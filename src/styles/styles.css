@@ -21,6 +21,13 @@ html, body { margin: 0; background: #fff; overflow-x: hidden; max-width: 100%; }
   .lc-showcase { display: none !important; }
 }
 
+/* DataAccess integrations — column count is pure CSS (not JS useIsMobile) so it
+   is correct in the server HTML on mobile, before/without island hydration. */
+.lc-integ-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 620px; margin: 0 auto; }
+@media (max-width: 760px) {
+  .lc-integ-grid { grid-template-columns: 1fr; gap: 16px; max-width: 300px; }
+}
+
 a { color: inherit; }
 a:hover { color: inherit; }
 
