@@ -1,7 +1,9 @@
 ---
-// CTABanner — white-paper email capture. Form is a stub: submit is a no-op
-// (preventDefault). The owner wires Resend + Supabase later — see handoff §5.
-// TODO: point this form at /api/send-brochure once the backend exists.
+// CTABanner — white-paper email capture.
+// Wired to the existing Supabase edge function `download-request`, which
+// validates the (work) email, emails the "Beyond the Bottleneck" white-paper
+// PDF via Resend, and logs the lead into webform_leads. Same contract + UX as
+// the Webflow cubeten-form-wiring script. The .lc-cta-input class is the hook.
 ---
 <section class="cta">
   <img class="cta-img-desktop" src="/assets/img/media/white-paper-mockup.webp" alt="LabsCubed automation white paper" width="1500" height="1800" loading="lazy" />
@@ -52,3 +54,90 @@
     .cta-img-mobile { display: block; width: 100%; max-width: 420px; margin-top: 32px; border-radius: 12px; }
   }
 </style>
+
+<script>
+  // Wire the white-paper form to the Supabase `download-request` edge function.
+  // Emails the gated PDF via Resend + logs the lead. Mirrors the Webflow wiring.
+  const ENDPOINT = "https://grozewxrymeiruhggcdy.supabase.co/functions/v1/download-request";
+  const UTM_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"];
+  const COOKIE = "lc_first_touch";
+  const MAX_AGE = 60 * 60 * 24 * 90; // 90 days
+  const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+
+  function getCookie(name: string): string {
+    const m = document.cookie.match("(^|;)\\s*" + name + "\\s*=\\s*([^;]+)");
+    return m ? decodeURIComponent(m.pop() as string) : "";
+  }
+  function setCookie(name: string, value: string): void {
+    document.cookie = `${name}=${encodeURIComponent(value)};path=/;max-age=${MAX_AGE};SameSite=Lax`;
+  }
+  function currentUtms(): Record<string, string> | null {
+    const p = new URLSearchParams(location.search);
+    const o: Record<string, string> = {};
+    let any = false;
+    UTM_KEYS.forEach((k) => { const v = p.get(k); if (v) { o[k] = v; any = true; } });
+    return any ? o : null;
+  }
+  // First-touch attribution: persist the first UTM set we ever see for this visitor.
+  function firstTouch(): Record<string, string> {
+    let s: Record<string, string> = {};
+    try { s = JSON.parse(getCookie(COOKIE) || "{}") || {}; } catch { s = {}; }
+    const has = s.utm_source || s.utm_medium || s.utm_campaign || s.utm_content || s.utm_term;
+    if (!has) {
+      const cur = currentUtms();
+      if (cur) {
+        cur.landing_page = location.pathname;
+        cur.referrer = document.referrer || "";
+        cur.ts = new Date().toISOString();
+        setCookie(COOKIE, JSON.stringify(cur));
+        s = cur;
+      }
+    }
+    return s;
+  }
+
+  function wire(form: HTMLFormElement): void {
+    const input = form.querySelector<HTMLInputElement>(".lc-cta-input");
+    const label = form.querySelector<HTMLElement>(".cta-form-btn-label");
+    if (!input || !label) return;
+    const setLabel = (t: string) => { label.textContent = t; };
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const email = (input.value || "").trim();
+      if (!EMAIL_RE.test(email)) { setLabel("Enter a valid email"); return; }
+
+      setLabel("Sending…");
+      input.disabled = true;
+      const ft = firstTouch();
+
+      fetch(ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          source: location.pathname,
+          asset: "whitepaper",
+          utm_source: ft.utm_source || "",
+          utm_medium: ft.utm_medium || "",
+          utm_campaign: ft.utm_campaign || "",
+          utm_content: ft.utm_content || "",
+          utm_term: ft.utm_term || "",
+          referrer: ft.referrer || document.referrer || "",
+          landing_page: ft.landing_page || location.pathname,
+        }),
+      })
+        .then((r) => r.json().catch(() => ({})).then((d) => ({ status: r.status, data: d })))
+        .then(({ status, data }) => {
+          if (status === 200 && data && data.success) { setLabel("Check your inbox!"); input.value = ""; }
+          else if (status === 422) { setLabel("Use your work email"); }
+          else { setLabel("Try again"); }
+          input.disabled = false;
+        })
+        .catch(() => { setLabel("Try again"); input.disabled = false; });
+    });
+  }
+
+  firstTouch(); // capture attribution on landing
+  document.querySelectorAll<HTMLFormElement>(".cta-form").forEach(wire);
+</script>
