@@ -52,7 +52,7 @@ export default function DataAccess() {
         </div>
         <div style={{ marginTop: m ? 48 : 80 }}>
           <div style={{ textAlign: "center", fontWeight: 700, fontSize: 11, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--text-muted)", marginBottom: m ? 24 : 36 }}>Or integrate with the systems you already run</div>
-          <div style={{ display: "grid", gridTemplateColumns: m ? "1fr" : "repeat(3, 1fr)", gap: m ? 10 : 24, maxWidth: m ? 150 : 620, margin: "0 auto" }}>
+          <div style={{ display: "grid", gridTemplateColumns: m ? "1fr" : "repeat(3, 1fr)", gap: m ? 16 : 24, maxWidth: m ? 300 : 620, margin: "0 auto" }}>
             {[
               { img: "integ-alpha.png", name: "Alpha Workbench", desc: "Push tensile results straight into Alpha’s rheology and materials-testing workflows — no manual re-entry." },
               { img: "integ-uncountable.png", name: "Uncountable", desc: "Feed every data point into Uncountable’s R&D and experiment-management platform to close the loop on formulation." },
