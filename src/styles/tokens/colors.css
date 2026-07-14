@@ -1,0 +1,43 @@
+/* ============================================================
+   LabsCubed — Color tokens
+   "Industrial Minimalism": black + white, one teal accent.
+   ============================================================ */
+:root {
+  /* ---- Base palette ---- */
+  --lc-black: #000000;
+  --lc-white: #ffffff;
+  --lc-ink-900: #111111;     /* near-black section background (stats band) */
+  --lc-ink: #1d1d1f;         /* primary text (Apple-ink) */
+  --lc-teal: #17ddc5;        /* brand accent — buttons, highlights, logo */
+  --lc-teal-deep: #0d9488;   /* deeper teal for small text / hover ink */
+  --lc-gray-500: #86868b;    /* muted body / captions */
+  --lc-gray-100: #f5f5f7;    /* primary subtle surface */
+  --lc-gray-150: #f4f4f4;    /* icon-tile surface */
+  --lc-gray-200: #ebebeb;    /* neutral badge fill */
+
+  /* ---- Lines & overlays ---- */
+  --lc-line: rgba(0, 0, 0, 0.05);          /* hairline borders, card edges */
+  --lc-line-strong: rgba(0, 0, 0, 0.1);    /* dividers inside panels */
+  --lc-line-inverse: rgba(255, 255, 255, 0.1);
+  --lc-overlay-dark: rgba(0, 0, 0, 0.5);   /* image scrim */
+
+  /* ---- Semantic aliases ---- */
+  --text-primary: var(--lc-ink);
+  --text-muted: var(--lc-gray-500);
+  --text-inverse: var(--lc-white);
+  --text-inverse-muted: rgba(255, 255, 255, 0.5);
+
+  --surface-page: var(--lc-white);
+  --surface-subtle: var(--lc-gray-100);
+  --surface-dark: var(--lc-black);
+  --surface-stat: var(--lc-ink-900);
+  --surface-card: var(--lc-white);
+  --surface-tile: var(--lc-gray-150);
+
+  --accent: var(--lc-teal);
+  --accent-ink: var(--lc-black);     /* text/icon that sits ON the teal */
+
+  --border-subtle: var(--lc-line);
+  --border-card: var(--lc-line);
+  --border-divider: var(--lc-line-strong);
+}

@@ -1,0 +1,18 @@
+# LabsCubed — allow all crawlers, including AI answer engines (this site wants
+# to be cited). Do NOT add Disallow rules for these agents.
+User-agent: *
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+Sitemap: https://lp.labscubed.com/sitemap-index.xml

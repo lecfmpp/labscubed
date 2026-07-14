@@ -1,0 +1,65 @@
+---
+// Footer — static. Links/contact verbatim from ui-lib.jsx Footer.
+import Button from './Button.astro';
+
+const cols = [
+  { h: 'Company', items: [['Home', '/'], ['Rubber Testing', '/rubber-testing'], ['Plastic Testing', '/plastic-testing'], ['ROI Calculator', 'https://roicalculator.labscubed.com/'], ['Testimonials', '/#testimonials']] },
+  { h: 'Help', items: [['FAQs', '/#faqs'], ['Get a Quote', '/get-a-quote']] },
+  { h: 'Access', items: [['Request Demo', '/get-a-quote'], ['Privacy Policy', '/privacy-policy']] },
+];
+---
+<footer class="ft">
+  <div class="ft-inner">
+    <div class="ft-top">
+      <div class="ft-lede">
+        <h2 class="ft-h2">Building the Autonomous Tensile Lab.</h2>
+        <p class="ft-p">We build the automated systems that bring true autonomy to tensile testing. Remove repetitive manual work from your workflows and empower your lab to run around the clock with precision.</p>
+      </div>
+      <div class="ft-cta"><Button variant="solid" arrow={false} href="/get-a-quote">Get a Quote</Button></div>
+    </div>
+    <div class="ft-cols">
+      <div class="ft-logo-col">
+        <img src="/assets/img/logo.png" alt="LabsCubed" class="ft-logo" />
+      </div>
+      {cols.map((c) => (
+        <div class="ft-col">
+          <div class="ft-col-h">{c.h}</div>
+          {c.items.map(([label, href]) => <a href={href} class="lc-footlink ft-link">{label}</a>)}
+        </div>
+      ))}
+      <div class="ft-col">
+        <div class="ft-col-h">Contact</div>
+        <a href="mailto:info@labscubed.com" class="lc-footlink ft-link">info@labscubed.com</a>
+        <a href="tel:+15197490460" class="lc-footlink ft-link">(519) 749-0460</a>
+        <div class="ft-link ft-plain">Kitchener, ON</div>
+      </div>
+    </div>
+    <div class="ft-legal">© 2026 LabsCubed Inc. All rights reserved.</div>
+  </div>
+</footer>
+
+<style>
+  .ft { background: #000; color: #fff; position: relative; overflow: hidden; }
+  .ft-inner { max-width: 1392px; margin: 0 auto; padding: 120px 64px 40px; box-sizing: border-box; }
+  .ft-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 32px; flex-wrap: wrap; }
+  .ft-lede { max-width: 560px; }
+  .ft-h2 { font-weight: 500; font-size: 64px; letter-spacing: -0.03em; line-height: 1.05; margin: 0; color: #fff; }
+  .ft-p { margin-top: 22px; font-weight: 300; font-size: 16px; line-height: 1.6; color: rgba(255,255,255,0.55); max-width: 480px; }
+  .ft-cta { padding-top: 14px; }
+  .ft-cols { display: flex; gap: 80px; margin-top: 96px; flex-wrap: wrap; }
+  .ft-logo-col { margin-right: 40px; }
+  .ft-logo { height: 26px; width: auto; display: block; }
+  .ft-col { display: flex; flex-direction: column; gap: 16px; }
+  .ft-col-h { font-size: 14px; font-weight: 600; }
+  .ft-link { font-size: 14px; color: rgba(255,255,255,0.5); text-decoration: none; }
+  .ft-plain { }
+  .ft-legal { border-top: 1px solid rgba(255,255,255,0.1); margin-top: 64px; padding-top: 28px; font-size: 13px; color: rgba(255,255,255,0.4); }
+
+  @media (max-width: 760px) {
+    .ft-inner { padding: 80px 20px 36px; }
+    .ft-h2 { font-size: 40px; }
+    .ft-cols { gap: 36px; margin-top: 56px; }
+    .ft-logo-col { flex-basis: 100%; margin-right: 0; }
+    .ft-legal { margin-top: 48px; }
+  }
+</style>

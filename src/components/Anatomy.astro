@@ -1,0 +1,27 @@
+---
+// Anatomy — gradient title + YouTube iframe.
+import Section from './Section.astro';
+---
+<Section bg="#fff">
+  <div class="anat-inner">
+    <h2 class="anat-title lc-gradtext">Anatomy of precision.</h2>
+    <p class="anat-sub">Every component is over-engineered. We stripped away the unnecessary to focus entirely on uncompromising stability and data integrity.</p>
+    <div class="anat-video">
+      <iframe src="https://www.youtube.com/embed/EA0jUa83Qjs?rel=0&modestbranding=1" title="Anatomy of precision — CubeTen automated tensile testing machine" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy"></iframe>
+    </div>
+  </div>
+</Section>
+
+<style>
+  .anat-inner { padding: 130px 0; text-align: center; }
+  .anat-title { font-weight: 600; font-size: 100px; letter-spacing: -0.03em; line-height: 1.1; margin: 0; }
+  .anat-sub { margin: 20px auto 0; max-width: 720px; font-weight: 300; font-size: 18px; line-height: 1.55; color: var(--text-muted); }
+  .anat-video { position: relative; width: 100%; max-width: 1180px; margin: 40px auto 0; aspect-ratio: 16 / 9; border-radius: 16px; overflow: hidden; box-shadow: var(--shadow-edge); }
+  .anat-video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: none; display: block; }
+
+  @media (max-width: 760px) {
+    .anat-inner { padding: 80px 0; }
+    .anat-title { font-size: 44px; }
+    .anat-sub { font-size: 16px; }
+  }
+</style>

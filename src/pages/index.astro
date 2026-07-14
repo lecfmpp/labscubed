@@ -1,0 +1,37 @@
+---
+import Base from '../layouts/Base.astro';
+// Static sections (.astro — zero JS)
+import Hero from '../components/Hero.astro';
+import Trust from '../components/Trust.astro';
+import Setup from '../components/Setup.astro';
+import Industries from '../components/Industries.astro';
+import Anatomy from '../components/Anatomy.astro';
+import Measurement from '../components/Measurement.astro';
+import CTABanner from '../components/CTABanner.astro';
+import FAQ from '../components/FAQ.astro';
+import Footer from '../components/Footer.astro';
+// React islands
+import Nav from '../islands/Nav.tsx';
+import ProductHighlight from '../islands/ProductHighlight.tsx';
+import ConfiguratorFlow from '../islands/ConfiguratorFlow.tsx';
+import DataAccess from '../islands/DataAccess.tsx';
+import VideoCarousel from '../islands/VideoCarousel.tsx';
+---
+<Base>
+  <Nav client:load />
+  <main class="lc-page">
+    <Hero />
+    <Trust />
+    <ProductHighlight client:visible />
+    <Setup />
+    <ConfiguratorFlow client:visible />
+    <DataAccess client:visible />
+    <Industries />
+    <Anatomy />
+    <Measurement />
+    <VideoCarousel client:visible />
+    <CTABanner />
+    <FAQ />
+  </main>
+  <Footer />
+</Base>

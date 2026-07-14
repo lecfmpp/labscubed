@@ -1,0 +1,56 @@
+---
+import '../styles/styles.css';
+import { SITE_URL } from '../site.mjs';
+import { buildJsonLd } from '../lib/jsonld';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+const {
+  title = 'LabsCubed — More tests. Higher accuracy. 85% shorter lab cycle.',
+  description = 'Continuous tensile testing automation for high-volume polymer labs. Operator-independent precision that scales effortlessly, without manual errors.',
+} = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, SITE_URL).href;
+const ogImage = new URL('/assets/img/media/hero-cubeten.webp', SITE_URL).href;
+const jsonLd = buildJsonLd(SITE_URL);
+---
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/png" href="/assets/img/logo.png" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="LabsCubed" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <!-- Preconnects for below-the-fold third parties -->
+    <link rel="preconnect" href="https://www.youtube.com" />
+    <link rel="preconnect" href="https://img.youtube.com" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    {jsonLd.map((block) => (
+      <script type="application/ld+json" set:html={JSON.stringify(block)} />
+    ))}
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

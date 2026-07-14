@@ -1,0 +1,14 @@
+---
+// Static equivalent of ui-lib Section: 1312px container, 64px desktop /
+// 20px mobile gutters (the useIsMobile branch → CSS media query at 760px).
+interface Props { bg?: string; style?: string; class?: string; id?: string; }
+const { bg = '#fff', style = '', class: cls = '', id } = Astro.props;
+---
+<section class={`lc-section ${cls}`} id={id} style={`background:${bg};${style}`}>
+  <div class="lc-section-inner"><slot /></div>
+</section>
+<style>
+  .lc-section { width: 100%; display: flex; justify-content: center; }
+  .lc-section-inner { width: 100%; max-width: 1312px; padding: 0 64px; box-sizing: border-box; }
+  @media (max-width: 760px) { .lc-section-inner { padding: 0 20px; } }
+</style>

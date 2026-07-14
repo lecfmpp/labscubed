@@ -1,0 +1,59 @@
+---
+// Measurement — Badge + heading + 3 method cards.
+import Section from './Section.astro';
+
+const cards = [
+  { tag: 'Built-in · No setup', title: 'Crosshead Displacement', img: '/assets/img/media/crosshead.webp', body: "Strain is derived from crosshead travel, read by the servo motor's high-resolution encoder. Always on, with nothing to attach or calibrate per sample.", use: 'High-throughput runs, elastomers and large elongations that exceed an extensometer’s travel.' },
+  { tag: 'Contact', title: 'Physical Extensometer', img: '/assets/img/media/physical-extensometer.webp', body: 'A calibrated clip-on gauge grips the specimen and measures elongation directly at the gauge length — the reference method for modulus and yield.', use: 'ASTM & ISO modulus and yield results that demand the tightest accuracy.' },
+  { tag: 'Optical · Non-contact', title: 'Video Extensometer', img: '/assets/img/media/video-extensometer.webp', body: 'High-speed cameras track contrast marks on the specimen, measuring strain without ever touching it — so nothing slips or loads the sample.', use: 'Thin films, soft or delicate materials, and strain-to-break measurement.' },
+];
+---
+<Section bg="#fff">
+  <div class="meas-inner">
+    <div class="meas-badge-wrap"><span class="lc-badge-subtle">Measurement</span></div>
+    <h2 class="meas-h2">How CubeTen and CubeOne measure strain accurately</h2>
+    <p class="meas-sub">Our machines pair a built-in encoder with calibrated contact and non-contact extensometers, so every test is measured by the right method for the material.</p>
+    <div class="meas-grid">
+      {cards.map((c) => (
+        <div class="lc-icard meas-card">
+          <div class="meas-card-imgwrap"><img src={c.img} alt={c.title} loading="lazy" /></div>
+          <div class="meas-card-body">
+            <div class="meas-card-tag">{c.tag}</div>
+            <div class="meas-card-title">{c.title}</div>
+            <div class="meas-card-desc">{c.body}</div>
+            <div class="meas-card-best">
+              <div class="meas-card-best-label">Best for</div>
+              <div class="meas-card-best-use">{c.use}</div>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</Section>
+
+<style>
+  .meas-inner { padding: 0 0 130px; text-align: center; }
+  .meas-badge-wrap { display: flex; justify-content: center; margin-bottom: 16px; }
+  .lc-badge-subtle { display: inline-flex; background: var(--lc-gray-100); color: var(--text-muted); border-radius: 4px; padding: 5px 12px; font-weight: 700; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; line-height: 1; }
+  .meas-h2 { font-weight: 700; font-size: 56px; letter-spacing: -0.03em; line-height: 1.2; margin: 0 auto; color: var(--lc-ink); max-width: 644px; }
+  .meas-sub { margin: 20px auto 0; max-width: 604px; font-weight: 300; font-size: 18px; line-height: 1.55; color: var(--text-muted); }
+  .meas-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 64px; text-align: left; }
+  .meas-card { display: flex; flex-direction: column; border-radius: 24px; background: #fff; border: 1px solid var(--lc-line); box-shadow: var(--shadow-edge); overflow: hidden; }
+  .meas-card-imgwrap { padding: 16px; background: var(--lc-gray-100); border-bottom: 1px solid var(--lc-line); }
+  .meas-card-imgwrap img { width: 100%; height: 188px; object-fit: contain; display: block; }
+  .meas-card-body { padding: 22px 28px 28px; display: flex; flex-direction: column; gap: 11px; flex: 1; }
+  .meas-card-tag { font-weight: 700; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--lc-teal-deep); }
+  .meas-card-title { font-weight: 600; font-size: 22px; letter-spacing: -0.02em; color: var(--lc-ink); }
+  .meas-card-desc { font-size: 14.5px; line-height: 1.55; color: var(--text-muted); font-weight: 300; }
+  .meas-card-best { margin-top: auto; padding-top: 18px; border-top: 1px solid var(--lc-line); }
+  .meas-card-best-label { font-weight: 600; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(29,29,31,0.5); margin-bottom: 6px; }
+  .meas-card-best-use { font-size: 13.5px; line-height: 1.5; color: var(--lc-ink); font-weight: 400; }
+
+  @media (max-width: 760px) {
+    .meas-inner { padding: 0 0 40px; }
+    .meas-h2 { font-size: 30px; }
+    .meas-sub { font-size: 16px; }
+    .meas-grid { grid-template-columns: 1fr; }
+  }
+</style>

@@ -1,0 +1,54 @@
+---
+// CTABanner — white-paper email capture. Form is a stub: submit is a no-op
+// (preventDefault). The owner wires Resend + Supabase later — see handoff §5.
+// TODO: point this form at /api/send-brochure once the backend exists.
+---
+<section class="cta">
+  <img class="cta-img-desktop" src="/assets/img/media/white-paper-mockup.webp" alt="LabsCubed automation white paper" loading="lazy" />
+  <div class="cta-overlay"></div>
+  <div class="cta-inner">
+    <div class="cta-content">
+      <div class="cta-tag">White Paper</div>
+      <h2 class="cta-h2">Beyond the bottleneck: a data-backed case for testing automation.</h2>
+      <p class="cta-p">Download your business case for automation — the definitive data on cost reduction and eliminating human error.</p>
+      <form class="cta-form" onsubmit="event.preventDefault();return false;">
+        <input class="lc-cta-input cta-input" placeholder="Enter your email address" aria-label="Email address" />
+        <span class="cta-form-glow"></span>
+        <button type="submit" class="cta-form-btn">
+          <span class="cta-form-btn-label">Download Now</span>
+          <span class="cta-form-btn-circle"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M7 17 17 7M17 7H9M17 7v8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+        </button>
+      </form>
+      <img class="cta-img-mobile" src="/assets/img/media/white-paper-mockup.webp" alt="LabsCubed automation white paper" loading="lazy" />
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta { background: #000; color: #fff; position: relative; overflow: hidden; border-top: 1px solid rgba(255,255,255,0.06); border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .cta-img-desktop { position: absolute; right: 4%; top: 50%; transform: translateY(-50%); width: 42%; max-width: 560px; pointer-events: none; z-index: 0; }
+  .cta-overlay { position: absolute; inset: 0; background: linear-gradient(270deg, rgba(0,0,0,0) 60%, #000 100%); pointer-events: none; z-index: 1; }
+  .cta-inner { position: relative; z-index: 2; max-width: 1392px; margin: 0 auto; padding: 150px 64px; box-sizing: border-box; }
+  .cta-content { max-width: 591px; }
+  .cta-tag { margin-bottom: 20px; display: inline-flex; align-items: center; padding: 4px 12px; border-radius: 4px; background: rgba(255,255,255,0.1); font-size: 11px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.85); }
+  .cta-h2 { font-weight: 500; font-size: 64px; letter-spacing: -0.04em; line-height: 1.15; margin: 0; color: #fff; }
+  .cta-p { margin-top: 22px; font-weight: 400; font-size: 24px; line-height: 1.4; color: rgba(255,255,255,0.5); }
+  .cta-form { margin-top: 36px; position: relative; display: flex; align-items: center; width: 423px; max-width: 423px; height: 61px; background: rgba(255,255,255,0.1); border-radius: 1000px; padding: 8px; box-sizing: border-box; }
+  .cta-input { flex: 1; min-width: 0; background: transparent; border: none; outline: none; color: #fff; font-weight: 500; font-size: 14px; padding-left: 25px; }
+  .cta-form-glow { position: absolute; right: 8px; width: 184px; height: 45px; border-radius: 43px; background: #17DDC5; opacity: 0.5; filter: blur(40px); pointer-events: none; }
+  .cta-form-btn { position: relative; display: inline-flex; align-items: center; height: 45px; background: #17DDC5; border-radius: 43px; border: none; cursor: pointer; padding: 0 4px 0 22px; flex: none; }
+  .cta-form-btn-label { font-weight: 500; font-size: 14px; color: #000; opacity: 0.9; }
+  .cta-form-btn-circle { width: 38px; height: 38px; border-radius: 50%; background: #000; display: inline-flex; align-items: center; justify-content: center; margin-left: 12px; }
+  .cta-img-mobile { display: none; }
+
+  @media (max-width: 760px) {
+    .cta-img-desktop, .cta-overlay { display: none; }
+    .cta-inner { padding: 80px 20px; }
+    .cta-h2 { font-size: 34px; }
+    .cta-p { font-size: 17px; }
+    .cta-form { width: 100%; }
+    .cta-input { padding-left: 18px; }
+    .cta-form-btn { padding: 0 4px 0 16px; }
+    .cta-img-mobile { display: block; width: 100%; max-width: 420px; margin-top: 32px; border-radius: 12px; }
+  }
+</style>

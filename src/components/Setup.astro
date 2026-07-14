@@ -1,0 +1,56 @@
+---
+// Setup — 3-step, alternating image/text rows with GIFs.
+import Section from './Section.astro';
+
+const steps = [
+  { n: '01', img: '/assets/img/media/step1-load-samples.gif', title: 'Load up to 15 Samples at a time', body: 'Place ASTM or ISO standard specimens onto the autonomous dual-gripper carousel.' },
+  { n: '02', img: '/assets/img/media/step2-setup-tray-screen.gif', title: 'Set Parameters, press start and walk away', body: 'Input test specifications via the intuitive native touchscreen or remote interface.' },
+  { n: '03', img: '/assets/img/media/short-easy-steps.gif', title: 'Spend your time doing actual work', body: 'The system automatically grips, pulls, and calculates everything without human intervention — so your engineers can focus on valuable work.' },
+];
+---
+<Section bg="#fff">
+  <div class="setup-inner">
+    <div class="setup-head">
+      <div class="setup-eyebrow">How our testing machines work</div>
+      <h2 class="setup-title lc-gradtext">The 3-step setup.</h2>
+    </div>
+    <div class="setup-rows">
+      {steps.map((s, i) => (
+        <div class={`setup-row ${i % 2 === 1 ? 'row-odd' : ''}`}>
+          <div class="setup-img"><img src={s.img} alt={s.title} loading="lazy" /></div>
+          <div class="setup-text">
+            <div class="setup-n">{s.n}</div>
+            <h3 class="setup-h3">{s.title}</h3>
+            <p class="setup-body">{s.body}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</Section>
+
+<style>
+  .setup-inner { padding: 20px 0 130px; }
+  .setup-head { text-align: center; }
+  .setup-eyebrow { font-size: 18px; color: var(--text-muted); margin-bottom: 14px; }
+  .setup-title { font-weight: 600; font-size: 100px; letter-spacing: -0.03em; line-height: 1.1; margin: 0; }
+  .setup-rows { margin-top: 90px; display: flex; flex-direction: column; gap: 80px; }
+  .setup-row { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+  .setup-row.row-odd .setup-img { order: 1; }
+  .setup-img { border-radius: 16px; overflow: hidden; background: var(--lc-gray-100); box-shadow: var(--shadow-edge); }
+  .setup-img img { width: 100%; display: block; height: auto; }
+  .setup-n { font-size: 14px; font-weight: 700; color: var(--lc-teal-deep); letter-spacing: 0.1em; }
+  .setup-h3 { font-weight: 700; font-size: 37px; letter-spacing: -0.01em; margin: 10px 0 0; color: var(--lc-ink); }
+  .setup-body { margin-top: 14px; font-size: 18px; line-height: 1.55; color: var(--text-muted); font-weight: 300; max-width: 420px; }
+
+  @media (max-width: 760px) {
+    .setup-inner { padding: 10px 0 80px; }
+    .setup-eyebrow { font-size: 15px; }
+    .setup-title { font-size: 44px; }
+    .setup-rows { margin-top: 56px; gap: 48px; }
+    .setup-row { grid-template-columns: 1fr; gap: 24px; }
+    .setup-row.row-odd .setup-img { order: 0; }
+    .setup-h3 { font-size: 28px; }
+    .setup-body { font-size: 16px; }
+  }
+</style>

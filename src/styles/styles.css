@@ -1,0 +1,63 @@
+/* ============================================================
+   LabsCubed Design System — global entry point
+   (paths fixed for src/styles/ location in the Astro project)
+   ============================================================ */
+@import "./tokens/fonts.css";
+@import "./tokens/colors.css";
+@import "./tokens/typography.css";
+@import "./tokens/spacing.css";
+@import "./tokens/base.css";
+
+/* ============================================================
+   Global runtime CSS carried over from reference index.html <head>
+   (keyframes + hover/utility classes referenced throughout).
+   ============================================================ */
+body { margin: 0; background: #fff; overflow-x: hidden; }
+
+a { color: inherit; }
+a:hover { color: inherit; }
+
+.lc-navlink { transition: color .15s ease; }
+.lc-navlink:hover { color: #fff !important; }
+.lc-footlink:hover { color: #fff !important; }
+
+.lc-btn { transition: filter .18s ease, transform .12s ease; }
+.lc-btn:hover { filter: brightness(0.95); transform: translateY(-1px); }
+
+.lc-icard:hover { transform: translateY(-3px); box-shadow: var(--shadow-edge), 0 18px 40px rgba(0,0,0,0.08); }
+
+.lc-cta-input::placeholder { color: rgba(255,255,255,0.4); font-weight: 500; }
+.lc-cta-input:-webkit-autofill,
+.lc-cta-input:-webkit-autofill:hover,
+.lc-cta-input:-webkit-autofill:focus,
+.lc-cta-input:-webkit-autofill:active {
+  -webkit-text-fill-color: #fff !important;
+  caret-color: #fff;
+  -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
+  box-shadow: 0 0 0 1000px transparent inset !important;
+  transition: background-color 9999s ease-in-out 0s !important;
+}
+
+@keyframes lcFadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes lcMarquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.lc-caret { animation: lcBlink 1s steps(1) infinite; }
+@keyframes lcBlink { 50% { opacity: 0; } }
+@keyframes lcTrayFade { from { opacity: 0.3; } to { opacity: 1; } }
+
+.lc-logo-track:hover { animation-play-state: paused; }
+
+.lc-hero-scroll { scrollbar-width: none; -ms-overflow-style: none; }
+.lc-hero-scroll::-webkit-scrollbar { display: none; }
+
+/* CubeTen showcase is desktop-only (reference returns null on mobile). Hide the
+   SSR'd markup on mobile so it never flashes before the island hydrates. */
+@media (max-width: 760px) { .lc-showcase { display: none !important; } }
+
+/* Ink → grey → ink gradient text-fill (Setup / Anatomy / FAQ / Configurator titles). */
+.lc-gradtext {
+  background: linear-gradient(90deg, #000000 0%, #666666 56.25%, #000000 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}

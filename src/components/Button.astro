@@ -1,0 +1,30 @@
+---
+// Static equivalent of ui-lib Button.
+interface Props { variant?: string; size?: string; arrow?: boolean; href?: string; style?: string; }
+const { variant = 'primary', size = 'md', arrow, href = '#', style = '' } = Astro.props;
+const showArrow = arrow ?? (variant === 'primary' || variant === 'dark');
+const P: Record<string, any> = {
+  primary: { bg: 'var(--lc-teal)', color: '#000', circle: '#000', arrow: '#fff' },
+  dark: { bg: '#000', color: '#fff', circle: 'rgba(255,255,255,0.14)', arrow: '#fff' },
+  solid: { bg: 'var(--lc-teal)', color: '#000', circle: null },
+  ghost: { bg: 'transparent', color: '#fff', circle: 'rgba(255,255,255,0.14)', arrow: '#fff' },
+};
+const p = P[variant];
+const circle = size === 'sm' ? 30 : 36;
+const pad = showArrow
+  ? (size === 'sm' ? '8px 8px 8px 18px' : '8px 8px 8px 26px')
+  : (size === 'sm' ? '11px 22px' : '16px 30px');
+const border = variant === 'ghost' ? '1px solid rgba(255,255,255,0.25)' : 'none';
+---
+<a
+  href={href}
+  class="lc-btn"
+  style={`display:inline-flex;align-items:center;gap:14px;border-radius:999px;background:${p.bg};color:${p.color};border:${border};font-weight:500;font-size:${size === 'sm' ? 13 : 14}px;line-height:1;padding:${pad};text-decoration:none;${style}`}
+>
+  <span><slot /></span>
+  {showArrow && (
+    <span style={`width:${circle}px;height:${circle}px;border-radius:50%;background:${p.circle};color:${p.arrow};display:inline-flex;align-items:center;justify-content:center;flex:none;`}>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M7 17 17 7M17 7H9M17 7v8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+    </span>
+  )}
+</a>

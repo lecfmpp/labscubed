@@ -1,0 +1,38 @@
+/* ============================================================
+   LabsCubed — Spacing, radii, shadow tokens
+   Generous whitespace; rounded-pill CTAs; soft 32px cards.
+   ============================================================ */
+:root {
+  /* ---- Radii ---- */
+  --radius-pill: 999px;    /* CTAs, chips, toggles */
+  --radius-card: 32px;     /* large feature / industry cards */
+  --radius-panel: 24px;    /* measurement-method cards */
+  --radius-lg: 16px;       /* dashboard mockup */
+  --radius-md: 12px;       /* inner chart panels */
+  --radius-sm: 8px;        /* icon tiles */
+  --radius-badge: 4px;     /* badges & tags */
+
+  /* ---- Shadows ---- */
+  --shadow-card: 0 30px 60px rgba(0, 0, 0, 0.1);   /* floating dashboard */
+  --shadow-edge: inset 0 0 0 1px rgba(0, 0, 0, 0.05); /* card hairline edge */
+
+  /* ---- Spacing scale ---- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+  --space-32: 128px;
+
+  /* ---- Layout ---- */
+  --container: 1312px;   /* content width (1440 − 64 gutters) */
+  --gutter: 64px;        /* page side padding */
+  --section-pad: 128px;  /* vertical rhythm between sections */
+}
