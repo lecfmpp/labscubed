@@ -125,7 +125,7 @@ function MobileSpecimenSlider({ ids, pid, setPid }: any) {
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: 16 }}>
         <div style={{ minWidth: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <img src={standard.indexOf("ISO") === 0 ? "/assets/img/standards/iso-logo-ink.png" : "/assets/img/standards/astm-logo-ink.png"} alt={standard} style={{ height: 18, width: "auto", opacity: 0.85 }} />
+            <img src={standard.indexOf("ISO") === 0 ? "/assets/img/standards/iso-logo-ink.png" : "/assets/img/standards/astm-logo-ink.png"} alt={standard} width={standard.indexOf("ISO") === 0 ? 194 : 210} height={standard.indexOf("ISO") === 0 ? 136 : 168} style={{ height: 18, width: "auto", opacity: 0.85 }} />
             <div style={{ fontWeight: 600, fontSize: 12, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--lc-teal-deep)" }}>{standard}</div>
           </div>
           <div style={{ fontWeight: 700, fontSize: 30, letterSpacing: "-0.01em", color: "var(--lc-ink)", lineHeight: 1.05, marginTop: 6 }}>{name}</div>
@@ -178,7 +178,7 @@ export default function ProductHighlight() {
             <h3 style={{ fontWeight: 700, fontSize: m ? 34 : 56, lineHeight: 1.07, letterSpacing: "-0.03em", margin: 0, color: "var(--lc-ink)" }}>Industrial power.<br />Compact footprint.<br /><span style={{ whiteSpace: "nowrap" }}><TypeCycle words={["Rubber Testing", "Plastic Testing"]} /></span></h3>
           </div>
           <div style={{ position: "relative", width: "100%", aspectRatio: "16 / 11" }}>
-            <img key={tray} src={TRAY_IMG[tray]} alt={`Autonomous ${tray.toLowerCase()} tray loaded with test specimens`} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", display: "block", filter: "drop-shadow(0 42px 14px rgba(0,0,0,0.2))", animation: "lcTrayFade .4s ease" }} />
+            <img key={tray} src={TRAY_IMG[tray]} width={600} height={400} alt={`Autonomous ${tray.toLowerCase()} tray loaded with test specimens`} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", display: "block", filter: "drop-shadow(0 42px 14px rgba(0,0,0,0.2))", animation: "lcTrayFade .4s ease" }} />
           </div>
         </div>
         <div style={{ marginTop: m ? 40 : 72, display: "grid", gridTemplateColumns: m ? "1fr" : "repeat(4, 1fr)", gap: m ? 0 : 40 }}>
@@ -216,7 +216,7 @@ export default function ProductHighlight() {
             <DetailCard s={s} />
             <div>
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <img src={standard.indexOf("ISO") === 0 ? "/assets/img/standards/iso-logo-ink.png" : "/assets/img/standards/astm-logo-ink.png"} alt={standard} style={{ height: 24, width: "auto", display: "block", opacity: 0.85 }} />
+                <img src={standard.indexOf("ISO") === 0 ? "/assets/img/standards/iso-logo-ink.png" : "/assets/img/standards/astm-logo-ink.png"} alt={standard} width={standard.indexOf("ISO") === 0 ? 194 : 210} height={standard.indexOf("ISO") === 0 ? 136 : 168} style={{ height: 24, width: "auto", display: "block", opacity: 0.85 }} />
                 <div style={{ fontWeight: 600, fontSize: 15, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--lc-teal-deep)" }}>{standard}</div>
               </div>
               <div style={{ fontWeight: 700, fontSize: 56, letterSpacing: "-0.01em", color: "var(--lc-ink)", lineHeight: 1, marginTop: 8 }}>{name}</div>

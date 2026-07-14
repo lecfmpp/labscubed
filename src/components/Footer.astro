@@ -2,10 +2,11 @@
 // Footer — static. Links/contact verbatim from ui-lib.jsx Footer.
 import Button from './Button.astro';
 
+// Links replicate the live labscubed.com Webflow footer (absolute www URLs).
 const cols = [
-  { h: 'Company', items: [['Home', '/'], ['Rubber Testing', '/rubber-testing'], ['Plastic Testing', '/plastic-testing'], ['ROI Calculator', 'https://roicalculator.labscubed.com/'], ['Testimonials', '/#testimonials']] },
-  { h: 'Help', items: [['FAQs', '/#faqs'], ['Get a Quote', '/get-a-quote']] },
-  { h: 'Access', items: [['Request Demo', '/get-a-quote'], ['Privacy Policy', '/privacy-policy']] },
+  { h: 'Company', items: [['Home', 'https://www.labscubed.com/'], ['Rubber Testing', 'https://www.labscubed.com/rubber-testing'], ['Plastic Testing', 'https://www.labscubed.com/plastic-testing'], ['Testimonials', 'https://www.labscubed.com/#testimonials']] },
+  { h: 'Help', items: [['FAQs', 'https://www.labscubed.com/#faqs'], ['Get a Quote', 'https://www.labscubed.com/get-a-quote']] },
+  { h: 'Access', items: [['Request Demo', 'https://www.labscubed.com/get-a-quote'], ['Privacy Policy', 'https://www.labscubed.com/privacy-policy']] },
 ];
 ---
 <footer class="ft">
@@ -15,11 +16,11 @@ const cols = [
         <h2 class="ft-h2">Building the Autonomous Tensile Lab.</h2>
         <p class="ft-p">We build the automated systems that bring true autonomy to tensile testing. Remove repetitive manual work from your workflows and empower your lab to run around the clock with precision.</p>
       </div>
-      <div class="ft-cta"><Button variant="solid" arrow={false} href="/get-a-quote">Get a Quote</Button></div>
+      <div class="ft-cta"><Button variant="solid" arrow={false} href="https://www.labscubed.com/get-a-quote">Get a Quote</Button></div>
     </div>
     <div class="ft-cols">
       <div class="ft-logo-col">
-        <img src="/assets/img/logo.png" alt="LabsCubed" class="ft-logo" />
+        <img src="/assets/img/logo.png" alt="LabsCubed" class="ft-logo" width="564" height="140" />
       </div>
       {cols.map((c) => (
         <div class="ft-col">

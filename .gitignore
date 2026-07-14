@@ -10,3 +10,5 @@ node_modules/
 npm-debug.log*
 # os
 .DS_Store
+# generated at build (prebuild fetches YouTube thumbnails)
+public/assets/img/yt/

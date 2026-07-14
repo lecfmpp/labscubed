@@ -10,8 +10,11 @@ const railIds = ['astm-d638-i', 'astm-d638-ii', 'iso-527-1a', 'astm-d624-c', 'is
 const cells = railIds.map((id) => {
   const s = getSample(id);
   const matLabel = s.material === 'rubber' ? 'Rubber' : 'Plastic';
-  const stdLogo = s.standard.indexOf('ISO') === 0 ? '/assets/img/standards/iso-logo.png' : '/assets/img/standards/astm-logo.png';
-  return { s, matLabel, stdLogo, blurb: `Automated ${matLabel} ${s.testType} Testing` };
+  const isIso = s.standard.indexOf('ISO') === 0;
+  const stdLogo = isIso ? '/assets/img/standards/iso-logo.png' : '/assets/img/standards/astm-logo.png';
+  const lw = isIso ? 194 : 210;
+  const lh = isIso ? 136 : 168;
+  return { s, matLabel, stdLogo, lw, lh, blurb: `Automated ${matLabel} ${s.testType} Testing` };
 });
 const glow = '0 30px 80px rgba(23,221,197,0.16), 0 14px 44px rgba(23,221,197,0.12), 0 4px 18px rgba(23,221,197,0.08)';
 ---
@@ -20,7 +23,7 @@ const glow = '0 30px 80px rgba(23,221,197,0.16), 0 14px 44px rgba(23,221,197,0.1
     <h1 class="hero-h1">Continuous Tensile Testing Automation Built for High-Volume Polymer Labs.</h1>
     <p class="hero-sub">We provide operator-independent precision that scales effortlessly without manual errors. Stop forcing technicians to manually swap out heavy grips and fixtures to change test profiles.</p>
     <div class="hero-img-wrap">
-      <img src="/assets/img/media/hero-cubeten-crop.png" alt="CubeTen automated tensile testing machine" class="hero-img" loading="eager" fetchpriority="high" width="708" height="708" />
+      <img src="/assets/img/media/hero-cubeten-crop.webp" alt="CubeTen automated tensile testing machine" class="hero-img" loading="eager" fetchpriority="high" width="1500" height="795" />
       <div class="hero-img-fade"></div>
     </div>
   </div>
@@ -32,7 +35,7 @@ const glow = '0 30px 80px rgba(23,221,197,0.16), 0 14px 44px rgba(23,221,197,0.1
         <>
           {i > 0 && <div class="hero-divider"></div>}
           <div class="hero-cell" style={`--glow:${glow}`}>
-            <div class="hero-cell-logo"><img src={c.stdLogo} alt={c.s.standard} /></div>
+            <div class="hero-cell-logo"><img src={c.stdLogo} alt={c.s.standard} width={c.lw} height={c.lh} /></div>
             <div class="hero-cell-spec">
               <span class="spec spec-default"><Sample spec={c.s} variant="outline" tone="dark" outlineScale={3.9} style={{ width: '100%', maxHeight: 34 }} /></span>
               <span class="spec spec-hover"><Sample spec={c.s} variant="fill" tone="dark" color="teal" outlineScale={3.9} style={{ width: '100%', maxHeight: 34 }} /></span>
@@ -54,7 +57,7 @@ const glow = '0 30px 80px rgba(23,221,197,0.16), 0 14px 44px rgba(23,221,197,0.1
         {cells.map((c) => (
           <div class="hero-mcell-wrap">
             <div class="hero-cell hero-mcell" style={`--glow:${glow}`}>
-              <div class="hero-cell-logo"><img src={c.stdLogo} alt={c.s.standard} /></div>
+              <div class="hero-cell-logo"><img src={c.stdLogo} alt={c.s.standard} width={c.lw} height={c.lh} /></div>
               <div class="hero-cell-spec">
                 <span class="spec spec-default"><Sample spec={c.s} variant="outline" tone="dark" outlineScale={3.9} style={{ width: '100%', maxHeight: 27 }} /></span>
                 <span class="spec spec-hover"><Sample spec={c.s} variant="fill" tone="dark" color="teal" outlineScale={3.9} style={{ width: '100%', maxHeight: 27 }} /></span>

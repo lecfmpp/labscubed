@@ -2,9 +2,9 @@
 // Industries — three cards. <image-slot> replaced with a plain <img> + overlay
 // (image-slot is an editor placeholder; real src is provided).
 const cards = [
-  { src: '/assets/img/industries/automotive.webp', title: 'Automotive & Transportation', body: 'Validate rubbers and plastics for extreme on-road stress and durability.' },
-  { src: '/assets/img/industries/health.webp', title: 'Medical Devices & Healthcare', body: 'Ensure precision and integrity in critical fluid-delivery components.' },
-  { src: '/assets/img/industries/additive.webp', title: 'Additive Manufacturing & Advanced Compounding', body: 'Characterize printed and compounded materials with repeatable accuracy.' },
+  { src: '/assets/img/industries/automotive.webp', w: 900, h: 600, title: 'Automotive & Transportation', body: 'Validate rubbers and plastics for extreme on-road stress and durability.' },
+  { src: '/assets/img/industries/health.webp', w: 900, h: 600, title: 'Medical Devices & Healthcare', body: 'Ensure precision and integrity in critical fluid-delivery components.' },
+  { src: '/assets/img/industries/additive.webp', w: 506, h: 474, title: 'Additive Manufacturing & Advanced Compounding', body: 'Characterize printed and compounded materials with repeatable accuracy.' },
 ];
 ---
 <section class="ind">
@@ -16,7 +16,7 @@ const cards = [
     <div class="ind-grid">
       {cards.map((c) => (
         <div class="lc-icard ind-card">
-          <img class="ind-card-img" src={c.src} alt={c.title} loading="lazy" />
+          <img class="ind-card-img" src={c.src} alt={c.title} width={c.w} height={c.h} loading="lazy" />
           <div class="ind-card-overlay"></div>
           <span class="ind-card-arrow">
             <span style="color:#fff"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M7 17 17 7M17 7H9M17 7v8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>

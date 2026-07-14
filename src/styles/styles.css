@@ -19,6 +19,7 @@ a:hover { color: inherit; }
 
 .lc-navlink { transition: color .15s ease; }
 .lc-navlink:hover { color: #fff !important; }
+.lc-navdrop:hover { background: rgba(255,255,255,0.08); }
 .lc-footlink:hover { color: #fff !important; }
 
 .lc-btn { transition: filter .18s ease, transform .12s ease; }

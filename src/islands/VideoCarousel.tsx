@@ -48,7 +48,15 @@ export default function VideoCarousel() {
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M7 17 17 7M17 7H9M17 7v8" stroke="var(--lc-ink)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
         </a>
         <a href={link} target="_blank" rel="noopener" style={{ display: "block", position: "relative", paddingTop: "56.25%", borderRadius: 14, overflow: "hidden", background: "linear-gradient(135deg, #141414, #2c2c2c)", boxShadow: "var(--shadow-edge)" }}>
-          {v.id && <img src={`https://img.youtube.com/vi/${v.id}/hqdefault.jpg`} alt={v.title} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />}
+          {v.id && <img
+            src={`/assets/img/yt/${v.id}.webp`}
+            width={640}
+            height={480}
+            loading="lazy"
+            alt={v.title}
+            onError={(e) => { const img = e.currentTarget as HTMLImageElement; if (!img.dataset.fb) { img.dataset.fb = "1"; img.src = `https://img.youtube.com/vi/${v.id}/hqdefault.jpg`; } }}
+            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+          />}
           <span style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
             <span style={{ width: 60, height: 60, borderRadius: "50%", background: "rgba(0,0,0,0.55)", border: "1px solid rgba(255,255,255,0.25)", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z" /></svg>

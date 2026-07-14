@@ -3,14 +3,14 @@
 import Section from './Section.astro';
 
 const partners = [
-  { src: '/assets/img/partners/parker-hannifin.png', alt: 'Parker Hannifin', h: 42 },
-  { src: '/assets/img/partners/chevron-phillips.png', alt: 'Chevron Phillips Chemical', h: 50 },
-  { src: '/assets/img/partners/caterpillar.svg', alt: 'Caterpillar', h: 36 },
-  { src: '/assets/img/partners/wacker.svg', alt: 'Wacker', h: 40 },
-  { src: '/assets/img/partners/hexpol.webp', alt: 'HEXPOL', h: 28 },
-  { src: '/assets/img/partners/ace.webp', alt: 'ACE Laboratories', h: 44 },
-  { src: '/assets/img/partners/momentive.webp', alt: 'Momentive', h: 28 },
-  { src: '/assets/img/partners/soucy.webp', alt: 'Soucy', h: 30 },
+  { src: '/assets/img/partners/parker-hannifin.png', alt: 'Parker Hannifin', h: 42, w: 3840, nh: 2160 },
+  { src: '/assets/img/partners/chevron-phillips.png', alt: 'Chevron Phillips Chemical', h: 50, w: 250, nh: 134 },
+  { src: '/assets/img/partners/caterpillar.svg', alt: 'Caterpillar', h: 36, w: 392, nh: 64 },
+  { src: '/assets/img/partners/wacker.svg', alt: 'Wacker', h: 40, w: 187, nh: 42 },
+  { src: '/assets/img/partners/hexpol.webp', alt: 'HEXPOL', h: 28, w: 312, nh: 52 },
+  { src: '/assets/img/partners/ace.webp', alt: 'ACE Laboratories', h: 44, w: 224, nh: 64 },
+  { src: '/assets/img/partners/momentive.webp', alt: 'Momentive', h: 28, w: 312, nh: 52 },
+  { src: '/assets/img/partners/soucy.webp', alt: 'Soucy', h: 30, w: 312, nh: 52 },
 ];
 const doubled = [...partners, ...partners];
 ---
@@ -20,7 +20,7 @@ const doubled = [...partners, ...partners];
     <div class="trust-mask">
       <div class="lc-logo-track trust-track">
         {doubled.map((p, i) => (
-          <img src={p.src} alt={i < partners.length ? p.alt : ''} aria-hidden={i >= partners.length} style={`--h:${p.h}px`} loading="lazy" />
+          <img src={p.src} alt={i < partners.length ? p.alt : ''} aria-hidden={i >= partners.length} style={`--h:${p.h}px`} width={p.w} height={p.nh} loading="lazy" />
         ))}
       </div>
     </div>

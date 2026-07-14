@@ -20,7 +20,7 @@ function DashboardSlider({ images }: any) {
       style={{ position: "relative", borderRadius: 16, overflow: "hidden", boxShadow: "var(--shadow-edge), var(--shadow-card)", background: "#fff", aspectRatio: "1080 / 541" }}
     >
       {images.map((src: string, idx: number) => (
-        <img key={src} src={IMG2 + src} alt="LabsCubed data review dashboard — stress-strain analysis" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", display: "block", opacity: idx === i ? 1 : 0, transition: "opacity .9s ease", pointerEvents: "none" }} />
+        <img key={src} src={IMG2 + src} width={1080} height={541} alt="LabsCubed data review dashboard — stress-strain analysis" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", display: "block", opacity: idx === i ? 1 : 0, transition: "opacity .9s ease", pointerEvents: "none" }} />
       ))}
       {images.length > 1 && (
         <div style={{ position: "absolute", bottom: 16, left: 0, right: 0, display: "flex", justifyContent: "center", gap: 8 }}>
@@ -60,7 +60,7 @@ export default function DataAccess() {
             ].map((it) => (
               <div key={it.name} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
                 <div style={{ borderRadius: 14, overflow: "hidden", boxShadow: "var(--shadow-edge)" }}>
-                  <img src={IMG2 + it.img} alt={it.name + " logo"} style={{ width: "100%", display: "block" }} />
+                  <img src={IMG2 + it.img} width={211} height={136} alt={it.name + " logo"} style={{ width: "100%", display: "block", height: "auto" }} />
                 </div>
                 <div>
                   <div style={{ fontWeight: 600, fontSize: m ? 15 : 16, color: "var(--lc-ink)" }}>{it.name}</div>
@@ -71,7 +71,7 @@ export default function DataAccess() {
           </div>
           <div style={{ marginTop: m ? 24 : 34, textAlign: "center" }}>
             <span style={{ fontWeight: 300, fontSize: m ? 14 : 16, color: "var(--text-muted)" }}>…and these are just a few. Don’t see your tool? </span>
-            <a href="/get-a-quote" className="lc-inline-link" style={{ fontWeight: 500, fontSize: m ? 14 : 16, color: "var(--lc-ink)", textDecoration: "none", borderBottom: "1px solid var(--lc-teal)", paddingBottom: 1 }}>We’ll build the integration you need →</a>
+            <a href="https://www.labscubed.com/get-a-quote" className="lc-inline-link" style={{ fontWeight: 500, fontSize: m ? 14 : 16, color: "var(--lc-ink)", textDecoration: "none", borderBottom: "1px solid var(--lc-teal)", paddingBottom: 1 }}>We’ll build the integration you need →</a>
           </div>
         </div>
       </div>

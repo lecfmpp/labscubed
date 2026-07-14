@@ -3,9 +3,9 @@
 import Section from './Section.astro';
 
 const cards = [
-  { tag: 'Built-in · No setup', title: 'Crosshead Displacement', img: '/assets/img/media/crosshead.webp', body: "Strain is derived from crosshead travel, read by the servo motor's high-resolution encoder. Always on, with nothing to attach or calibrate per sample.", use: 'High-throughput runs, elastomers and large elongations that exceed an extensometer’s travel.' },
-  { tag: 'Contact', title: 'Physical Extensometer', img: '/assets/img/media/physical-extensometer.webp', body: 'A calibrated clip-on gauge grips the specimen and measures elongation directly at the gauge length — the reference method for modulus and yield.', use: 'ASTM & ISO modulus and yield results that demand the tightest accuracy.' },
-  { tag: 'Optical · Non-contact', title: 'Video Extensometer', img: '/assets/img/media/video-extensometer.webp', body: 'High-speed cameras track contrast marks on the specimen, measuring strain without ever touching it — so nothing slips or loads the sample.', use: 'Thin films, soft or delicate materials, and strain-to-break measurement.' },
+  { tag: 'Built-in · No setup', title: 'Crosshead Displacement', img: '/assets/img/media/crosshead.webp', w: 500, h: 260, body: "Strain is derived from crosshead travel, read by the servo motor's high-resolution encoder. Always on, with nothing to attach or calibrate per sample.", use: 'High-throughput runs, elastomers and large elongations that exceed an extensometer’s travel.' },
+  { tag: 'Contact', title: 'Physical Extensometer', img: '/assets/img/media/physical-extensometer.webp', w: 500, h: 260, body: 'A calibrated clip-on gauge grips the specimen and measures elongation directly at the gauge length — the reference method for modulus and yield.', use: 'ASTM & ISO modulus and yield results that demand the tightest accuracy.' },
+  { tag: 'Optical · Non-contact', title: 'Video Extensometer', img: '/assets/img/media/video-extensometer.webp', w: 500, h: 282, body: 'High-speed cameras track contrast marks on the specimen, measuring strain without ever touching it — so nothing slips or loads the sample.', use: 'Thin films, soft or delicate materials, and strain-to-break measurement.' },
 ];
 ---
 <Section bg="#fff">
@@ -16,7 +16,7 @@ const cards = [
     <div class="meas-grid">
       {cards.map((c) => (
         <div class="lc-icard meas-card">
-          <div class="meas-card-imgwrap"><img src={c.img} alt={c.title} loading="lazy" /></div>
+          <div class="meas-card-imgwrap"><img src={c.img} alt={c.title} width={c.w} height={c.h} loading="lazy" /></div>
           <div class="meas-card-body">
             <div class="meas-card-tag">{c.tag}</div>
             <div class="meas-card-title">{c.title}</div>

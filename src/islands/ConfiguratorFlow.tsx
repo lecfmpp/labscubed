@@ -64,7 +64,7 @@ function SampleSelectCard({ s, active, onClick }: any) {
         <div style={{ fontWeight: 600, fontSize: 15, letterSpacing: "-0.01em", color: "var(--lc-ink)" }}>{s.name}</div>
         <div style={{ fontSize: 12.5, color: active ? "var(--lc-teal-deep)" : "var(--text-muted)", marginTop: 2, fontWeight: 500 }}>{s.standard}</div>
       </div>
-      <img src={STD_LOGO_INK(s.standard)} alt={s.standard} style={{ flex: "none", height: 21, width: "auto", opacity: active ? 0.95 : 0.5, transition: "opacity .18s ease" }} />
+      <img src={STD_LOGO_INK(s.standard)} alt={s.standard} width={s.standard.indexOf("ISO") === 0 ? 194 : 210} height={s.standard.indexOf("ISO") === 0 ? 136 : 134} style={{ flex: "none", height: 21, width: "auto", opacity: active ? 0.95 : 0.5, transition: "opacity .18s ease" }} />
     </button>);
 }
 
@@ -74,7 +74,7 @@ const DAILY_OPTIONS = [
   { value: 1, label: "20–50", sub: "Mid volume" },
   { value: 2, label: "50–100", sub: "High volume" },
   { value: 3, label: "100+", sub: "Max throughput" }];
-const MACHINE_HREF: any = { CubeTen: "/plastic-testing", CubeOne: "/rubber-testing", CubeGo: "/cubego" };
+const MACHINE_HREF: any = { CubeTen: "https://www.labscubed.com/plastic-testing", CubeOne: "https://www.labscubed.com/rubber-testing", CubeGo: "https://www.labscubed.com/cubego" };
 function machineBase(name: string) {
   if (name === "CubeOne") return MODELS["Rubber|Tensile"];
   if (name === "CubeGo") return CUSTOM_MODEL;
@@ -236,7 +236,7 @@ function Configurator({ selected, toggleSample, dailyIdx, setDailyIdx, otherSamp
             </div>
             <div style={{ marginTop: 8, fontSize: 14, color: "rgba(255,255,255,0.6)", fontWeight: 300 }}>Matched to {selected.length} standard{selected.length > 1 ? "s" : ""}{otherSample && otherSample.trim() ? " + your custom spec" : ""}.</div>
           </div>
-          <div style={{ position: "relative" }}><Button variant="primary" href={MACHINE_HREF[rec.name] || "/plastic-testing"}>Explore {rec.name}</Button></div>
+          <div style={{ position: "relative" }}><Button variant="primary" href={MACHINE_HREF[rec.name] || "https://www.labscubed.com/plastic-testing"}>Explore {rec.name}</Button></div>
         </div>
       </div>
     </Section>);
@@ -279,10 +279,12 @@ function CubeTenShowcase({ model, focus }: any) {
   const key = STATES[focus] ? focus : "neutral";
   const st = STATES[key];
   const transition = "transform .85s cubic-bezier(.22,.9,.28,1), filter .55s ease, opacity .55s ease";
-  const machine = (state: any, src: string, alt: string, feetAdj?: number) =>
+  const machine = (state: any, src: string, alt: string, iw: number, ih: number, feetAdj?: number) =>
   <img
     src={src}
     alt={alt}
+    width={iw}
+    height={ih}
     style={{
       position: "absolute", left: "50%", bottom: `calc(15% - ${feetAdj || 0}px)`, height: H, width: "auto",
       transformOrigin: "bottom center",
@@ -303,14 +305,14 @@ function CubeTenShowcase({ model, focus }: any) {
         <div style={{ display: "flex", justifyContent: "center", marginTop: m ? 16 : 18, position: "relative" }}>
           <span style={{ position: "absolute", width: 220, height: 46, top: 2, left: "50%", transform: "translateX(-50%)", borderRadius: 43, background: "#17DDC5", opacity: 0.36, filter: "blur(46px)", pointerEvents: "none" }} />
           <FadeSwap deps={model.name}>
-            <Button variant="primary" style={{ whiteSpace: "nowrap" }} href={({ CubeTen: "/plastic-testing", CubeOne: "/rubber-testing", CubeGo: "/cubego" } as any)[model.name] || "/plastic-testing"}>Explore {model.name}</Button>
+            <Button variant="primary" style={{ whiteSpace: "nowrap" }} href={({ CubeTen: "https://www.labscubed.com/plastic-testing", CubeOne: "https://www.labscubed.com/rubber-testing", CubeGo: "https://www.labscubed.com/cubego" } as any)[model.name] || "https://www.labscubed.com/plastic-testing"}>Explore {model.name}</Button>
           </FadeSwap>
         </div>
         {!m &&
         <div style={{ position: "relative", width: "100%", height: H, maxWidth: 973, margin: "34px auto 0", marginBottom: -(H * OVERLAP), zIndex: 3 }}>
-          {machine(st.go, "/assets/img/media/machine-cubego-v3.webp", "CubeGo portable tensile testing machine", 4)}
-          {machine(st.ten, "/assets/img/media/machine-cubeten.png", "CubeTen automated tensile testing machine")}
-          {machine(st.one, "/assets/img/media/machine-cubeone.png", "CubeOne automated tensile testing machine", 4)}
+          {machine(st.go, "/assets/img/media/machine-cubego-v3.webp", "CubeGo portable tensile testing machine", 446, 206, 4)}
+          {machine(st.ten, "/assets/img/media/machine-cubeten.webp", "CubeTen automated tensile testing machine", 1653, 900)}
+          {machine(st.one, "/assets/img/media/machine-cubeone.webp", "CubeOne automated tensile testing machine", 2396, 900, 4)}
         </div>
         }
       </div>
