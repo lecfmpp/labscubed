@@ -12,7 +12,14 @@
    Global runtime CSS carried over from reference index.html <head>
    (keyframes + hover/utility classes referenced throughout).
    ============================================================ */
-body { margin: 0; background: #fff; overflow-x: hidden; }
+html, body { margin: 0; background: #fff; overflow-x: hidden; max-width: 100%; }
+
+/* Mobile guard: the CubeTenShowcase is desktop-only (the island returns null on
+   mobile after hydration). Hide it via CSS too so its wide desktop machine
+   render never flashes at ≤760px during the pre-hydration paint. */
+@media (max-width: 760px) {
+  .lc-showcase { display: none !important; }
+}
 
 a { color: inherit; }
 a:hover { color: inherit; }
