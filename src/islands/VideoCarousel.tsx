@@ -72,7 +72,7 @@ export default function VideoCarousel() {
         <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 24 }}>
           <div>
             <div style={{ fontWeight: 700, fontSize: 11, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--text-muted)" }}>From our channel</div>
-            <h2 style={{ fontWeight: 700, fontSize: m ? 32 : 56, letterSpacing: "-0.03em", lineHeight: 1.07, margin: "16px 0 0", color: "var(--lc-ink)" }}>See CubeTen and CubeOne in action.</h2>
+            <h2 className="lc-vc-title">See CubeTen and CubeOne in action.</h2>
           </div>
           <div style={{ display: "flex", gap: 12 }}>
             <button onClick={() => go(-1)} style={{ ...arrowBtn, opacity: i === 0 ? 0.35 : 1 }} aria-label="Previous">

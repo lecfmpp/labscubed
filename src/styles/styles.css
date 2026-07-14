@@ -28,6 +28,16 @@ html, body { margin: 0; background: #fff; overflow-x: hidden; max-width: 100%; }
   .lc-integ-grid { grid-template-columns: 1fr; gap: 16px; max-width: 300px; }
 }
 
+/* Shared Section inner gutter as CSS (was JS useIsMobile) so island sections
+   get the correct mobile side padding in the server HTML before hydration —
+   this also aligns their edge controls (e.g. carousel arrows) to the gutter. */
+.lc-section-inner { width: 100%; max-width: 1312px; margin: 0 auto; padding: 0 64px; box-sizing: border-box; }
+@media (max-width: 760px) { .lc-section-inner { padding: 0 20px; } }
+
+/* VideoCarousel heading — CSS-responsive size (was JS m ? 32 : 56). */
+.lc-vc-title { font-weight: 700; font-size: 56px; letter-spacing: -0.03em; line-height: 1.07; margin: 16px 0 0; color: var(--lc-ink); }
+@media (max-width: 760px) { .lc-vc-title { font-size: 32px; } }
+
 a { color: inherit; }
 a:hover { color: inherit; }
 

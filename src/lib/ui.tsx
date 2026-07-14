@@ -71,10 +71,9 @@ export function Eyebrow({ children, muted }: any) {
 }
 
 export function Section({ children, bg = "#fff", style }: any) {
-  const m = useIsMobile();
   return (
     <section style={{ background: bg, width: "100%", display: "flex", justifyContent: "center", ...style }}>
-      <div style={{ width: "100%", maxWidth: 1312, padding: gutter(m), boxSizing: "border-box" }}>{children}</div>
+      <div className="lc-section-inner">{children}</div>
     </section>
   );
 }
