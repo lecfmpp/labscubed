@@ -11,7 +11,7 @@ export function buildJsonLd(site: string) {
     url: site,
     logo: new URL("/assets/img/logo.png", site).href,
     description:
-      "LabsCubed designs and manufactures automated tensile, flexure and tear testing systems for high-volume polymer and elastomer labs.",
+      "LabsCubed designs and manufactures automated tensile, flexure and tear testing systems for polymer, rubber and elastomer labs.",
     contactPoint: {
       "@type": "ContactPoint",
       contactType: "sales",
