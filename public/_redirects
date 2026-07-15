@@ -1,0 +1,8 @@
+# This site (Netlify) serves the homepage. The homepage and Astro's own assets
+# (/_astro/*, /assets/*, /uploads/*, /robots.txt, /sitemap*.xml) are real files,
+# so Netlify serves them directly — the rule below never touches them.
+#
+# Every OTHER path is invisibly proxied (status 200 = rewrite, not redirect) to
+# the Webflow site published at site.labscubed.com, so all existing
+# labscubed.com/... pages keep working at the exact same URLs.
+/*  https://site.labscubed.com/:splat  200
