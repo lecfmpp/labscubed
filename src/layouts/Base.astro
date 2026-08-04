@@ -12,6 +12,22 @@ const {
   description = 'Automated, ISO- and ASTM-compliant tensile testing for polymer and rubber labs — repeatable results that free your team from repetitive testing.',
 } = Astro.props;
 
+/* Head resource hints — why there are preloads and no preconnects.
+
+   Preloads: the Inter woff2 and the LCP hero image are both needed for the
+   first paint, and the browser discovers both late on its own — the font only
+   once it has downloaded and parsed the stylesheet, the hero only once the
+   parser reaches it in the body. The preloads start them in parallel with the
+   stylesheet instead. The hero preload carries the same srcset/sizes as the
+   <img> in Hero.astro; if one changes the other has to change with it, or the
+   browser preloads a candidate it then discards.
+
+   Preconnects: deliberately none. The page used to preconnect to
+   fonts.googleapis.com, fonts.gstatic.com, www.youtube.com and img.youtube.com.
+   Inter is now self-hosted and the carousel's video titles and thumbnails are
+   baked in at build time, so the page makes no third-party requests during load
+   and every one of those handshakes was pure overhead — Lighthouse was already
+   flagging img.youtube.com as an unused preconnect. */
 const canonical = new URL(Astro.url.pathname, SITE_URL).href;
 const ogImage = new URL('/assets/img/media/hero-cubeten.webp', SITE_URL).href;
 const jsonLd = buildJsonLd(SITE_URL);
@@ -40,11 +56,23 @@ const jsonLd = buildJsonLd(SITE_URL);
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
 
-    <!-- Preconnects for below-the-fold third parties -->
-    <link rel="preconnect" href="https://www.youtube.com" />
-    <link rel="preconnect" href="https://img.youtube.com" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    {/* Preload the two assets the first paint needs — see the note in frontmatter. */}
+    <link
+      rel="preload"
+      href="/assets/fonts/inter-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/assets/img/media/hero-cubeten-crop-760.webp"
+      as="image"
+      type="image/webp"
+      fetchpriority="high"
+      imagesrcset="/assets/img/media/hero-cubeten-crop-480.webp 480w, /assets/img/media/hero-cubeten-crop-760.webp 760w, /assets/img/media/hero-cubeten-crop.webp 1500w"
+      imagesizes="(max-width: 760px) 64vw, min(55.5vw, 708px)"
+    />
 
     {jsonLd.map((block) => (
       <script type="application/ld+json" set:html={JSON.stringify(block)} />

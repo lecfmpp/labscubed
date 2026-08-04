@@ -2,22 +2,21 @@
    Ported from home-b.jsx. */
 import React from 'react';
 import { useIsMobile, Section } from '../lib/ui';
+import ytTitles from '../lib/yt-titles.json';
+
+/* Titles are resolved at build time by scripts/fetch-yt-thumbs.mjs (prebuild).
+   This used to be five youtube.com/oembed calls in a useEffect, which Lighthouse
+   flagged on the critical request chain: they could not even start until React
+   had hydrated, and every card rendered with an empty title until they landed.
+   Now the carousel is correct in the server HTML and does no network work. */
+const VIDEO_IDS = ["8IuGJsjw2AE", "khQHHxJd2hM", "eWPbdBoOrJ4", "Y0qXEgPcf5U", "RILG7TXhc-w"];
+const VIDEOS = VIDEO_IDS.map((id) => ({
+  id,
+  title: (ytTitles as Record<string, string>)[id] || "Watch on YouTube",
+}));
 
 export default function VideoCarousel() {
-  const VIDEO_IDS = ["8IuGJsjw2AE", "khQHHxJd2hM", "eWPbdBoOrJ4", "Y0qXEgPcf5U", "RILG7TXhc-w"];
-  const [videos, setVideos] = React.useState(VIDEO_IDS.map((id) => ({ id, title: "" })));
-  React.useEffect(() => {
-    let alive = true;
-    Promise.all(
-      VIDEO_IDS.map((id) =>
-      fetch(`https://www.youtube.com/oembed?format=json&url=https://www.youtube.com/watch?v=${id}`).
-      then((r) => r.ok ? r.json() : null).
-      then((d) => ({ id, title: d && d.title ? d.title : "Watch on YouTube" })).
-      catch(() => ({ id, title: "Watch on YouTube" }))
-      )
-    ).then((res) => {if (alive) setVideos(res);});
-    return () => {alive = false;};
-  }, []);
+  const videos = VIDEOS;
   const m = useIsMobile();
   const GAP = m ? 16 : 24;
   const VISIBLE = m ? 1 : 3;

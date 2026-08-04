@@ -27,7 +27,7 @@ export default function Nav() {
     return (
       <div style={{ position: "absolute", top: 0, left: 0, right: 0, zIndex: 20 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 20px" }}>
-          <a href={HOME}><img src="/assets/img/logo.png" alt="LabsCubed" width={564} height={140} style={{ height: 28, width: "auto", display: "block" }} /></a>
+          <a href={HOME}><img src="/assets/img/logo.webp" alt="LabsCubed" width={419} height={104} style={{ height: 28, width: "auto", display: "block" }} /></a>
           <button onClick={() => setOpen((o) => !o)} aria-label="Menu" style={{ all: "unset", cursor: "pointer", width: 42, height: 42, display: "inline-flex", alignItems: "center", justifyContent: "center", borderRadius: 10, background: "rgba(255,255,255,0.1)" }}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
               {open
@@ -54,7 +54,7 @@ export default function Nav() {
   return (
     <div style={{ position: "absolute", top: 0, left: 0, right: 0, zIndex: 10, display: "flex", justifyContent: "center" }}>
       <div style={{ width: "100%", maxWidth: 1392, padding: "18px 26px", boxSizing: "border-box", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <a href={HOME}><img src="/assets/img/logo.png" alt="LabsCubed" width={564} height={140} style={{ height: 34, width: "auto", display: "block" }} /></a>
+        <a href={HOME}><img src="/assets/img/logo.webp" alt="LabsCubed" width={419} height={104} style={{ height: 34, width: "auto", display: "block" }} /></a>
         <nav style={{ display: "flex", gap: 26, alignItems: "center" }}>
           {mainLinks.map(([l, href]) => (
             <a key={l} href={href} style={{ color: "rgba(255,255,255,0.85)", fontSize: 13, textDecoration: "none" }} className="lc-navlink">{l}</a>

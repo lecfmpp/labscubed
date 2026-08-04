@@ -125,7 +125,7 @@ function MobileSpecimenSlider({ ids, pid, setPid }: any) {
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: 16 }}>
         <div style={{ minWidth: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <img src={standard.indexOf("ISO") === 0 ? "/assets/img/standards/iso-logo-ink.png" : "/assets/img/standards/astm-logo-ink.png"} alt={standard} width={standard.indexOf("ISO") === 0 ? 194 : 210} height={standard.indexOf("ISO") === 0 ? 136 : 168} style={{ height: 18, width: "auto", opacity: 0.85 }} />
+            <img src={standard.indexOf("ISO") === 0 ? "/assets/img/standards/iso-logo-ink.webp" : "/assets/img/standards/astm-logo-ink.webp"} alt={standard} width={standard.indexOf("ISO") === 0 ? 120 : 105} height={84} style={{ height: 18, width: "auto", opacity: 0.85 }} />
             <div style={{ fontWeight: 600, fontSize: 12, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--lc-teal-deep)" }}>{standard}</div>
           </div>
           <div style={{ fontWeight: 700, fontSize: 30, letterSpacing: "-0.01em", color: "var(--lc-ink)", lineHeight: 1.05, marginTop: 6 }}>{name}</div>
@@ -216,7 +216,7 @@ export default function ProductHighlight() {
             <DetailCard s={s} />
             <div>
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <img src={standard.indexOf("ISO") === 0 ? "/assets/img/standards/iso-logo-ink.png" : "/assets/img/standards/astm-logo-ink.png"} alt={standard} width={standard.indexOf("ISO") === 0 ? 194 : 210} height={standard.indexOf("ISO") === 0 ? 136 : 168} style={{ height: 24, width: "auto", display: "block", opacity: 0.85 }} />
+                <img src={standard.indexOf("ISO") === 0 ? "/assets/img/standards/iso-logo-ink.webp" : "/assets/img/standards/astm-logo-ink.webp"} alt={standard} width={standard.indexOf("ISO") === 0 ? 120 : 105} height={84} style={{ height: 24, width: "auto", display: "block", opacity: 0.85 }} />
                 <div style={{ fontWeight: 600, fontSize: 15, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--lc-teal-deep)" }}>{standard}</div>
               </div>
               <div style={{ fontWeight: 700, fontSize: 56, letterSpacing: "-0.01em", color: "var(--lc-ink)", lineHeight: 1, marginTop: 8 }}>{name}</div>

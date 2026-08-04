@@ -20,7 +20,21 @@ function DashboardSlider({ images }: any) {
       style={{ position: "relative", borderRadius: 16, overflow: "hidden", boxShadow: "var(--shadow-edge), var(--shadow-card)", background: "#fff", aspectRatio: "1080 / 541" }}
     >
       {images.map((src: string, idx: number) => (
-        <img key={src} src={IMG2 + src} width={1080} height={541} alt="LabsCubed data review dashboard — stress-strain analysis" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", display: "block", opacity: idx === i ? 1 : 0, transition: "opacity .9s ease", pointerEvents: "none" }} />
+        /* `sizes` mirrors the wrapper in DataAccess below: full bleed minus the
+           section gutter, capped by the 1312px shell. Without it the browser
+           assumes 100vw and pulls the 1080w file onto phones that only need
+           the 760w one. */
+        <img
+          key={src}
+          src={`${IMG2}${src}.webp`}
+          srcSet={`${IMG2}${src}-760.webp 760w, ${IMG2}${src}.webp 1080w`}
+          sizes="(max-width: 760px) calc(100vw - 40px), min(1184px, calc(100vw - 128px))"
+          width={1080}
+          height={541}
+          loading="lazy"
+          alt="LabsCubed data review dashboard — stress-strain analysis"
+          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", display: "block", opacity: idx === i ? 1 : 0, transition: "opacity .9s ease", pointerEvents: "none" }}
+        />
       ))}
       {images.length > 1 && (
         <div style={{ position: "absolute", bottom: 16, left: 0, right: 0, display: "flex", justifyContent: "center", gap: 8 }}>
@@ -47,20 +61,21 @@ export default function DataAccess() {
             <span style={{ width: 7, height: 7, borderRadius: "50%", background: "var(--lc-teal)", flex: "none" }} />
             <span style={{ fontWeight: 700, fontSize: 11, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--lc-ink)" }}>The LabsCubed Portal</span>
           </div>
-          <DashboardSlider images={["dashboard.webp", "dashboard_01.webp"]} />
+          {/* Basenames — DashboardSlider appends the extension and builds the srcset. */}
+          <DashboardSlider images={["dashboard", "dashboard_01"]} />
           <div style={{ textAlign: "center", marginTop: m ? 16 : 20, fontWeight: 300, fontSize: m ? 13 : 15, color: "var(--text-muted)" }}>Live dashboards, streamed from every test into the LabsCubed Portal.</div>
         </div>
         <div style={{ marginTop: m ? 48 : 80 }}>
           <div style={{ textAlign: "center", fontWeight: 700, fontSize: 11, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--text-muted)", marginBottom: m ? 24 : 36 }}>Or integrate with the systems you already run</div>
           <div className="lc-integ-grid">
             {[
-              { img: "integ-alpha.png", name: "Alpha Workbench", desc: "Push tensile results straight into Alpha’s rheology and materials-testing workflows — no manual re-entry." },
-              { img: "integ-uncountable.png", name: "Uncountable", desc: "Feed every data point into Uncountable’s R&D and experiment-management platform to close the loop on formulation." },
-              { img: "integ-sap.png", name: "SAP", desc: "Sync results into SAP so quality records and ERP stay in lockstep across the business." },
+              { img: "integ-alpha.webp", name: "Alpha Workbench", desc: "Push tensile results straight into Alpha’s rheology and materials-testing workflows — no manual re-entry." },
+              { img: "integ-uncountable.webp", name: "Uncountable", desc: "Feed every data point into Uncountable’s R&D and experiment-management platform to close the loop on formulation." },
+              { img: "integ-sap.webp", name: "SAP", desc: "Sync results into SAP so quality records and ERP stay in lockstep across the business." },
             ].map((it) => (
               <div key={it.name} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
                 <div style={{ borderRadius: 14, overflow: "hidden", boxShadow: "var(--shadow-edge)" }}>
-                  <img src={IMG2 + it.img} width={211} height={136} alt={it.name + " logo"} style={{ width: "100%", display: "block", height: "auto" }} />
+                  <img src={IMG2 + it.img} width={211} height={136} loading="lazy" alt={it.name + " logo"} style={{ width: "100%", display: "block", height: "auto" }} />
                 </div>
                 <div>
                   <div style={{ fontWeight: 600, fontSize: m ? 15 : 16, color: "var(--lc-ink)" }}>{it.name}</div>

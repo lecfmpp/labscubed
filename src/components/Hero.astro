@@ -11,9 +11,9 @@ const cells = railIds.map((id) => {
   const s = getSample(id);
   const matLabel = s.material === 'rubber' ? 'Rubber' : 'Plastic';
   const isIso = s.standard.indexOf('ISO') === 0;
-  const stdLogo = isIso ? '/assets/img/standards/iso-logo.png' : '/assets/img/standards/astm-logo.png';
-  const lw = isIso ? 194 : 210;
-  const lh = isIso ? 136 : 168;
+  const stdLogo = isIso ? '/assets/img/standards/iso-logo.webp' : '/assets/img/standards/astm-logo.webp';
+  const lw = isIso ? 120 : 105;
+  const lh = 84;
   return { s, matLabel, stdLogo, lw, lh, blurb: `Automated ${matLabel} ${s.testType} Testing` };
 });
 const glow = '0 30px 80px rgba(23,221,197,0.16), 0 14px 44px rgba(23,221,197,0.12), 0 4px 18px rgba(23,221,197,0.08)';
@@ -23,7 +23,21 @@ const glow = '0 30px 80px rgba(23,221,197,0.16), 0 14px 44px rgba(23,221,197,0.1
     <h1 class="hero-h1">Automated tensile testing for polymer and rubber labs.</h1>
     <p class="hero-sub">ISO- and ASTM-compliant automation that delivers repeatable results and frees your team from repetitive testing.</p>
     <div class="hero-img-wrap">
-      <img src="/assets/img/media/hero-cubeten-crop.webp" alt="CubeTen automated tensile testing machine" class="hero-img" loading="eager" fetchpriority="high" width="1500" height="795" />
+      <!-- LCP element. The 1500w original is only right for a DPR-2 desktop;
+           a phone draws this at ~264 CSS px, so `sizes` has to mirror the two
+           widths in the CSS below (64vw under 760px, min(55.5vw, 708px) above)
+           or the browser over-fetches. Matched by the preload in Base.astro. -->
+      <img
+        src="/assets/img/media/hero-cubeten-crop-760.webp"
+        srcset="/assets/img/media/hero-cubeten-crop-480.webp 480w, /assets/img/media/hero-cubeten-crop-760.webp 760w, /assets/img/media/hero-cubeten-crop.webp 1500w"
+        sizes="(max-width: 760px) 64vw, min(55.5vw, 708px)"
+        alt="CubeTen automated tensile testing machine"
+        class="hero-img"
+        loading="eager"
+        fetchpriority="high"
+        width="1500"
+        height="795"
+      />
       <div class="hero-img-fade"></div>
     </div>
   </div>

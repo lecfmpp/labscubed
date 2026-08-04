@@ -48,7 +48,7 @@ export function modelFromSample(sampleId: string) {
   return { ...getModel(material, test), standard: s.standard, sample: s };
 }
 
-const STD_LOGO_INK = (std: string) => std && std.indexOf("ISO") === 0 ? "/assets/img/standards/iso-logo-ink.png" : "/assets/img/standards/astm-emblem-ink.png";
+const STD_LOGO_INK = (std: string) => std && std.indexOf("ISO") === 0 ? "/assets/img/standards/iso-logo-ink.webp" : "/assets/img/standards/astm-emblem-ink.webp";
 
 function SampleSelectCard({ s, active, onClick }: any) {
   return (
@@ -64,7 +64,7 @@ function SampleSelectCard({ s, active, onClick }: any) {
         <div style={{ fontWeight: 600, fontSize: 15, letterSpacing: "-0.01em", color: "var(--lc-ink)" }}>{s.name}</div>
         <div style={{ fontSize: 12.5, color: active ? "var(--lc-teal-deep)" : "var(--text-muted)", marginTop: 2, fontWeight: 500 }}>{s.standard}</div>
       </div>
-      <img src={STD_LOGO_INK(s.standard)} alt={s.standard} width={s.standard.indexOf("ISO") === 0 ? 194 : 210} height={s.standard.indexOf("ISO") === 0 ? 136 : 134} style={{ flex: "none", height: 21, width: "auto", opacity: active ? 0.95 : 0.5, transition: "opacity .18s ease" }} />
+      <img src={STD_LOGO_INK(s.standard)} alt={s.standard} width={s.standard.indexOf("ISO") === 0 ? 120 : 132} height={84} style={{ flex: "none", height: 21, width: "auto", opacity: active ? 0.95 : 0.5, transition: "opacity .18s ease" }} />
     </button>);
 }
 

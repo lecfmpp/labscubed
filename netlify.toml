@@ -4,3 +4,25 @@
 
 [build.environment]
   NODE_VERSION = "20"
+
+# Netlify serves everything copied out of public/ with
+# `cache-control: public,max-age=0,must-revalidate`, so the fonts, images and
+# videos were revalidated on every single navigation. Astro's own /_astro/*
+# output is content-hashed and already cached properly; these rules give the
+# unhashed public/ assets the same treatment.
+#
+# Fonts are immutable: the filename encodes the family and subset, and a new
+# subset would be a new file.
+[[headers]]
+  for = "/assets/fonts/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Images and videos are NOT marked immutable — their paths are stable across
+# deploys, so replacing one in place has to be able to reach existing visitors.
+# 30 days with stale-while-revalidate keeps repeat views instant while letting a
+# swapped asset propagate in the background within a day of the next visit.
+[[headers]]
+  for = "/assets/img/*"
+  [headers.values]
+    Cache-Control = "public, max-age=2592000, stale-while-revalidate=86400"

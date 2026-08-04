@@ -17,19 +17,35 @@ import ConfiguratorFlow from '../islands/ConfiguratorFlow.tsx';
 import DataAccess from '../islands/DataAccess.tsx';
 import VideoCarousel from '../islands/VideoCarousel.tsx';
 ---
+{/*
+  Hydration strategy. Every island used to be client:load, so all five chunks
+  plus the React runtime were fetched at top priority and competed with the
+  hero image and the font for bandwidth on the first paint.
+
+  Nav stays client:load — it is above the fold and owns the mobile menu, which
+  has to work the instant it is visible.
+
+  The other four are client:idle, not client:visible. They are all well below
+  the fold, so client:visible looks like the obvious pick, but useIsMobile()
+  returns false during SSR: the server HTML carries desktop paddings and font
+  sizes, and only hydration corrects them. Deferring that until the section
+  scrolls into view would snap the layout out from under a phone reader and put
+  CLS (currently 0) at risk. client:idle keeps the chunks off the critical path
+  while still hydrating long before anyone scrolls that far.
+*/}
 <Base>
   <Nav client:load />
   <main class="lc-page">
     <Hero />
     <Trust />
-    <ProductHighlight client:load />
+    <ProductHighlight client:idle />
     <Setup />
-    <ConfiguratorFlow client:load />
-    <DataAccess client:load />
+    <ConfiguratorFlow client:idle />
+    <DataAccess client:idle />
     <Industries />
     <Anatomy />
     <Measurement />
-    <VideoCarousel client:load />
+    <VideoCarousel client:idle />
     <CTABanner />
     <FAQ />
   </main>

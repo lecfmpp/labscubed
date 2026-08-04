@@ -20,7 +20,13 @@ const steps = [
       {steps.map((s, i) => (
         <div class={`setup-row ${i % 2 === 1 ? 'row-odd' : ''}`}>
           <div class="setup-img">
-            <video src={s.vid} poster={s.poster} width={s.w} height={s.h} autoplay loop muted playsinline preload="none" aria-label={s.title}></video>
+            <!-- src is deliberately held in data-src, not src. `preload="none"`
+                 does not survive `autoplay`: the browser has to buffer to honour
+                 autoplay, so all three clips (238 KB) were downloading during
+                 the initial load for a section that sits well below the fold.
+                 The script below attaches the real src once the row nears the
+                 viewport; the poster paints immediately either way. -->
+            <video data-src={s.vid} poster={s.poster} width={s.w} height={s.h} loop muted playsinline preload="none" aria-label={s.title}></video>
           </div>
           <div class="setup-text">
             <div class="setup-n">{s.n}</div>
@@ -32,6 +38,42 @@ const steps = [
     </div>
   </div>
 </Section>
+
+<script>
+  /* Load + play the step clips only once they are close to the viewport.
+     Astro bundles and defers this, so it costs nothing on the critical path.
+
+     No-JS fallback is the poster frame, which is the right degradation for
+     three decorative loops. rootMargin starts the fetch a screen early so the
+     clip is usually running by the time the row is actually read. */
+  const videos = document.querySelectorAll<HTMLVideoElement>('.setup-img video[data-src]');
+
+  const start = (video: HTMLVideoElement) => {
+    const src = video.dataset.src;
+    if (!src) return;
+    video.src = src;
+    delete video.dataset.src;
+    // Autoplay can still be refused (Low Power Mode, data saver). The poster
+    // stays up in that case, so swallow the rejection rather than logging.
+    video.play().catch(() => {});
+  };
+
+  if (!('IntersectionObserver' in window)) {
+    videos.forEach(start);
+  } else {
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          start(entry.target as HTMLVideoElement);
+          io.unobserve(entry.target);
+        }
+      },
+      { rootMargin: '100% 0px' }
+    );
+    videos.forEach((v) => io.observe(v));
+  }
+</script>
 
 <style>
   .setup-inner { padding: 20px 0 130px; }
