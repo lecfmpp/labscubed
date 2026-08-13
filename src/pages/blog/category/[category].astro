@@ -1,0 +1,108 @@
+---
+/* /blog/category/<slug> — one landing page per public category.
+ *
+ * These are real indexable hubs rather than a client-side filter, so each
+ * cluster gets a crawlable page that can accumulate its own authority and
+ * gives the cluster posts somewhere to be linked from.
+ */
+import Base from '../../../layouts/Base.astro';
+import Nav from '../../../islands/Nav.tsx';
+import Footer from '../../../components/Footer.astro';
+import '../../../styles/blog.css';
+import { BLOG_ORIGIN } from '../../../site.mjs';
+import {
+  getPosts,
+  categoryLabel,
+  formatDate,
+  postDate,
+  readTime,
+  type BlogPost,
+} from '../../../lib/blog';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  const cats = [...new Set(posts.flatMap((p) => p.categories))];
+  return cats.map((category) => ({
+    params: { category },
+    props: { posts: posts.filter((p) => p.categories.includes(category)) },
+  }));
+}
+
+const { category } = Astro.params as { category: string };
+const { posts } = Astro.props as { posts: BlogPost[] };
+const all = await getPosts();
+
+const label = categoryLabel(category);
+const title = `Blog LabsCubed | ${label}`;
+const description = `${label} articles from LabsCubed — automated materials testing, standards and lab workflow guidance.`;
+const canonical = `${BLOG_ORIGIN}/blog/category/${category}`;
+const categories = [...new Set(all.flatMap((p) => p.categories))].sort();
+---
+
+<Base
+  title={title}
+  description={description}
+  canonical={canonical}
+  preloadHero={false}
+  jsonLd={[
+    {
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      name: label,
+      description,
+      url: canonical,
+      isPartOf: { '@type': 'Blog', name: 'LabsCubed Blog', url: `${BLOG_ORIGIN}/blog` },
+    },
+  ]}
+>
+  <Nav client:load />
+
+  <main class="lc-page">
+    <header class="bl-head">
+      <h1>{label}</h1>
+      <p>{posts.length} {posts.length === 1 ? 'article' : 'articles'}</p>
+    </header>
+
+    <nav class="bl-filters" aria-label="Categories">
+      <a class="bl-filter" href="/blog">All</a>
+      {categories.map((c) => (
+        <a
+          class="bl-filter"
+          href={`/blog/category/${c}`}
+          aria-current={c === category ? 'true' : undefined}
+        >
+          {categoryLabel(c)}
+        </a>
+      ))}
+    </nav>
+
+    <div class="bl-list">
+      <div class="bl-grid">
+        {posts.map((p) => (
+          <a class="bl-card" href={`/post/${p.slug}`}>
+            {p.thumb_image_url && (
+              <img
+                class="bl-card__img"
+                src={p.thumb_image_url}
+                alt={p.thumb_image_alt ?? p.title}
+                loading="lazy"
+                decoding="async"
+                width="600"
+                height="338"
+              />
+            )}
+            <div class="bl-card__body">
+              <h2 class="bl-card__title">{p.title}</h2>
+              {p.summary && <p class="bl-card__sum">{p.summary}</p>}
+              <p class="bl-card__meta">
+                {formatDate(postDate(p))} · {readTime(p)} min read
+              </p>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+
+    <Footer />
+  </main>
+</Base>

@@ -1,0 +1,119 @@
+---
+/* /blog and /blog/2, /blog/3 … — the post index.
+ *
+ * Astro's paginate() gives page 1 the bare `/blog` path, which is the URL the
+ * current site already uses and the one the nav links to, so pagination is
+ * additive rather than a change of address.
+ */
+import Base from '../../layouts/Base.astro';
+import Nav from '../../islands/Nav.tsx';
+import Footer from '../../components/Footer.astro';
+import '../../styles/blog.css';
+import { BLOG_ORIGIN } from '../../site.mjs';
+import {
+  getPosts,
+  categoryLabel,
+  formatDate,
+  postDate,
+  readTime,
+  type BlogPost,
+} from '../../lib/blog';
+import { blogListingSchema } from '../../lib/blog-schema';
+import type { GetStaticPaths, Page } from 'astro';
+
+export const getStaticPaths = (async ({ paginate }) => {
+  const posts = await getPosts();
+  return paginate(posts, { pageSize: 12 });
+}) satisfies GetStaticPaths;
+
+const { page } = Astro.props as { page: Page<BlogPost> };
+const all = await getPosts();
+
+const title =
+  page.currentPage === 1
+    ? 'Blog LabsCubed | Automated Materials Testing Insights'
+    : `Blog LabsCubed | Page ${page.currentPage}`;
+const description =
+  'Guides on automated tensile testing, ASTM and ISO methods, polymer and rubber QA workflows, and lab automation — from the LabsCubed engineering team.';
+const canonical = `${BLOG_ORIGIN}${page.url.current}`;
+
+/* rel=prev/next so paginated pages are read as one series rather than as
+   near-duplicate listings competing with each other. */
+const headExtra = [
+  page.url.prev
+    ? `<link rel="prev" href="${BLOG_ORIGIN}${page.url.prev}" />`
+    : '',
+  page.url.next
+    ? `<link rel="next" href="${BLOG_ORIGIN}${page.url.next}" />`
+    : '',
+].join('');
+
+const categories = [...new Set(all.flatMap((p) => p.categories))].sort();
+---
+
+<Base
+  title={title}
+  description={description}
+  canonical={canonical}
+  jsonLd={[blogListingSchema(all, BLOG_ORIGIN)]}
+  preloadHero={false}
+  headExtra={headExtra}
+>
+  <Nav client:load />
+
+  <main class="lc-page">
+    <header class="bl-head">
+      <h1>LabsCubed Blog</h1>
+      <p>{description}</p>
+    </header>
+
+    {categories.length > 0 && page.currentPage === 1 && (
+      <nav class="bl-filters" aria-label="Categories">
+        <a class="bl-filter" href="/blog" aria-current="true">All</a>
+        {categories.map((c) => (
+          <a class="bl-filter" href={`/blog/category/${c}`}>{categoryLabel(c)}</a>
+        ))}
+      </nav>
+    )}
+
+    <div class="bl-list">
+      <div class="bl-grid">
+        {page.data.map((p) => (
+          <a class="bl-card" href={`/post/${p.slug}`}>
+            {p.thumb_image_url && (
+              <img
+                class="bl-card__img"
+                src={p.thumb_image_url}
+                alt={p.thumb_image_alt ?? p.title}
+                loading="lazy"
+                decoding="async"
+                width="600"
+                height="338"
+              />
+            )}
+            <div class="bl-card__body">
+              {p.categories[0] && (
+                <p class="bl-card__cat">{categoryLabel(p.categories[0])}</p>
+              )}
+              <h2 class="bl-card__title">{p.title}</h2>
+              {p.summary && <p class="bl-card__sum">{p.summary}</p>}
+              <p class="bl-card__meta">
+                {formatDate(postDate(p))} · {readTime(p)} min read
+              </p>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+
+    {(page.url.prev || page.url.next) && (
+      <nav class="bl-pager" aria-label="Pagination">
+        {page.url.prev ? <a href={page.url.prev}>← Newer</a> : <span />}
+        <span>Page {page.currentPage} of {page.lastPage}</span>
+        {page.url.next ? <a href={page.url.next}>Older →</a> : <span />}
+      </nav>
+    )}
+
+    <Footer />
+  </main>
+</Base>

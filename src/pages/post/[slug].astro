@@ -1,0 +1,72 @@
+---
+/* /post/<slug> — one page per post, pre-rendered at build time.
+ *
+ * The route mirrors the Webflow CMS path exactly (`/post/…`, from the "post"
+ * collection slug), so every indexed URL and every internal link across the
+ * existing 21 posts keeps working unchanged after the cutover.
+ */
+import BlogPost from '../../layouts/BlogPost.astro';
+import { BLOG_ORIGIN } from '../../site.mjs';
+import {
+  getPosts,
+  extractSchemas,
+  relatedPosts,
+  categoryLabel,
+  formatDate,
+  postDate,
+  readTime,
+  type BlogPost as Post,
+} from '../../lib/blog';
+import { schemasForPost } from '../../lib/blog-schema';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post, all: posts },
+  }));
+}
+
+const { post, all } = Astro.props as { post: Post; all: Post[] };
+
+const { schemas: payload, body } = extractSchemas(post.content);
+const url = `${BLOG_ORIGIN}/post/${post.slug}`;
+const schemas = schemasForPost(post, payload, url, BLOG_ORIGIN);
+const related = relatedPosts(post, all, 3);
+const isDraft = post.status !== 'published';
+---
+
+<BlogPost post={post} schemas={schemas} body={body} isDraft={isDraft}>
+  {related.length > 0 && (
+    <section class="bp-related" slot="related">
+      <h2>Keep reading</h2>
+      <div class="bl-grid">
+        {related.map((p) => (
+          <a class="bl-card" href={`/post/${p.slug}`}>
+            {p.thumb_image_url && (
+              <img
+                class="bl-card__img"
+                src={p.thumb_image_url}
+                alt={p.thumb_image_alt ?? p.title}
+                loading="lazy"
+                decoding="async"
+                width="600"
+                height="338"
+              />
+            )}
+            <div class="bl-card__body">
+              {p.categories[0] && (
+                <p class="bl-card__cat">{categoryLabel(p.categories[0])}</p>
+              )}
+              <h3 class="bl-card__title">{p.title}</h3>
+              {p.summary && <p class="bl-card__sum">{p.summary}</p>}
+              <p class="bl-card__meta">
+                {formatDate(postDate(p))} · {readTime(p)} min read
+              </p>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
+</BlogPost>

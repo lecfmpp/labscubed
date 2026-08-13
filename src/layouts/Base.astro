@@ -6,10 +6,30 @@ import { buildJsonLd } from '../lib/jsonld';
 interface Props {
   title?: string;
   description?: string;
+  /** Absolute og/twitter image. Defaults to the CubeTen hero. */
+  ogImage?: string;
+  /** 'website' for the homepage, 'article' for blog posts. */
+  ogType?: string;
+  /** Absolute canonical. Defaults to SITE_URL + current path. Blog pages pass
+   *  the www origin explicitly to preserve the URLs already indexed. */
+  canonical?: string;
+  /** Replaces the homepage Organization/Product/FAQ blocks when supplied. */
+  jsonLd?: unknown[];
+  /** The hero preload only helps the homepage; every other page would be
+   *  preloading an image it never renders, which Lighthouse flags as waste. */
+  preloadHero?: boolean;
+  /** Extra <head> markup (e.g. prev/next rel links on paginated listings). */
+  headExtra?: string;
 }
 const {
   title = 'LabsCubed — Automated tensile testing for polymer and rubber labs',
   description = 'Automated, ISO- and ASTM-compliant tensile testing for polymer and rubber labs — repeatable results that free your team from repetitive testing.',
+  ogImage: ogImageProp,
+  ogType = 'website',
+  canonical: canonicalProp,
+  jsonLd: jsonLdProp,
+  preloadHero = true,
+  headExtra,
 } = Astro.props;
 
 /* Head resource hints — why there are preloads and no preconnects.
@@ -28,9 +48,10 @@ const {
    baked in at build time, so the page makes no third-party requests during load
    and every one of those handshakes was pure overhead — Lighthouse was already
    flagging img.youtube.com as an unused preconnect. */
-const canonical = new URL(Astro.url.pathname, SITE_URL).href;
-const ogImage = new URL('/assets/img/media/hero-cubeten.webp', SITE_URL).href;
-const jsonLd = buildJsonLd(SITE_URL);
+const canonical = canonicalProp ?? new URL(Astro.url.pathname, SITE_URL).href;
+const ogImage =
+  ogImageProp ?? new URL('/assets/img/media/hero-cubeten.webp', SITE_URL).href;
+const jsonLd = jsonLdProp ?? buildJsonLd(SITE_URL);
 ---
 <!DOCTYPE html>
 <html lang="en">
@@ -43,7 +64,7 @@ const jsonLd = buildJsonLd(SITE_URL);
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
     <!-- Open Graph -->
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
     <meta property="og:site_name" content="LabsCubed" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
@@ -64,19 +85,23 @@ const jsonLd = buildJsonLd(SITE_URL);
       type="font/woff2"
       crossorigin
     />
-    <link
-      rel="preload"
-      href="/assets/img/media/hero-cubeten-crop-760.webp"
-      as="image"
-      type="image/webp"
-      fetchpriority="high"
-      imagesrcset="/assets/img/media/hero-cubeten-crop-480.webp 480w, /assets/img/media/hero-cubeten-crop-760.webp 760w, /assets/img/media/hero-cubeten-crop.webp 1500w"
-      imagesizes="(max-width: 760px) 64vw, min(55.5vw, 708px)"
-    />
+    {preloadHero && (
+      <link
+        rel="preload"
+        href="/assets/img/media/hero-cubeten-crop-760.webp"
+        as="image"
+        type="image/webp"
+        fetchpriority="high"
+        imagesrcset="/assets/img/media/hero-cubeten-crop-480.webp 480w, /assets/img/media/hero-cubeten-crop-760.webp 760w, /assets/img/media/hero-cubeten-crop.webp 1500w"
+        imagesizes="(max-width: 760px) 64vw, min(55.5vw, 708px)"
+      />
+    )}
 
     {jsonLd.map((block) => (
       <script type="application/ld+json" set:html={JSON.stringify(block)} />
     ))}
+
+    {headExtra && <Fragment set:html={headExtra} />}
   </head>
   <body>
     <slot />

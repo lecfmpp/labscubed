@@ -1,0 +1,118 @@
+---
+/* Blog post shell.
+ *
+ * Everything above and below the article is rebuilt here because the Webflow
+ * CMS template used to supply it: the H1, the category pills, the meta row and
+ * the hero image. That is why the stored body deliberately contains no <h1>
+ * and no byline — the body is the article, this layout is the page. Keeping
+ * that split means the same HTML can be re-rendered anywhere without edits.
+ */
+import '../styles/blog.css';
+import '../styles/blog-assets.css';
+import Base from './Base.astro';
+import Nav from '../islands/Nav.tsx';
+import Footer from '../components/Footer.astro';
+import { BLOG_ORIGIN } from '../site.mjs';
+import {
+  type BlogPost,
+  categoryLabel,
+  formatDate,
+  postDate,
+  postDescription,
+  readTime,
+} from '../lib/blog';
+
+interface Props {
+  post: BlogPost;
+  schemas: unknown[];
+  body: string;
+  isDraft: boolean;
+}
+const { post, schemas, body, isDraft } = Astro.props;
+
+const url = `${BLOG_ORIGIN}/post/${post.slug}`;
+const description = postDescription(post);
+/* Title format is copied from the Webflow template — these titles are already
+   indexed, and changing them would churn every blog result at once. */
+const title = `Blog LabsCubed | ${post.title}`;
+const published = postDate(post);
+---
+
+<Base
+  title={title}
+  description={description}
+  canonical={url}
+  ogImage={post.thumb_image_url ?? post.hero_image_url ?? undefined}
+  ogType="article"
+  jsonLd={schemas}
+  preloadHero={false}
+>
+  <Nav client:load />
+
+  <main class="lc-page">
+    {isDraft && (
+      <div class="bp-draft">
+        Draft preview — this post is <strong>{post.status}</strong> in the CMS and is
+        not visible on the live site.
+      </div>
+    )}
+
+    {/* Full-bleed hero: the thumbnail runs as a background behind a dark
+        gradient with the title centred over it — the same construction as the
+        Webflow `section_blog-post-header5` template it replaces. The image is
+        eager and high priority because it is the LCP element. */}
+    <header class="bp-hero">
+      {post.hero_image_url && (
+        <img
+          class="bp-hero__bg"
+          src={post.hero_image_url}
+          alt={post.hero_image_alt ?? post.title}
+          loading="eager"
+          fetchpriority="high"
+          decoding="async"
+        />
+      )}
+      <div class="bp-hero__overlay" aria-hidden="true"></div>
+      <div class="bp-hero__inner">
+        <h1 class="bp-hero__title">{post.title}</h1>
+      </div>
+    </header>
+
+    <div class="bp-top">
+      <nav class="bp-breadcrumb" aria-label="Breadcrumb">
+        <a href={`${BLOG_ORIGIN}/`}>Home</a>
+        <span class="bp-breadcrumb__sep" aria-hidden="true">/</span>
+        <a href="/blog">Blog</a>
+        <span class="bp-breadcrumb__sep" aria-hidden="true">/</span>
+        <span aria-current="page">{post.title}</span>
+      </nav>
+
+      <div class="bp-metarow">
+        {post.categories.length > 0 && (
+          <div class="bp-cats">
+            {post.categories.map((c) => (
+              <a class="bp-cat" href={`/blog/category/${c}`}>{categoryLabel(c)}</a>
+            ))}
+          </div>
+        )}
+
+        <div class="bp-dates">
+          <time datetime={published.toISOString()}>{formatDate(published)}</time>
+          <span class="bp-dates__div" aria-hidden="true"></span>
+          <span>{readTime(post)} min</span>
+        </div>
+      </div>
+    </div>
+
+    {/* The body ships exactly as stored. `set:html` is safe here because the
+        source is our own CMS, written by the automation and human-reviewed —
+        not user input. */}
+    <div class="bp-wrap">
+      <article class="lcb-article" set:html={body} />
+    </div>
+
+    <slot name="related" />
+
+    <Footer />
+  </main>
+</Base>
