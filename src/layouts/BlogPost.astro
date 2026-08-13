@@ -12,7 +12,7 @@ import '../styles/blog-assets.css';
 import Base from './Base.astro';
 import Nav from '../islands/Nav.tsx';
 import Footer from '../components/Footer.astro';
-import { BLOG_ORIGIN } from '../site.mjs';
+import { BLOG_HOST, BLOG_BASE, postUrl } from '../site.mjs';
 import {
   type BlogPost,
   categoryLabel,
@@ -30,10 +30,11 @@ interface Props {
   schemas: unknown[];
   body: string;
   isDraft: boolean;
+  noindex?: boolean;
 }
-const { post, schemas, body, isDraft } = Astro.props;
+const { post, schemas, body, isDraft, noindex = false } = Astro.props;
 
-const url = `${BLOG_ORIGIN}/post/${post.slug}`;
+const url = postUrl(post.slug);
 const description = postDescription(post);
 /* Title format is copied from the Webflow template — these titles are already
    indexed, and changing them would churn every blog result at once. */
@@ -49,6 +50,7 @@ const published = postDate(post);
   ogType="article"
   jsonLd={schemas}
   preloadHero={false}
+  noindex={noindex}
 >
   <Nav client:load />
 
@@ -83,9 +85,9 @@ const published = postDate(post);
 
     <div class="bp-top">
       <nav class="bp-breadcrumb" aria-label="Breadcrumb">
-        <a href={`${BLOG_ORIGIN}/`}>Home</a>
+        <a href="https://www.labscubed.com/">Home</a>
         <span class="bp-breadcrumb__sep" aria-hidden="true">/</span>
-        <a href="/blog">Blog</a>
+        <a href={BLOG_BASE}>Blog</a>
         <span class="bp-breadcrumb__sep" aria-hidden="true">/</span>
         <span aria-current="page">{post.title}</span>
       </nav>
@@ -94,7 +96,7 @@ const published = postDate(post);
         {post.categories.length > 0 && (
           <div class="bp-cats">
             {post.categories.map((c) => (
-              <a class="bp-cat" href={`/blog/category/${c}`}>{categoryLabel(c)}</a>
+              <a class="bp-cat" href={`${BLOG_BASE}/category/${c}`}>{categoryLabel(c)}</a>
             ))}
           </div>
         )}

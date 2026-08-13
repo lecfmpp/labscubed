@@ -5,7 +5,7 @@
  * depend on scraping the listing page.
  */
 import type { APIRoute } from 'astro';
-import { BLOG_ORIGIN } from '../site.mjs';
+import { BLOG_HOST, BLOG_BASE, postUrl } from '../site.mjs';
 import { getPosts, postDate, postDescription } from '../lib/blog';
 
 const esc = (s: string) =>
@@ -22,7 +22,7 @@ export const GET: APIRoute = async () => {
 
   const items = posts
     .map((p) => {
-      const url = `${BLOG_ORIGIN}/post/${p.slug}`;
+      const url = postUrl(p.slug);
       return `    <item>
       <title>${esc(p.title)}</title>
       <link>${url}</link>
@@ -38,10 +38,10 @@ ${p.categories.map((c) => `      <category>${esc(c)}</category>`).join('\n')}
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>LabsCubed Blog</title>
-    <link>${BLOG_ORIGIN}/blog</link>
+    <link>${BLOG_HOST}${BLOG_BASE}</link>
     <description>Automated materials testing, ASTM and ISO methods, and lab workflow guidance from the LabsCubed engineering team.</description>
     <language>en-us</language>
-    <atom:link href="${BLOG_ORIGIN}/rss.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="${BLOG_HOST}/rss.xml" rel="self" type="application/rss+xml" />
 ${items}
   </channel>
 </rss>`;

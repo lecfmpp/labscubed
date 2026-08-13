@@ -1,15 +1,14 @@
 ---
-/* /blog and /blog/2, /blog/3 … — the post index.
+/* /posts/page/2, /posts/page/3 … — pages 2 onward of the index.
  *
- * Astro's paginate() gives page 1 the bare `/blog` path, which is the URL the
- * current site already uses and the one the nav links to, so pagination is
- * additive rather than a change of address.
+ * Page 1 is /posts (index.astro). Keeping the later pages under a /page/
+ * segment means a paginated URL can never be mistaken for a post slug.
  */
-import Base from '../../layouts/Base.astro';
-import Nav from '../../islands/Nav.tsx';
-import Footer from '../../components/Footer.astro';
-import '../../styles/blog.css';
-import { BLOG_ORIGIN } from '../../site.mjs';
+import Base from '../../../layouts/Base.astro';
+import Nav from '../../../islands/Nav.tsx';
+import Footer from '../../../components/Footer.astro';
+import '../../../styles/blog.css';
+import { BLOG_HOST, BLOG_BASE, BLOG_STAGING, blogUrl } from '../../../site.mjs';
 import {
   getPosts,
   categoryLabel,
@@ -18,18 +17,35 @@ import {
   readTime,
   thumbImage,
   thumbAlt,
-  type BlogPost,
-} from '../../lib/blog';
-import { blogListingSchema } from '../../lib/blog-schema';
-import type { GetStaticPaths, Page } from 'astro';
+} from '../../../lib/blog';
+import { blogListingSchema } from '../../../lib/blog-schema';
 
-export const getStaticPaths = (async ({ paginate }) => {
+/* Astro runs getStaticPaths in its own scope — it cannot see other frontmatter
+   constants, so the page size is declared inside it and passed through props. */
+export async function getStaticPaths() {
+  const PAGE_SIZE = 12;
   const posts = await getPosts();
-  return paginate(posts, { pageSize: 12 });
-}) satisfies GetStaticPaths;
+  const last = Math.max(1, Math.ceil(posts.length / PAGE_SIZE));
+  // Page 1 is served by index.astro, so this route starts at 2.
+  return Array.from({ length: Math.max(0, last - 1) }, (_, i) => {
+    const n = i + 2;
+    return { params: { page: String(n) }, props: { n, last, posts, pageSize: PAGE_SIZE } };
+  });
+}
 
-const { page } = Astro.props as { page: Page<BlogPost> };
-const all = await getPosts();
+const { n, last, posts, pageSize } = Astro.props;
+const page = {
+  data: posts.slice((n - 1) * pageSize, n * pageSize),
+  currentPage: n,
+  lastPage: last,
+  url: {
+    current: `${BLOG_BASE}/page/${n}`,
+    prev: n === 2 ? BLOG_BASE : `${BLOG_BASE}/page/${n - 1}`,
+    next: n < last ? `${BLOG_BASE}/page/${n + 1}` : undefined,
+  },
+};
+
+const all = posts;
 
 const title =
   page.currentPage === 1
@@ -37,16 +53,16 @@ const title =
     : `Blog LabsCubed | Page ${page.currentPage}`;
 const description =
   'Guides on automated tensile testing, ASTM and ISO methods, polymer and rubber QA workflows, and lab automation — from the LabsCubed engineering team.';
-const canonical = `${BLOG_ORIGIN}${page.url.current}`;
+const canonical = `${BLOG_HOST}${page.url.current}`;
 
 /* rel=prev/next so paginated pages are read as one series rather than as
    near-duplicate listings competing with each other. */
 const headExtra = [
   page.url.prev
-    ? `<link rel="prev" href="${BLOG_ORIGIN}${page.url.prev}" />`
+    ? `<link rel="prev" href="${BLOG_HOST}${page.url.prev}" />`
     : '',
   page.url.next
-    ? `<link rel="next" href="${BLOG_ORIGIN}${page.url.next}" />`
+    ? `<link rel="next" href="${BLOG_HOST}${page.url.next}" />`
     : '',
 ].join('');
 
@@ -57,9 +73,10 @@ const categories = [...new Set(all.flatMap((p) => p.categories))].sort();
   title={title}
   description={description}
   canonical={canonical}
-  jsonLd={[blogListingSchema(all, BLOG_ORIGIN)]}
+  jsonLd={[blogListingSchema(all, BLOG_HOST)]}
   preloadHero={false}
   headExtra={headExtra}
+  noindex={BLOG_STAGING}
 >
   <Nav client:load />
 
@@ -69,11 +86,11 @@ const categories = [...new Set(all.flatMap((p) => p.categories))].sort();
       <p>{description}</p>
     </header>
 
-    {categories.length > 0 && page.currentPage === 1 && (
+    {false && (
       <nav class="bl-filters" aria-label="Categories">
-        <a class="bl-filter" href="/blog" aria-current="true">All</a>
+        <a class="bl-filter" href={BLOG_BASE} aria-current="true">All</a>
         {categories.map((c) => (
-          <a class="bl-filter" href={`/blog/category/${c}`}>{categoryLabel(c)}</a>
+          <a class="bl-filter" href={`${BLOG_BASE}/category/${c}`}>{categoryLabel(c)}</a>
         ))}
       </nav>
     )}
@@ -81,7 +98,7 @@ const categories = [...new Set(all.flatMap((p) => p.categories))].sort();
     <div class="bl-list">
       <div class="bl-grid">
         {page.data.map((p) => (
-          <a class="bl-card" href={`/post/${p.slug}`}>
+          <a class="bl-card" href={`${BLOG_BASE}/${p.slug}`}>
             {thumbImage(p) && (
               <img
                 class="bl-card__img"

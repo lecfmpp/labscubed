@@ -6,7 +6,7 @@
  * existing 21 posts keeps working unchanged after the cutover.
  */
 import BlogPost from '../../layouts/BlogPost.astro';
-import { BLOG_ORIGIN } from '../../site.mjs';
+import { BLOG_HOST, BLOG_BASE, BLOG_STAGING, postUrl } from '../../site.mjs';
 import {
   getPosts,
   thumbImage,
@@ -32,19 +32,19 @@ export async function getStaticPaths() {
 const { post, all } = Astro.props as { post: Post; all: Post[] };
 
 const { schemas: payload, body } = extractSchemas(post.content, post.images);
-const url = `${BLOG_ORIGIN}/post/${post.slug}`;
-const schemas = schemasForPost(post, payload, url, BLOG_ORIGIN);
+const url = postUrl(post.slug);
+const schemas = schemasForPost(post, payload, url, BLOG_HOST);
 const related = relatedPosts(post, all, 3);
 const isDraft = post.status !== 'published';
 ---
 
-<BlogPost post={post} schemas={schemas} body={body} isDraft={isDraft}>
+<BlogPost post={post} schemas={schemas} body={body} isDraft={isDraft} noindex={BLOG_STAGING}>
   {related.length > 0 && (
     <section class="bp-related" slot="related">
       <h2>Keep reading</h2>
       <div class="bl-grid">
         {related.map((p) => (
-          <a class="bl-card" href={`/post/${p.slug}`}>
+          <a class="bl-card" href={`${BLOG_BASE}/${p.slug}`}>
             {thumbImage(p) && (
               <img
                 class="bl-card__img"

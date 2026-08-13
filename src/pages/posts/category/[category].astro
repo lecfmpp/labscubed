@@ -9,7 +9,7 @@ import Base from '../../../layouts/Base.astro';
 import Nav from '../../../islands/Nav.tsx';
 import Footer from '../../../components/Footer.astro';
 import '../../../styles/blog.css';
-import { BLOG_ORIGIN } from '../../../site.mjs';
+import { BLOG_HOST, BLOG_BASE, BLOG_STAGING } from '../../../site.mjs';
 import {
   getPosts,
   categoryLabel,
@@ -37,7 +37,7 @@ const all = await getPosts();
 const label = categoryLabel(category);
 const title = `Blog LabsCubed | ${label}`;
 const description = `${label} articles from LabsCubed — automated materials testing, standards and lab workflow guidance.`;
-const canonical = `${BLOG_ORIGIN}/blog/category/${category}`;
+const canonical = `${BLOG_HOST}${BLOG_BASE}/category/${category}`;
 const categories = [...new Set(all.flatMap((p) => p.categories))].sort();
 ---
 
@@ -46,6 +46,7 @@ const categories = [...new Set(all.flatMap((p) => p.categories))].sort();
   description={description}
   canonical={canonical}
   preloadHero={false}
+  noindex={BLOG_STAGING}
   jsonLd={[
     {
       '@context': 'https://schema.org',
@@ -53,7 +54,7 @@ const categories = [...new Set(all.flatMap((p) => p.categories))].sort();
       name: label,
       description,
       url: canonical,
-      isPartOf: { '@type': 'Blog', name: 'LabsCubed Blog', url: `${BLOG_ORIGIN}/blog` },
+      isPartOf: { '@type': 'Blog', name: 'LabsCubed Blog', url: `${BLOG_HOST}${BLOG_BASE}` },
     },
   ]}
 >
@@ -66,11 +67,11 @@ const categories = [...new Set(all.flatMap((p) => p.categories))].sort();
     </header>
 
     <nav class="bl-filters" aria-label="Categories">
-      <a class="bl-filter" href="/blog">All</a>
+      <a class="bl-filter" href={BLOG_BASE}>All</a>
       {categories.map((c) => (
         <a
           class="bl-filter"
-          href={`/blog/category/${c}`}
+          href={`${BLOG_BASE}/category/${c}`}
           aria-current={c === category ? 'true' : undefined}
         >
           {categoryLabel(c)}
@@ -81,7 +82,7 @@ const categories = [...new Set(all.flatMap((p) => p.categories))].sort();
     <div class="bl-list">
       <div class="bl-grid">
         {posts.map((p) => (
-          <a class="bl-card" href={`/post/${p.slug}`}>
+          <a class="bl-card" href={`${BLOG_BASE}/${p.slug}`}>
             {thumbImage(p) && (
               <img
                 class="bl-card__img"
