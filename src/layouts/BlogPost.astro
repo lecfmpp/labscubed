@@ -20,6 +20,9 @@ import {
   postDate,
   postDescription,
   readTime,
+  heroImage,
+  heroAlt,
+  thumbImage,
 } from '../lib/blog';
 
 interface Props {
@@ -42,7 +45,7 @@ const published = postDate(post);
   title={title}
   description={description}
   canonical={url}
-  ogImage={post.thumb_image_url ?? post.hero_image_url ?? undefined}
+  ogImage={thumbImage(post) ?? heroImage(post) ?? undefined}
   ogType="article"
   jsonLd={schemas}
   preloadHero={false}
@@ -62,11 +65,11 @@ const published = postDate(post);
         Webflow `section_blog-post-header5` template it replaces. The image is
         eager and high priority because it is the LCP element. */}
     <header class="bp-hero">
-      {post.hero_image_url && (
+      {heroImage(post) && (
         <img
           class="bp-hero__bg"
-          src={post.hero_image_url}
-          alt={post.hero_image_alt ?? post.title}
+          src={heroImage(post)}
+          alt={heroAlt(post)}
           loading="eager"
           fetchpriority="high"
           decoding="async"

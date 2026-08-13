@@ -418,3 +418,24 @@ html {
     border-radius: 12px;
   }
 }
+
+/* ---------- In-article images ---------- */
+
+/* Rendered from a `data-image-slot` placeholder once that slot has an upload.
+   An unfilled slot is removed at build time, so this rule only ever styles a
+   figure that actually has an image in it. */
+.lcb-figure {
+  margin: 0 0 1.5rem;
+}
+.lcb-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+}
+.lcb-figure figcaption {
+  margin: 0.6rem 0 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: #64748b;
+}

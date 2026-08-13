@@ -43,6 +43,7 @@ export interface BlogPost {
   thumb_image_url: string | null;
   thumb_image_alt: string | null;
   read_time_minutes: number | null;
+  images: Record<string, { url?: string; alt?: string }>;
   actual_word_count: number | null;
   published_at: string | null;
   created_at: string;
@@ -94,7 +95,7 @@ export async function getPosts(): Promise<BlogPost[]> {
     select:
       'id,title,slug,meta_description,summary,content,author,status,categories,tags,' +
       'primary_keyword,hero_image_url,hero_image_alt,thumb_image_url,thumb_image_alt,' +
-      'read_time_minutes,actual_word_count,published_at,created_at,updated_at',
+      'read_time_minutes,actual_word_count,published_at,created_at,updated_at,images',
     status: `in.(${statuses.join(',')})`,
     content: 'not.is.null',
     order: 'published_at.desc.nullslast,created_at.desc',
@@ -180,9 +181,46 @@ function unwrapArticle(html: string): string {
   return close === -1 ? open : open.slice(0, close) + open.slice(close + 6);
 }
 
+/** An empty image placeholder written by the blog-creator design pass. */
+const IMAGE_SLOT = /<figure\b[^>]*\bdata-image-slot=["']([^"']+)["'][^>]*>\s*<\/figure>/gi;
+
+const attrOf = (tag: string, name: string) => {
+  const m = tag.match(new RegExp(`\\b${name}=["']([^"']*)["']`, 'i'));
+  return m ? m[1] : '';
+};
+
+/**
+ * Fill or remove each `data-image-slot` placeholder.
+ *
+ * The automation marks where an image belongs but never embeds one, so the
+ * article HTML stays stable no matter how many times an image is re-uploaded.
+ * A slot with an upload becomes a real <figure><img>; a slot without one is
+ * removed outright, so a post can be reviewed and published with only some of
+ * its images and never shows a broken frame.
+ */
+function fillImageSlots(
+  html: string,
+  images: Record<string, { url?: string; alt?: string }>,
+): string {
+  return html.replace(IMAGE_SLOT, (tag, slot) => {
+    const img = images?.[slot];
+    if (!img?.url) return '';
+    const alt = img.alt || attrOf(tag, 'data-alt') || '';
+    const esc = (v: string) => v.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+    return (
+      `<figure class="lcb-figure">` +
+      `<img src="${esc(img.url)}" alt="${esc(alt)}" loading="lazy" decoding="async">` +
+      `</figure>`
+    );
+  });
+}
+
 /** Full body pipeline: drop the inline CSS copy, then unwrap. */
-function prepareBody(html: string): string {
-  return unwrapArticle(stripBoilerplateStyle(html)).trim();
+function prepareBody(
+  html: string,
+  images: Record<string, { url?: string; alt?: string }> = {},
+): string {
+  return fillImageSlots(unwrapArticle(stripBoilerplateStyle(html)), images).trim();
 }
 
 /**
@@ -194,12 +232,15 @@ function prepareBody(html: string): string {
  * AI answer engines among them — can actually read it, and the inert div is
  * removed from the body instead of being shipped to every reader.
  */
-export function extractSchemas(html: string): {
+export function extractSchemas(
+  html: string,
+  images: Record<string, { url?: string; alt?: string }> = {},
+): {
   schemas: unknown[];
   body: string;
 } {
   const m = html.match(SCHEMA_DIV);
-  if (!m) return { schemas: [], body: prepareBody(html) };
+  if (!m) return { schemas: [], body: prepareBody(html, images) };
 
   let schemas: unknown[] = [];
   try {
@@ -210,7 +251,7 @@ export function extractSchemas(html: string): {
     // still strip the div so the page is clean.
     schemas = [];
   }
-  return { schemas, body: prepareBody(html.replace(SCHEMA_DIV, '')) };
+  return { schemas, body: prepareBody(html.replace(SCHEMA_DIV, ''), images) };
 }
 
 /** Read time in whole minutes — stored value wins, else ~220 wpm. */
@@ -221,6 +262,16 @@ export function readTime(post: BlogPost): number {
     post.content.replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length;
   return Math.max(1, Math.round(words / 220));
 }
+
+/** Hero and card images, preferring the slot map over the legacy columns. */
+export const heroImage = (p: BlogPost) =>
+  p.images?.main?.url ?? p.hero_image_url ?? null;
+export const heroAlt = (p: BlogPost) =>
+  p.images?.main?.alt ?? p.hero_image_alt ?? p.title;
+export const thumbImage = (p: BlogPost) =>
+  p.images?.thumb?.url ?? p.thumb_image_url ?? null;
+export const thumbAlt = (p: BlogPost) =>
+  p.images?.thumb?.alt ?? p.thumb_image_alt ?? p.title;
 
 export function postDate(post: BlogPost): Date {
   return new Date(post.published_at ?? post.created_at);

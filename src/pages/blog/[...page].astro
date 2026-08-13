@@ -16,6 +16,8 @@ import {
   formatDate,
   postDate,
   readTime,
+  thumbImage,
+  thumbAlt,
   type BlogPost,
 } from '../../lib/blog';
 import { blogListingSchema } from '../../lib/blog-schema';
@@ -80,11 +82,11 @@ const categories = [...new Set(all.flatMap((p) => p.categories))].sort();
       <div class="bl-grid">
         {page.data.map((p) => (
           <a class="bl-card" href={`/post/${p.slug}`}>
-            {p.thumb_image_url && (
+            {thumbImage(p) && (
               <img
                 class="bl-card__img"
-                src={p.thumb_image_url}
-                alt={p.thumb_image_alt ?? p.title}
+                src={thumbImage(p)}
+                alt={thumbAlt(p)}
                 loading="lazy"
                 decoding="async"
                 width="600"

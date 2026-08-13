@@ -9,6 +9,8 @@ import BlogPost from '../../layouts/BlogPost.astro';
 import { BLOG_ORIGIN } from '../../site.mjs';
 import {
   getPosts,
+  thumbImage,
+  thumbAlt,
   extractSchemas,
   relatedPosts,
   categoryLabel,
@@ -29,7 +31,7 @@ export async function getStaticPaths() {
 
 const { post, all } = Astro.props as { post: Post; all: Post[] };
 
-const { schemas: payload, body } = extractSchemas(post.content);
+const { schemas: payload, body } = extractSchemas(post.content, post.images);
 const url = `${BLOG_ORIGIN}/post/${post.slug}`;
 const schemas = schemasForPost(post, payload, url, BLOG_ORIGIN);
 const related = relatedPosts(post, all, 3);
@@ -43,11 +45,11 @@ const isDraft = post.status !== 'published';
       <div class="bl-grid">
         {related.map((p) => (
           <a class="bl-card" href={`/post/${p.slug}`}>
-            {p.thumb_image_url && (
+            {thumbImage(p) && (
               <img
                 class="bl-card__img"
-                src={p.thumb_image_url}
-                alt={p.thumb_image_alt ?? p.title}
+                src={thumbImage(p)}
+                alt={thumbAlt(p)}
                 loading="lazy"
                 decoding="async"
                 width="600"
