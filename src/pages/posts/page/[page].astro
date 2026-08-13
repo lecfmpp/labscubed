@@ -78,7 +78,7 @@ const categories = [...new Set(all.flatMap((p) => p.categories))].sort();
   headExtra={headExtra}
   noindex={BLOG_STAGING}
 >
-  <Nav client:load />
+  <Nav client:load light />
 
   <main class="lc-page">
     <header class="bl-head">
@@ -99,7 +99,7 @@ const categories = [...new Set(all.flatMap((p) => p.categories))].sort();
       <div class="bl-grid">
         {page.data.map((p) => (
           <a class="bl-card" href={`${BLOG_BASE}/${p.slug}`}>
-            {thumbImage(p) && (
+            {thumbImage(p) ? (
               <img
                 class="bl-card__img"
                 src={thumbImage(p)}
@@ -109,16 +109,26 @@ const categories = [...new Set(all.flatMap((p) => p.categories))].sort();
                 width="600"
                 height="338"
               />
+            ) : (
+              /* Posts awaiting their thumbnail still have to sit evenly in the
+                 grid — an empty slot would collapse the card against its
+                 neighbours. */
+              <div class="bl-card__img bl-card__ph" aria-hidden="true">
+                <span>{categoryLabel(p.categories[0] ?? 'LabsCubed')}</span>
+              </div>
             )}
             <div class="bl-card__body">
-              {p.categories[0] && (
-                <p class="bl-card__cat">{categoryLabel(p.categories[0])}</p>
-              )}
+              <div class="bl-card__top">
+                <div class="bl-card__cats">
+                  {p.categories.map((c) => <span class="bl-card__cat">{categoryLabel(c)}</span>)}
+                </div>
+                <span class="bl-card__read">{readTime(p)} min read</span>
+              </div>
               <h2 class="bl-card__title">{p.title}</h2>
               {p.summary && <p class="bl-card__sum">{p.summary}</p>}
-              <p class="bl-card__meta">
-                {formatDate(postDate(p))} · {readTime(p)} min read
-              </p>
+              <span class="bl-card__go" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+              </span>
             </div>
           </a>
         ))}

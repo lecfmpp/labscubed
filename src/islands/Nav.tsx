@@ -18,8 +18,12 @@ const resourceLinks: [string, string][] = [
 ];
 const QUOTE = 'https://www.labscubed.com/get-a-quote';
 
-export default function Nav() {
+/* `light` renders the bar for a white page — the blog listing and category
+   hubs, which have no dark hero for the default white links to sit on. The
+   homepage and the post pages keep the transparent-over-hero default. */
+export default function Nav({ light = false }: { light?: boolean }) {
   const m = useIsMobile();
+  const linkColor = light ? "rgba(15,23,42,0.86)" : "rgba(255,255,255,0.85)";
   const [open, setOpen] = React.useState(false);
   const [resOpen, setResOpen] = React.useState(false);
 
@@ -27,12 +31,12 @@ export default function Nav() {
     return (
       <div style={{ position: "absolute", top: 0, left: 0, right: 0, zIndex: 20 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 20px" }}>
-          <a href={HOME}><img src="/assets/img/logo.webp" alt="LabsCubed" width={419} height={104} style={{ height: 28, width: "auto", display: "block" }} /></a>
-          <button onClick={() => setOpen((o) => !o)} aria-label="Menu" style={{ all: "unset", cursor: "pointer", width: 42, height: 42, display: "inline-flex", alignItems: "center", justifyContent: "center", borderRadius: 10, background: "rgba(255,255,255,0.1)" }}>
+          <a href={HOME}><img src="/assets/img/logo.webp" alt="LabsCubed" width={419} height={104} style={{ height: 28, width: "auto", display: "block", filter: light ? "invert(1) hue-rotate(180deg)" : "none" }} /></a>
+          <button onClick={() => setOpen((o) => !o)} aria-label="Menu" style={{ all: "unset", cursor: "pointer", width: 42, height: 42, display: "inline-flex", alignItems: "center", justifyContent: "center", borderRadius: 10, background: light ? "rgba(15,23,42,0.06)" : "rgba(255,255,255,0.1)" }}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
               {open
-                ? <path d="M6 6l12 12M18 6L6 18" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
-                : <path d="M4 7h16M4 12h16M4 17h16" stroke="#fff" strokeWidth="2" strokeLinecap="round" />}
+                ? <path d="M6 6l12 12M18 6L6 18" stroke={light ? "#0f172a" : "#fff"} strokeWidth="2" strokeLinecap="round" />
+                : <path d="M4 7h16M4 12h16M4 17h16" stroke={light ? "#0f172a" : "#fff"} strokeWidth="2" strokeLinecap="round" />}
             </svg>
           </button>
         </div>
@@ -54,17 +58,17 @@ export default function Nav() {
   return (
     <div style={{ position: "absolute", top: 0, left: 0, right: 0, zIndex: 10, display: "flex", justifyContent: "center" }}>
       <div style={{ width: "100%", maxWidth: 1392, padding: "18px 26px", boxSizing: "border-box", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <a href={HOME}><img src="/assets/img/logo.webp" alt="LabsCubed" width={419} height={104} style={{ height: 34, width: "auto", display: "block" }} /></a>
+        <a href={HOME}><img src="/assets/img/logo.webp" alt="LabsCubed" width={419} height={104} style={{ height: 34, width: "auto", display: "block", filter: light ? "invert(1) hue-rotate(180deg)" : "none" }} /></a>
         <nav style={{ display: "flex", gap: 26, alignItems: "center" }}>
           {mainLinks.map(([l, href]) => (
-            <a key={l} href={href} style={{ color: "rgba(255,255,255,0.85)", fontSize: 13, textDecoration: "none" }} className="lc-navlink">{l}</a>
+            <a key={l} href={href} style={{ color: linkColor, fontSize: 13, textDecoration: "none" }} className="lc-navlink">{l}</a>
           ))}
           <div
             style={{ position: "relative" }}
             onMouseEnter={() => setResOpen(true)}
             onMouseLeave={() => setResOpen(false)}
           >
-            <button style={{ all: "unset", cursor: "pointer", color: "rgba(255,255,255,0.85)", fontSize: 13, display: "inline-flex", alignItems: "center", gap: 5 }} className="lc-navlink" aria-haspopup="true" aria-expanded={resOpen}>Resources
+            <button style={{ all: "unset", cursor: "pointer", color: linkColor, fontSize: 13, display: "inline-flex", alignItems: "center", gap: 5 }} className="lc-navlink" aria-haspopup="true" aria-expanded={resOpen}>Resources
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" style={{ transform: resOpen ? "rotate(180deg)" : "none", transition: "transform .2s ease" }}><path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
             </button>
             <div style={{ position: "absolute", top: "100%", right: 0, paddingTop: 14, opacity: resOpen ? 1 : 0, visibility: resOpen ? "visible" : "hidden", transform: resOpen ? "translateY(0)" : "translateY(-6px)", transition: "opacity .18s ease, transform .18s ease, visibility .18s", pointerEvents: resOpen ? "auto" : "none" }}>
