@@ -23,15 +23,24 @@ const QUOTE = 'https://www.labscubed.com/get-a-quote';
    homepage and the post pages keep the transparent-over-hero default. */
 export default function Nav({ light = false }: { light?: boolean }) {
   const m = useIsMobile();
-  const linkColor = light ? "rgba(15,23,42,0.86)" : "rgba(255,255,255,0.85)";
+  const linkColor = light ? "#333" : "rgba(255,255,255,0.85)";
+  /* The stock logo is the light-on-dark artwork and disappears on white. The
+     site ships a dedicated dark variant for light backgrounds — use that rather
+     than filtering the light one, which never gives clean brand colour. */
+  const logoSrc = light ? "/assets/img/logo-dark.webp" : "/assets/img/logo.webp";
+  /* Solid bar on light pages: it sits in the flow (sticky) instead of floating
+     over a hero, so the page below is not obscured and needs no top padding. */
+  const barPos: React.CSSProperties = light
+    ? { position: "sticky", top: 0, background: "#fff", borderBottom: "1px solid #e8ebee" }
+    : { position: "absolute", top: 0, left: 0, right: 0 };
   const [open, setOpen] = React.useState(false);
   const [resOpen, setResOpen] = React.useState(false);
 
   if (m) {
     return (
-      <div style={{ position: "absolute", top: 0, left: 0, right: 0, zIndex: 20 }}>
+      <div style={{ ...barPos, zIndex: 40 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 20px" }}>
-          <a href={HOME}><img src="/assets/img/logo.webp" alt="LabsCubed" width={419} height={104} style={{ height: 28, width: "auto", display: "block", filter: light ? "invert(1) hue-rotate(180deg)" : "none" }} /></a>
+          <a href={HOME}><img src={logoSrc} alt="LabsCubed" width={419} height={104} style={{ height: 28, width: "auto", display: "block" }} /></a>
           <button onClick={() => setOpen((o) => !o)} aria-label="Menu" style={{ all: "unset", cursor: "pointer", width: 42, height: 42, display: "inline-flex", alignItems: "center", justifyContent: "center", borderRadius: 10, background: light ? "rgba(15,23,42,0.06)" : "rgba(255,255,255,0.1)" }}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
               {open
@@ -56,9 +65,9 @@ export default function Nav({ light = false }: { light?: boolean }) {
     );
   }
   return (
-    <div style={{ position: "absolute", top: 0, left: 0, right: 0, zIndex: 10, display: "flex", justifyContent: "center" }}>
+    <div style={{ ...barPos, zIndex: 40, display: "flex", justifyContent: "center" }}>
       <div style={{ width: "100%", maxWidth: 1392, padding: "18px 26px", boxSizing: "border-box", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <a href={HOME}><img src="/assets/img/logo.webp" alt="LabsCubed" width={419} height={104} style={{ height: 34, width: "auto", display: "block", filter: light ? "invert(1) hue-rotate(180deg)" : "none" }} /></a>
+        <a href={HOME}><img src={logoSrc} alt="LabsCubed" width={419} height={104} style={{ height: 34, width: "auto", display: "block" }} /></a>
         <nav style={{ display: "flex", gap: 26, alignItems: "center" }}>
           {mainLinks.map(([l, href]) => (
             <a key={l} href={href} style={{ color: linkColor, fontSize: 13, textDecoration: "none" }} className="lc-navlink">{l}</a>

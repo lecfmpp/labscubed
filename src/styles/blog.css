@@ -419,8 +419,10 @@ html {
    band here the listing rendered white-on-white and the nav links disappeared
    entirely. This is also what makes the listing and the post pages read as the
    same site. Full-bleed, with the content re-centred inside. */
+/* The light bar is solid and sits in the flow (sticky), so this no longer has
+   to reserve space for a nav floating over it — only its own breathing room. */
 .bl-head {
-  padding: clamp(104px, 10vw, 132px) 20px 8px;
+  padding: clamp(44px, 5.5vw, 72px) 20px 8px;
   text-align: center;
 }
 .bl-head > * {
