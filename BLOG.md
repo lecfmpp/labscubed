@@ -75,6 +75,40 @@ Locally, put them in `.env` (gitignored). See `.env.example`.
 | `src/styles/blog.css` | article typography + page chrome |
 | `src/styles/blog-assets.css` | the `.lcb` element kit (~50 components) |
 
+## Typography standard (locked)
+
+The blog renders in **Inter Tight**, self-hosted, variable weight, two subsets —
+not Inter, which the rest of this site uses. Every value below was measured off
+a live Webflow post (`/post/universal-testing-machine-guide-plastics-rubber`)
+and verified element-by-element against it.
+
+| Element | Family | Size | Weight | Line-height | Letter-spacing | Colour |
+| --- | --- | --- | --- | --- | --- | --- |
+| `h1` (post hero) | Inter Tight | 47px | 600 | 1.208 | normal | `#fff` |
+| `.lcb-article > h2` | Inter Tight | 28px | 700 | 1.2 | -0.02em | `#0f0f0f` |
+| `.lcb-article > h3` | Inter Tight | 21px | 600 | 1.3 | -0.01em | `#000` |
+| `.lcb-article > h4` | Inter Tight | 17px | 600 | 1.35 | — | `#000` |
+| `.lcb-article > p` | Inter Tight | 16px | 400 | 1.6 | normal | `#000` |
+| `> ul li`, `> ol li` | Inter Tight | 16px | 400 | 1.6 | normal | `#000` |
+| inline `a` | Inter Tight | 16px | 600 | inherit | — | inherit |
+
+Rules:
+
+- **Scoped to the blog.** Inter Tight applies to `.lcb-article`, `.bp-hero`,
+  `.bp-top`, `.bl-head`, `.bl-filters`, `.bl-list` and `.bp-related` only. The
+  homepage stays on Inter; no blog-scoped class may be used outside the blog.
+- **Direct-child selectors (`>`) are deliberate.** The kit elements in
+  `blog-assets.css` style their own internals — a descendant selector would
+  reach inside them and override the kit.
+- **`h4` is the one unmeasured row.** No published post carries an `<h4>`, so
+  those values come from the Webflow stylesheet's own declaration rather than a
+  measurement. Re-measure once a post uses one.
+- **Preload the right face.** Blog pages pass `preloadFont="inter-tight"` to
+  `Base`; anything else preloads a font it never draws while discovering the one
+  it needs late.
+- **Do not change a value here without re-measuring a live post.** These numbers
+  exist so a migrated article is indistinguishable from the one it replaces.
+
 ## Design parity notes
 
 These are not arbitrary values — each was read off the computed styles of the
