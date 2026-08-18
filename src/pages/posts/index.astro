@@ -36,10 +36,10 @@ const all = posts;
 
 const title =
   page.currentPage === 1
-    ? 'Blog LabsCubed | Automated Materials Testing Insights'
+    ? 'Blog | Automated Tensile Testing Equipment | LabsCubed'
     : `Blog LabsCubed | Page ${page.currentPage}`;
 const description =
-  'Guides on automated tensile testing, ASTM and ISO methods, polymer and rubber QA workflows, and lab automation — from the LabsCubed engineering team.';
+  "Here, you'll find comprehensive articles and resources on tensile testing and laboratory automation. We share insights on how to implement automated solutions to save time, achieve higher data consistency, and effectively minimize human error in your lab operations.";
 const canonical = `${BLOG_HOST}${page.url.current}`;
 
 /* rel=prev/next so paginated pages are read as one series rather than as
@@ -64,12 +64,13 @@ const categories = [...new Set(all.flatMap((p) => p.categories))].sort();
   preloadHero={false}
   headExtra={headExtra}
   noindex={BLOG_STAGING}
+  preloadFont="inter-tight"
 >
   <Nav client:load light />
 
   <main class="lc-page">
     <header class="bl-head">
-      <h1>LabsCubed Blog</h1>
+      <h1>LabsCubed Knowledge Hub</h1>
       <p>{description}</p>
     </header>
 

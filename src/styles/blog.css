@@ -19,8 +19,26 @@
 
 /* ---------- 1. Article typography (parity with Webflow) ---------- */
 
+/* Every value below was read off the computed styles of a live post
+   (/post/universal-testing-machine-guide-plastics-rubber) so a migrated article
+   is typographically identical to the one it replaces — same face, same weights,
+   same colours. Change nothing here without re-measuring against a live page. */
+
 html {
   scroll-behavior: smooth;
+}
+
+/* Inter Tight is the blog's face; the rest of this site uses Inter. Scoping it
+   to the blog surfaces keeps the migrated posts faithful without touching the
+   homepage. */
+.lcb-article,
+.bp-hero,
+.bp-top,
+.bl-head,
+.bl-filters,
+.bl-list,
+.bp-related {
+  font-family: "Inter Tight", Inter, system-ui, -apple-system, sans-serif;
 }
 
 /* Offset anchor jumps so a heading does not land under the sticky nav. */
@@ -31,27 +49,34 @@ html {
 .lcb-article > p {
   margin: 0 0 1rem;
   font-size: 16px;
-  line-height: 1.6;
+  font-weight: 400;
+  line-height: 1.6; /* 25.6px */
+  color: #000;
 }
 .lcb-article > h2 {
   margin: 1.5rem 0 1rem;
   font-size: 28px;
   font-weight: 700;
-  line-height: 1.2;
-  letter-spacing: -0.02em;
+  line-height: 1.2; /* 33.6px */
+  letter-spacing: -0.02em; /* -0.56px */
+  color: #0f0f0f;
 }
 .lcb-article > h3 {
   margin: 1.5rem 0 1rem;
   font-size: 21px;
   font-weight: 600;
-  line-height: 1.3;
-  letter-spacing: -0.01em;
+  line-height: 1.3; /* 27.3px */
+  letter-spacing: -0.01em; /* -0.21px */
+  color: #000;
 }
+/* No live post carries an h4, so these are the Webflow stylesheet's own
+   declared values rather than a measurement. */
 .lcb-article > h4 {
   margin: 1.5rem 0 1rem;
   font-size: 17px;
   font-weight: 600;
   line-height: 1.35;
+  color: #000;
 }
 .lcb-article > ul,
 .lcb-article > ol {
@@ -62,7 +87,9 @@ html {
 .lcb-article > ol > li {
   margin-bottom: 0.25rem;
   font-size: 16px;
-  line-height: 1.6;
+  font-weight: 400;
+  line-height: 1.6; /* 25.6px */
+  color: #000;
 }
 .lcb-article > p a,
 .lcb-article > ul a,
@@ -146,11 +173,12 @@ html {
   margin: 0 auto;
   text-align: center;
 }
+/* 47px / 600 / 1.208 on the live template. */
 .bp-hero__title {
   margin: 0;
   font-size: clamp(30px, 4.4vw, 47px);
   font-weight: 600;
-  line-height: 1.208;
+  line-height: 1.208; /* 56.79px */
   color: #fff;
   text-wrap: balance;
 }

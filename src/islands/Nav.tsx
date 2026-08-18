@@ -23,7 +23,7 @@ const QUOTE = 'https://www.labscubed.com/get-a-quote';
    homepage and the post pages keep the transparent-over-hero default. */
 export default function Nav({ light = false }: { light?: boolean }) {
   const m = useIsMobile();
-  const linkColor = light ? "#333" : "rgba(255,255,255,0.85)";
+  const linkColor = light ? "rgb(68,68,68)" : "rgba(255,255,255,0.85)";
   /* The stock logo is the light-on-dark artwork and disappears on white. The
      site ships a dedicated dark variant for light backgrounds — use that rather
      than filtering the light one, which never gives clean brand colour. */
@@ -66,18 +66,18 @@ export default function Nav({ light = false }: { light?: boolean }) {
   }
   return (
     <div style={{ ...barPos, zIndex: 40, display: "flex", justifyContent: "center" }}>
-      <div style={{ width: "100%", maxWidth: 1392, padding: "18px 26px", boxSizing: "border-box", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <div style={{ width: "100%", maxWidth: light ? 1253 : 1392, padding: light ? "15.7px 39px" : "18px 26px", boxSizing: "border-box", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <a href={HOME}><img src={logoSrc} alt="LabsCubed" width={419} height={104} style={{ height: 34, width: "auto", display: "block" }} /></a>
         <nav style={{ display: "flex", gap: 26, alignItems: "center" }}>
           {mainLinks.map(([l, href]) => (
-            <a key={l} href={href} style={{ color: linkColor, fontSize: 13, textDecoration: "none" }} className="lc-navlink">{l}</a>
+            <a key={l} href={href} style={{ color: linkColor, fontSize: light ? 12.5 : 13, fontWeight: light ? 500 : 400, textDecoration: "none" }} className="lc-navlink">{l}</a>
           ))}
           <div
             style={{ position: "relative" }}
             onMouseEnter={() => setResOpen(true)}
             onMouseLeave={() => setResOpen(false)}
           >
-            <button style={{ all: "unset", cursor: "pointer", color: linkColor, fontSize: 13, display: "inline-flex", alignItems: "center", gap: 5 }} className="lc-navlink" aria-haspopup="true" aria-expanded={resOpen}>Resources
+            <button style={{ all: "unset", cursor: "pointer", color: linkColor, fontSize: light ? 12.5 : 13, fontWeight: light ? 500 : 400, display: "inline-flex", alignItems: "center", gap: 5 }} className="lc-navlink" aria-haspopup="true" aria-expanded={resOpen}>Resources
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" style={{ transform: resOpen ? "rotate(180deg)" : "none", transition: "transform .2s ease" }}><path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
             </button>
             <div style={{ position: "absolute", top: "100%", right: 0, paddingTop: 14, opacity: resOpen ? 1 : 0, visibility: resOpen ? "visible" : "hidden", transform: resOpen ? "translateY(0)" : "translateY(-6px)", transition: "opacity .18s ease, transform .18s ease, visibility .18s", pointerEvents: resOpen ? "auto" : "none" }}>
@@ -89,7 +89,24 @@ export default function Nav({ light = false }: { light?: boolean }) {
             </div>
           </div>
         </nav>
-        <Button variant="primary" size="sm" href={QUOTE}>Get a Quote</Button>
+        {light ? (
+          /* Outline CTA, matching the live blog nav: a hairline border with a
+             barely-there sheen rather than the teal pill the dark nav uses. */
+          <a
+            href={QUOTE}
+            className="lc-btn"
+            style={{
+              display: "inline-flex", alignItems: "center",
+              padding: "9px 15px", borderRadius: 5.5,
+              border: "1px solid rgb(223,225,231)",
+              background: "linear-gradient(140deg, rgba(255,255,255,0.08), rgba(255,255,255,0))",
+              color: "rgb(15,15,15)", fontSize: 12.83, fontWeight: 500,
+              lineHeight: 1, textDecoration: "none", whiteSpace: "nowrap",
+            }}
+          >Get a Quote</a>
+        ) : (
+          <Button variant="primary" size="sm" href={QUOTE}>Get a Quote</Button>
+        )}
       </div>
     </div>
   );

@@ -22,6 +22,10 @@ interface Props {
   headExtra?: string;
   /** Keep the page out of the index — used for the staging blog host. */
   noindex?: boolean;
+  /** Which face to preload. Blog pages render in Inter Tight, so preloading
+   *  Inter there would fetch a font the page never draws while the one it does
+   *  need is discovered late, after the stylesheet parses. */
+  preloadFont?: 'inter' | 'inter-tight';
 }
 const {
   title = 'LabsCubed — Automated tensile testing for polymer and rubber labs',
@@ -33,6 +37,7 @@ const {
   preloadHero = true,
   headExtra,
   noindex = false,
+  preloadFont = 'inter',
 } = Astro.props;
 
 /* Head resource hints — why there are preloads and no preconnects.
@@ -84,7 +89,7 @@ const jsonLd = jsonLdProp ?? buildJsonLd(SITE_URL);
     {/* Preload the two assets the first paint needs — see the note in frontmatter. */}
     <link
       rel="preload"
-      href="/assets/fonts/inter-latin.woff2"
+      href={`/assets/fonts/${preloadFont}-latin.woff2`}
       as="font"
       type="font/woff2"
       crossorigin
