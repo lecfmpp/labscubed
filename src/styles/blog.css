@@ -431,7 +431,10 @@ html {
   margin-right: auto;
 }
 .bl-head h1 {
-  margin: 0 0 16px;
+  /* `margin: 0 auto 16px`, not `0 0 16px`: this rule outranks `.bl-head > *`,
+     so a shorthand with 0 side margins silently cancels the auto-centring and
+     the heading sits flush left inside its 1080px box. */
+  margin: 0 auto 16px;
   font-size: clamp(32px, 4.4vw, 46px);
   font-weight: 700;
   letter-spacing: -0.03em;
