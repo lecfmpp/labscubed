@@ -6,9 +6,22 @@ import Footer from '../../components/Footer.astro';
 ---
 
 <Base title="You're Registered - SPE Webinar Oct 20th" description="Thank you for registering for our webinar">
-  <Nav client:load />
+  {/* No countdown bar here — they have already registered. The header still
+      sticks, matching the registration page. */}
+  <div class="lc-sticky-top">
+    <Nav client:load inFlow />
+  </div>
   <main class="lc-page">
     <ThankYouApp client:only="react" />
   </main>
   <Footer />
 </Base>
+
+<style is:global>
+  .lc-sticky-top {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: #000;
+  }
+</style>

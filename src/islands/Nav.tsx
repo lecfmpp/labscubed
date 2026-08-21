@@ -18,14 +18,20 @@ const resourceLinks: [string, string][] = [
 ];
 const QUOTE = 'https://www.labscubed.com/get-a-quote';
 
-export default function Nav() {
+/* `inFlow` takes the bar out of overlay mode. By default it is absolutely
+   positioned so it floats transparently over the dark hero (the homepage).
+   Pages that stack it under something else — e.g. the webinar countdown bar —
+   pass inFlow so the two sit one above the other instead of on top of each
+   other. */
+export default function Nav({ inFlow = false }: { inFlow?: boolean }) {
   const m = useIsMobile();
   const [open, setOpen] = React.useState(false);
   const [resOpen, setResOpen] = React.useState(false);
+  const position = inFlow ? ('relative' as const) : ('absolute' as const);
 
   if (m) {
     return (
-      <div style={{ position: "absolute", top: 0, left: 0, right: 0, zIndex: 20 }}>
+      <div style={{ position, top: 0, left: 0, right: 0, zIndex: 20 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 20px" }}>
           <a href={HOME}><img src="/assets/img/logo.webp" alt="LabsCubed" width={419} height={104} style={{ height: 28, width: "auto", display: "block" }} /></a>
           <button onClick={() => setOpen((o) => !o)} aria-label="Menu" style={{ all: "unset", cursor: "pointer", width: 42, height: 42, display: "inline-flex", alignItems: "center", justifyContent: "center", borderRadius: 10, background: "rgba(255,255,255,0.1)" }}>
@@ -52,7 +58,7 @@ export default function Nav() {
     );
   }
   return (
-    <div style={{ position: "absolute", top: 0, left: 0, right: 0, zIndex: 10, display: "flex", justifyContent: "center" }}>
+    <div style={{ position, top: 0, left: 0, right: 0, zIndex: 10, display: "flex", justifyContent: "center" }}>
       <div style={{ width: "100%", maxWidth: 1392, padding: "18px 26px", boxSizing: "border-box", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <a href={HOME}><img src="/assets/img/logo.webp" alt="LabsCubed" width={419} height={104} style={{ height: 34, width: "auto", display: "block" }} /></a>
         <nav style={{ display: "flex", gap: 26, alignItems: "center" }}>

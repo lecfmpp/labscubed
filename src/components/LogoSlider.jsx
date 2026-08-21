@@ -1,6 +1,17 @@
 import React from 'react';
 
 const LogoSlider = () => {
+  // Sized down on phones: at 40px a wide mark like Caterpillar dominates a
+  // 375px viewport.
+  const [isMobile, setIsMobile] = React.useState(window.innerWidth <= 760);
+  React.useEffect(() => {
+    const on = () => setIsMobile(window.innerWidth <= 760);
+    window.addEventListener('resize', on);
+    return () => window.removeEventListener('resize', on);
+  }, []);
+  const logoHeight = isMobile ? 26 : 40;
+  const gap = isMobile ? 32 : 48;
+
   const logos = [
     { src: '/assets/img/partners/parker-hannifin.webp', alt: 'Parker Hannifin' },
     { src: '/assets/img/partners/chevron-phillips.webp', alt: 'Chevron Phillips Chemical' },
@@ -18,7 +29,7 @@ const LogoSlider = () => {
   return (
     <div style={{
       width: '100%',
-      marginTop: 40,
+      marginTop: isMobile ? 24 : 40,
       overflow: 'hidden',
       position: 'relative',
       maskImage: 'linear-gradient(90deg, transparent 0%, #000 8%, #000 92%, transparent 100%)',
@@ -26,7 +37,7 @@ const LogoSlider = () => {
     }}>
       <div style={{
         display: 'flex',
-        gap: '48px',
+        gap: `${gap}px`,
         alignItems: 'center',
         animation: 'scroll 40s linear infinite',
         width: 'max-content',
@@ -36,13 +47,13 @@ const LogoSlider = () => {
             flexShrink: 0,
             display: 'flex',
             alignItems: 'center',
-            height: 50,
+            height: isMobile ? 34 : 50,
           }}>
             <img
               src={logo.src}
               alt={logo.alt}
               style={{
-                height: 40,
+                height: logoHeight,
                 width: 'auto',
                 objectFit: 'contain',
                 filter: 'grayscale(1) brightness(1.3) invert(1)',
@@ -68,12 +79,6 @@ const LogoSlider = () => {
           }
           100% {
             transform: translateX(-50%);
-          }
-        }
-        
-        @media (max-width: 760px) {
-          [style*="gap: 48px"] {
-            gap: 32px !important;
           }
         }
       `}</style>

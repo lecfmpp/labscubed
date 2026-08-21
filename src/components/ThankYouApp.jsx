@@ -42,12 +42,24 @@ function VideoPlaceholder({ label }) {
   );
 }
 
+/* Renders the official brand mark when the SVG is present at the path below,
+   and falls back to a lettered badge when it is not. The real Google Calendar,
+   Outlook and Apple marks are trademarked assets — drop the official SVGs into
+   public/assets/img/calendar/ and they are picked up automatically. */
+function CalendarIcon({ icon, letter, color, name }) {
+  const [failed, setFailed] = React.useState(false);
+  if (failed) {
+    return <span style={{ width: 18, height: 18, borderRadius: 4, background: color, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: "#fff", flexShrink: 0 }}>{letter}</span>;
+  }
+  return <img src={icon} alt={`${name} Calendar`} width={18} height={18} onError={() => setFailed(true)} style={{ width: 18, height: 18, objectFit: "contain", flexShrink: 0, display: "block" }} />;
+}
+
 function Hero() {
   const m = useM();
   const calendarButtons = [
-    { name: "Google", href: CONFIG.calendarLinks.google, logo: "G", color: "#4285F4" },
-    { name: "Outlook", href: CONFIG.calendarLinks.outlook, logo: "O", color: "#0078D4" },
-    { name: "Apple", href: CONFIG.calendarLinks.apple, logo: "A", color: "#555" }
+    { name: "Google", href: CONFIG.calendarLinks.google, icon: "/assets/img/calendar/google-calendar.svg", letter: "G", color: "#4285F4" },
+    { name: "Outlook", href: CONFIG.calendarLinks.outlook, icon: "/assets/img/calendar/outlook.svg", letter: "O", color: "#0078D4" },
+    { name: "Apple", href: CONFIG.calendarLinks.apple, icon: "/assets/img/calendar/apple.svg", letter: "A", color: "#555" }
   ];
 
   return (
@@ -66,7 +78,7 @@ function Hero() {
           <div style={{ display: "flex", gap: 12, marginTop: 28, flexWrap: "wrap" }}>
             {calendarButtons.map((btn) => (
               <a key={btn.name} href={btn.href} target="_blank" rel="noopener noreferrer" style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 500, color: "#fff", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 999, padding: "10px 16px", textDecoration: "none", transition: "all 0.2s" }}>
-                <div style={{ width: 18, height: 18, borderRadius: 4, background: btn.color, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: "#fff" }}>{btn.logo}</div>
+                <CalendarIcon icon={btn.icon} letter={btn.letter} color={btn.color} name={btn.name} />
                 <span>{btn.name}</span>
               </a>
             ))}

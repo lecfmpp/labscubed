@@ -12,7 +12,12 @@
    Global runtime CSS carried over from reference index.html <head>
    (keyframes + hover/utility classes referenced throughout).
    ============================================================ */
-html, body { margin: 0; background: #fff; overflow-x: hidden; max-width: 100%; }
+/* overflow-x is declared twice on purpose. `hidden` makes the body a scroll
+   container, which silently breaks `position: sticky` for descendants (the
+   webinar pages' countdown + header stack). `clip` contains the same
+   horizontal overflow WITHOUT creating a scroll container, so sticky keeps
+   working; browsers too old to know `clip` ignore that line and keep `hidden`. */
+html, body { margin: 0; background: #fff; overflow-x: hidden; overflow-x: clip; max-width: 100%; }
 
 /* Mobile guard: the CubeTenShowcase is desktop-only (the island returns null on
    mobile after hydration). Hide it via CSS too so its wide desktop machine

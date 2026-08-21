@@ -1,14 +1,31 @@
 ---
 import Base from '../../layouts/Base.astro';
 import Nav from '../../islands/Nav.tsx';
+import WebinarTopBar from '../../components/WebinarTopBar.jsx';
 import RegistrationApp from '../../components/RegistrationApp.jsx';
 import Footer from '../../components/Footer.astro';
 ---
 
 <Base title="Webinar Registration - SPE Webinar Oct 20th" description="Register for our webinar on automating tensile testing with LabsCubed">
-  <Nav client:load />
+  {/* Countdown bar and header travel together as one sticky stack: the bar on
+      top, the header under it. Nav gets `inFlow` so it stacks instead of
+      floating over the bar, and the black background keeps the white nav text
+      readable once the page scrolls past the dark hero. */}
+  <div class="lc-sticky-top">
+    <WebinarTopBar client:only="react" />
+    <Nav client:load inFlow />
+  </div>
   <main class="lc-page">
     <RegistrationApp client:only="react" />
   </main>
   <Footer />
 </Base>
+
+<style is:global>
+  .lc-sticky-top {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: #000;
+  }
+</style>
