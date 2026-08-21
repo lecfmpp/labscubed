@@ -167,10 +167,10 @@ function Agenda() {
 function WhoIsThisFor() {
   const m = useM();
   const roles = [
-    { icon: "👥", title: "Lab Managers", desc: "Running QA labs in manufacturing or R&D" },
-    { icon: "🔬", title: "Quality Directors", desc: "Ensuring testing compliance and reducing costs" },
-    { icon: "⚙️", title: "R&D Engineers", desc: "Developing new materials and formulations" },
-    { icon: "📊", title: "Operations Leaders", desc: "Optimizing lab throughput and efficiency" }
+    { title: "Lab Managers", desc: "Running QA labs in manufacturing or R&D" },
+    { title: "Quality Directors", desc: "Ensuring testing compliance and reducing costs" },
+    { title: "R&D Engineers", desc: "Developing new materials and formulations" },
+    { title: "Operations Leaders", desc: "Optimizing lab throughput and efficiency" }
   ];
 
   const labs = [
@@ -191,14 +191,12 @@ function WhoIsThisFor() {
 
       <div style={{ marginTop: m ? 40 : 56 }}>
         <h3 style={{ fontSize: 18, fontWeight: 700, color: COLORS.ink, margin: 0, marginBottom: 24 }}>Key Roles</h3>
-        <div style={{ display: "grid", gridTemplateColumns: m ? "1fr" : "repeat(2, 1fr)", gap: m ? 20 : 28 }}>
+        <div style={{ display: "grid", gridTemplateColumns: m ? "1fr" : "repeat(2, 1fr)", gap: m ? 20 : 24 }}>
           {roles.map((role, i) => (
-            <div key={i} style={{ display: "flex", gap: 16 }}>
-              <div style={{ fontSize: 32, lineHeight: 1, flexShrink: 0 }}>{role.icon}</div>
-              <div>
-                <h4 style={{ fontSize: 16, fontWeight: 700, color: COLORS.ink, margin: 0, marginBottom: 4 }}>{role.title}</h4>
-                <p style={{ fontSize: 14, color: COLORS.muted, margin: 0, lineHeight: 1.5 }}>{role.desc}</p>
-              </div>
+            <div key={i} style={{ padding: "20px 22px", borderRadius: 16, background: "#fff", border: `1px solid ${COLORS.line}`, boxShadow: "0 1px 0 rgba(0,0,0,0.05)" }}>
+              <div style={{ width: 44, height: 44, borderRadius: 12, background: COLORS.teal, marginBottom: 14, opacity: 0.15 }} />
+              <h4 style={{ fontSize: 16, fontWeight: 700, color: COLORS.ink, margin: 0, marginBottom: 6 }}>{role.title}</h4>
+              <p style={{ fontSize: 14, color: COLORS.muted, margin: 0, lineHeight: 1.55 }}>{role.desc}</p>
             </div>
           ))}
         </div>
@@ -208,9 +206,10 @@ function WhoIsThisFor() {
         <h3 style={{ fontSize: 18, fontWeight: 700, color: COLORS.ink, margin: 0, marginBottom: 24 }}>Lab Types & Industries</h3>
         <div style={{ display: "grid", gridTemplateColumns: m ? "1fr" : "repeat(3, 1fr)", gap: m ? 16 : 20 }}>
           {labs.map((lab, i) => (
-            <div key={i} style={{ padding: "16px 18px", borderRadius: 12, background: COLORS.gray100, border: `1px solid ${COLORS.line}` }}>
+            <div key={i} style={{ padding: "18px 20px", borderRadius: 16, background: "#fff", border: `1px solid ${COLORS.line}`, boxShadow: "0 1px 0 rgba(0,0,0,0.05)" }}>
+              <div style={{ width: 28, height: 28, borderRadius: 8, background: COLORS.teal, marginBottom: 12, opacity: 0.12 }} />
               <h4 style={{ fontSize: 15, fontWeight: 700, color: COLORS.ink, margin: 0, marginBottom: 6 }}>{lab.name}</h4>
-              <p style={{ fontSize: 13, color: COLORS.muted, margin: 0, lineHeight: 1.5 }}>{lab.desc}</p>
+              <p style={{ fontSize: 13, color: COLORS.muted, margin: 0, lineHeight: 1.55 }}>{lab.desc}</p>
             </div>
           ))}
         </div>
