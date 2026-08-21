@@ -1,8 +1,14 @@
 ---
 import Base from '../../layouts/Base.astro';
+import Nav from '../../islands/Nav.tsx';
 import RegistrationApp from '../../components/RegistrationApp.jsx';
+import Footer from '../../components/Footer.astro';
 ---
 
 <Base title="Webinar Registration - SPE Webinar Oct 20th" description="Register for our webinar on automating tensile testing with LabsCubed">
-  <RegistrationApp client:only="react" />
+  <Nav client:load />
+  <main class="lc-page">
+    <RegistrationApp client:only="react" />
+  </main>
+  <Footer />
 </Base>
