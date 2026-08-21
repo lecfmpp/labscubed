@@ -92,19 +92,19 @@ function TopBar() {
           <div style={{ display: "flex", gap: m ? 2 : 4 }}>
             <div style={{ textAlign: "center" }}>
               <div style={{ fontVariantNumeric: "tabular-nums", fontWeight: 900, fontSize: m ? 14 : 24, background: "#000", borderRadius: 6, padding: m ? "2px 3px" : "4px 6px", color: "#fff", lineHeight: 1 }}>{pad(d)}</div>
-              <div style={{ fontSize: 8, fontWeight: 600, color: "#fff", opacity: 0.8, marginTop: 2 }}>D</div>
+              <div style={{ fontSize: 8, fontWeight: 600, color: "#000", opacity: 0.9, marginTop: 2 }}>D</div>
             </div>
             <div style={{ textAlign: "center" }}>
               <div style={{ fontVariantNumeric: "tabular-nums", fontWeight: 900, fontSize: m ? 14 : 24, background: "#000", borderRadius: 6, padding: m ? "2px 3px" : "4px 6px", color: "#fff", lineHeight: 1 }}>{pad(h)}</div>
-              <div style={{ fontSize: 8, fontWeight: 600, color: "#fff", opacity: 0.8, marginTop: 2 }}>H</div>
+              <div style={{ fontSize: 8, fontWeight: 600, color: "#000", opacity: 0.9, marginTop: 2 }}>H</div>
             </div>
             <div style={{ textAlign: "center" }}>
               <div style={{ fontVariantNumeric: "tabular-nums", fontWeight: 900, fontSize: m ? 14 : 24, background: "#000", borderRadius: 6, padding: m ? "2px 3px" : "4px 6px", color: "#fff", lineHeight: 1 }}>{pad(mnt)}</div>
-              <div style={{ fontSize: 8, fontWeight: 600, color: "#fff", opacity: 0.8, marginTop: 2 }}>M</div>
+              <div style={{ fontSize: 8, fontWeight: 600, color: "#000", opacity: 0.9, marginTop: 2 }}>M</div>
             </div>
             <div style={{ textAlign: "center" }}>
               <div style={{ fontVariantNumeric: "tabular-nums", fontWeight: 900, fontSize: m ? 14 : 24, background: "#000", borderRadius: 6, padding: m ? "2px 3px" : "4px 6px", color: "#fff", lineHeight: 1 }}>{pad(s)}</div>
-              <div style={{ fontSize: 8, fontWeight: 600, color: "#fff", opacity: 0.8, marginTop: 2 }}>S</div>
+              <div style={{ fontSize: 8, fontWeight: 600, color: "#000", opacity: 0.9, marginTop: 2 }}>S</div>
             </div>
           </div>
         </div>
