@@ -95,23 +95,23 @@ function TopBar() {
           {/* Countdown Timer - Large & Prominent */}
           <div style={{ display: "flex", alignItems: "center", gap: m ? 8 : 12, flexShrink: 0 }}>
             <span style={{ width: 10, height: 10, borderRadius: "50%", background: "#000" }} />
-            <span style={{ fontSize: m ? 13 : 14, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "#000", opacity: 0.7 }}>Starts in</span>
+            <span style={{ fontSize: m ? 13 : 14, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "#fff" }}>Starts in</span>
             <div style={{ display: "flex", gap: m ? 4 : 6 }}>
               <div style={{ textAlign: "center" }}>
-                <div style={{ fontVariantNumeric: "tabular-nums", fontWeight: 900, fontSize: m ? 28 : 48, background: "rgba(255,255,255,0.2)", borderRadius: 8, padding: m ? "4px 6px" : "8px 10px", color: "#000", lineHeight: 1 }}>{pad(d)}</div>
-                <div style={{ fontSize: 10, fontWeight: 600, color: "#000", opacity: 0.6, marginTop: 3 }}>D</div>
+                <div style={{ fontVariantNumeric: "tabular-nums", fontWeight: 900, fontSize: m ? 28 : 48, background: "#000", borderRadius: 8, padding: m ? "4px 6px" : "8px 10px", color: "#000", lineHeight: 1 }}>{pad(d)}</div>
+                <div style={{ fontSize: 10, fontWeight: 600, color: "#fff", opacity: 0.8, marginTop: 3 }}>D</div>
               </div>
               <div style={{ textAlign: "center" }}>
-                <div style={{ fontVariantNumeric: "tabular-nums", fontWeight: 900, fontSize: m ? 28 : 48, background: "rgba(255,255,255,0.2)", borderRadius: 8, padding: m ? "4px 6px" : "8px 10px", color: "#000", lineHeight: 1 }}>{pad(h)}</div>
-                <div style={{ fontSize: 10, fontWeight: 600, color: "#000", opacity: 0.6, marginTop: 3 }}>H</div>
+                <div style={{ fontVariantNumeric: "tabular-nums", fontWeight: 900, fontSize: m ? 28 : 48, background: "#000", borderRadius: 8, padding: m ? "4px 6px" : "8px 10px", color: "#000", lineHeight: 1 }}>{pad(h)}</div>
+                <div style={{ fontSize: 10, fontWeight: 600, color: "#fff", opacity: 0.8, marginTop: 3 }}>H</div>
               </div>
               <div style={{ textAlign: "center" }}>
-                <div style={{ fontVariantNumeric: "tabular-nums", fontWeight: 900, fontSize: m ? 28 : 48, background: "rgba(255,255,255,0.2)", borderRadius: 8, padding: m ? "4px 6px" : "8px 10px", color: "#000", lineHeight: 1 }}>{pad(mnt)}</div>
-                <div style={{ fontSize: 10, fontWeight: 600, color: "#000", opacity: 0.6, marginTop: 3 }}>M</div>
+                <div style={{ fontVariantNumeric: "tabular-nums", fontWeight: 900, fontSize: m ? 28 : 48, background: "#000", borderRadius: 8, padding: m ? "4px 6px" : "8px 10px", color: "#000", lineHeight: 1 }}>{pad(mnt)}</div>
+                <div style={{ fontSize: 10, fontWeight: 600, color: "#fff", opacity: 0.8, marginTop: 3 }}>M</div>
               </div>
               <div style={{ textAlign: "center" }}>
-                <div style={{ fontVariantNumeric: "tabular-nums", fontWeight: 900, fontSize: m ? 28 : 48, background: "rgba(255,255,255,0.2)", borderRadius: 8, padding: m ? "4px 6px" : "8px 10px", color: "#000", lineHeight: 1 }}>{pad(s)}</div>
-                <div style={{ fontSize: 10, fontWeight: 600, color: "#000", opacity: 0.6, marginTop: 3 }}>S</div>
+                <div style={{ fontVariantNumeric: "tabular-nums", fontWeight: 900, fontSize: m ? 28 : 48, background: "#000", borderRadius: 8, padding: m ? "4px 6px" : "8px 10px", color: "#000", lineHeight: 1 }}>{pad(s)}</div>
+                <div style={{ fontSize: 10, fontWeight: 600, color: "#fff", opacity: 0.8, marginTop: 3 }}>S</div>
               </div>
             </div>
           </div>
