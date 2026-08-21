@@ -164,6 +164,61 @@ function Agenda() {
   );
 }
 
+function WhoIsThisFor() {
+  const m = useM();
+  const roles = [
+    { icon: "👥", title: "Lab Managers", desc: "Running QA labs in manufacturing or R&D" },
+    { icon: "🔬", title: "Quality Directors", desc: "Ensuring testing compliance and reducing costs" },
+    { icon: "⚙️", title: "R&D Engineers", desc: "Developing new materials and formulations" },
+    { icon: "📊", title: "Operations Leaders", desc: "Optimizing lab throughput and efficiency" }
+  ];
+
+  const labs = [
+    { name: "Rubber & Elastomers", desc: "EPDM, natural rubber, synthetic elastomers" },
+    { name: "Plastics & Polymers", desc: "Nylon, PET, TPU, polycarbonate" },
+    { name: "Automotive Suppliers", desc: "Seals, hoses, gaskets, interior components" },
+    { name: "Aerospace Labs", desc: "High-performance composites and elastomers" },
+    { name: "Advanced Composites", desc: "Carbon fiber, fiberglass reinforced plastics" },
+    { name: "Contract Manufacturers", desc: "Multi-material testing & certification" }
+  ];
+
+  return (
+    <Wrap>
+      <H2>Who is this for?</H2>
+      <p style={{ marginTop: 12, fontSize: 16, lineHeight: 1.6, color: COLORS.muted, maxWidth: 680 }}>
+        This webinar is designed for labs that test elastomers, plastics, and composites—and want to cut manual work while improving data quality.
+      </p>
+
+      <div style={{ marginTop: m ? 40 : 56 }}>
+        <h3 style={{ fontSize: 18, fontWeight: 700, color: COLORS.ink, margin: 0, marginBottom: 24 }}>Key Roles</h3>
+        <div style={{ display: "grid", gridTemplateColumns: m ? "1fr" : "repeat(2, 1fr)", gap: m ? 20 : 28 }}>
+          {roles.map((role, i) => (
+            <div key={i} style={{ display: "flex", gap: 16 }}>
+              <div style={{ fontSize: 32, lineHeight: 1, flexShrink: 0 }}>{role.icon}</div>
+              <div>
+                <h4 style={{ fontSize: 16, fontWeight: 700, color: COLORS.ink, margin: 0, marginBottom: 4 }}>{role.title}</h4>
+                <p style={{ fontSize: 14, color: COLORS.muted, margin: 0, lineHeight: 1.5 }}>{role.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ marginTop: m ? 40 : 56 }}>
+        <h3 style={{ fontSize: 18, fontWeight: 700, color: COLORS.ink, margin: 0, marginBottom: 24 }}>Lab Types & Industries</h3>
+        <div style={{ display: "grid", gridTemplateColumns: m ? "1fr" : "repeat(3, 1fr)", gap: m ? 16 : 20 }}>
+          {labs.map((lab, i) => (
+            <div key={i} style={{ padding: "16px 18px", borderRadius: 12, background: COLORS.gray100, border: `1px solid ${COLORS.line}` }}>
+              <h4 style={{ fontSize: 15, fontWeight: 700, color: COLORS.ink, margin: 0, marginBottom: 6 }}>{lab.name}</h4>
+              <p style={{ fontSize: 13, color: COLORS.muted, margin: 0, lineHeight: 1.5 }}>{lab.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </Wrap>
+  );
+}
+
 function UpcomingWebinars() {
   const m = useM();
   const items = [
@@ -333,5 +388,5 @@ function RegisterSection() {
 }
 
 export default function App() {
-  return <div><TopBar /><Hero /><Agenda /><UpcomingWebinars /><RegisterSection /></div>;
+  return <div><TopBar /><Hero /><Agenda /><WhoIsThisFor /><UpcomingWebinars /><RegisterSection /></div>;
 }
