@@ -82,17 +82,47 @@ function TopBar() {
   const mnt = Math.floor((left % 3600000) / 60000);
   const s = Math.floor((left % 60000) / 1000);
   const pad = (n) => String(n).padStart(2, "0");
-  const pill = { fontVariantNumeric: "tabular-nums", fontWeight: 700, fontSize: 13, background: "rgba(255,255,255,0.08)", borderRadius: 6, padding: "4px 8px", color: "#fff" };
+  const pill = { fontVariantNumeric: "tabular-nums", fontWeight: 700, fontSize: 13, background: "rgba(255,255,255,0.15)", borderRadius: 6, padding: "6px 10px", color: "#000", fontWeight: 600 };
+
+  // Seats progress calculation
+  const seatsUsed = CONFIG.seatsTotal - CONFIG.seatsLeft;
+  const percentFilled = (seatsUsed / CONFIG.seatsTotal) * 100;
 
   return (
-    <div style={{ background: "#000", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
-      <div style={{ maxWidth: 1312, margin: "0 auto", padding: m ? "12px 20px" : "12px 64px", display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-          <span style={{ width: 7, height: 7, borderRadius: "50%", background: COLORS.teal }} />
-          <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.55)" }}>Starts in</span>
-          <div style={{ display: "flex", gap: 6 }}><span style={pill}>{pad(d)}d</span><span style={pill}>{pad(h)}h</span><span style={pill}>{pad(mnt)}m</span><span style={pill}>{pad(s)}s</span></div>
+    <div style={{ background: COLORS.teal, borderBottom: `3px solid ${COLORS.tealDeep}` }}>
+      <div style={{ maxWidth: 1312, margin: "0 auto", padding: m ? "20px" : "20px 64px" }}>
+        {/* Countdown Section */}
+        <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 16, marginBottom: 20 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+            <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#000" }} />
+            <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "#000", opacity: 0.7 }}>Starts in</span>
+            <div style={{ display: "flex", gap: 6 }}>
+              <span style={pill}>{pad(d)}d</span>
+              <span style={pill}>{pad(h)}h</span>
+              <span style={pill}>{pad(mnt)}m</span>
+              <span style={pill}>{pad(s)}s</span>
+            </div>
+          </div>
+          <div style={{ fontSize: 13, fontWeight: 600, color: "#000" }}>
+            <span style={{ opacity: 0.7 }}>Seats: </span>
+            <span style={{ fontWeight: 700 }}>{CONFIG.seatsLeft}</span>
+            <span style={{ opacity: 0.7 }}> / {CONFIG.seatsTotal}</span>
+          </div>
         </div>
-        <div style={{ fontSize: 13, fontWeight: 500, color: "rgba(255,255,255,0.7)" }}>Only <span style={{ color: COLORS.teal, fontWeight: 700 }}>{CONFIG.seatsLeft}</span> of {CONFIG.seatsTotal} seats remaining</div>
+
+        {/* Seats Progress Bar */}
+        <div style={{ width: "100%", height: 8, borderRadius: 10, background: "rgba(0,0,0,0.1)", overflow: "hidden" }}>
+          <div style={{
+            height: "100%",
+            width: `${percentFilled}%`,
+            background: `linear-gradient(90deg, ${COLORS.tealDeep} 0%, ${COLORS.teal} 100%)`,
+            transition: "width 0.3s ease",
+            borderRadius: 10
+          }} />
+        </div>
+        <div style={{ fontSize: 11, marginTop: 6, color: "#000", opacity: 0.6, fontWeight: 500 }}>
+          {seatsUsed} seats filled • {CONFIG.seatsLeft} remaining
+        </div>
       </div>
     </div>
   );
