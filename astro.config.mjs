@@ -9,5 +9,5 @@ export default defineConfig({
   site: SITE_URL,
   output: 'hybrid',
   adapter: netlify(),
-  integrations: [react(), sitemap()],
+  integrations: [react(), sitemap({ filter: (page) => !page.includes('/api/') })],
 });
