@@ -66,7 +66,7 @@ function H2({ children }) {
 
 function VideoPlaceholder({ label }) {
   return (
-    <div style={{ position: "relative", aspectRatio: "16/9", borderRadius: 20, overflow: "hidden", background: "linear-gradient(160deg, #1a1b1f, #000)", border: "1px solid rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+    <div style={{ position: "relative", width: "100%", aspectRatio: "16/9", borderRadius: 20, overflow: "hidden", background: "linear-gradient(160deg, #1a1b1f, #000)", border: "1px solid rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
       <span style={{ width: 72, height: 72, borderRadius: "50%", background: COLORS.teal, display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
         <svg width="24" height="24" viewBox="0 0 24 24" fill="#000"><path d="M8 5v14l11-7z" /></svg>
       </span>
@@ -131,7 +131,7 @@ function Hero() {
             <div><div style={{ fontSize: 14, fontWeight: 600 }}>{CONFIG.speakerName}</div><div style={{ fontSize: 12, fontWeight: 300, color: "rgba(255,255,255,0.5)" }}>{CONFIG.speakerTitle}</div></div>
           </div>
         </div>
-        <div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 0, minWidth: 0 }}>
           <VideoPlaceholder label="Webinar Preview" />
           <LogoSlider />
         </div>
