@@ -6,6 +6,6 @@ import { SITE_URL } from './src/site.mjs';
 // https://astro.build/config
 export default defineConfig({
   site: SITE_URL,
-  output: 'static',
+  output: 'hybrid',
   integrations: [react(), sitemap()],
 });
