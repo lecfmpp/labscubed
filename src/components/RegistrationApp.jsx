@@ -88,7 +88,7 @@ function TopBar() {
     <div style={{ background: COLORS.teal, borderBottom: `3px solid ${COLORS.tealDeep}` }}>
       <div style={{ maxWidth: 1312, margin: "0 auto", padding: m ? "16px 20px" : "16px 64px" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: m ? 6 : 8 }}>
-          <span style={{ fontSize: m ? 12 : 13, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "#fff", opacity: 0.9 }}>Starts in</span>
+          <span style={{ fontSize: m ? 12 : 13, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "#000", opacity: 0.9 }}>Starts in</span>
           <div style={{ display: "flex", gap: m ? 2 : 4 }}>
             <div style={{ textAlign: "center" }}>
               <div style={{ fontVariantNumeric: "tabular-nums", fontWeight: 900, fontSize: m ? 14 : 24, background: "#000", borderRadius: 6, padding: m ? "2px 3px" : "4px 6px", color: "#fff", lineHeight: 1 }}>{pad(d)}</div>
