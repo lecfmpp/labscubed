@@ -92,21 +92,6 @@ function Hero() {
   );
 }
 
-function OnDemand() {
-  const m = useM();
-  return (
-    <Wrap bg={COLORS.gray100}>
-      <div style={{ display: "grid", gridTemplateColumns: m ? "1fr" : "1fr 1fr", gap: m ? 28 : 56, alignItems: "center" }}>
-        <div>
-          <H2>Watch while you wait</H2>
-          <p style={{ marginTop: 16, fontSize: m ? 15 : 17, lineHeight: 1.6, fontWeight: 300, color: COLORS.muted, maxWidth: 440 }}>A short on-demand walkthrough of automated sample handling — a preview of what we'll cover live.</p>
-        </div>
-        <VideoPlaceholder label="On-Demand Preview" />
-      </div>
-    </Wrap>
-  );
-}
-
 function NextSteps() {
   const m = useM();
   const steps = [
@@ -135,5 +120,5 @@ function NextSteps() {
 }
 
 export default function App() {
-  return <div><Hero /><OnDemand /><NextSteps /></div>;
+  return <div><Hero /><NextSteps /></div>;
 }
