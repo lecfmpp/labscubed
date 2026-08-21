@@ -1,4 +1,5 @@
 import React from 'react';
+import LogoSlider from './LogoSlider.jsx';
 
 const CONFIG = {
   title: "Automating ASTM D638 & ISO 527 Tensile Testing",
@@ -86,7 +87,6 @@ function TopBar() {
   return (
     <div style={{ background: COLORS.teal, borderBottom: `3px solid ${COLORS.tealDeep}` }}>
       <div style={{ maxWidth: 1312, margin: "0 auto", padding: m ? "16px 20px" : "16px 64px" }}>
-        {/* Centered Countdown Timer */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: m ? 6 : 8 }}>
           <span style={{ fontSize: m ? 12 : 13, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "#fff", opacity: 0.9 }}>Starts in</span>
           <div style={{ display: "flex", gap: m ? 2 : 4 }}>
@@ -131,7 +131,10 @@ function Hero() {
             <div><div style={{ fontSize: 14, fontWeight: 600 }}>{CONFIG.speakerName}</div><div style={{ fontSize: 12, fontWeight: 300, color: "rgba(255,255,255,0.5)" }}>{CONFIG.speakerTitle}</div></div>
           </div>
         </div>
-        <VideoPlaceholder label="Webinar Preview" />
+        <div>
+          <VideoPlaceholder label="Webinar Preview" />
+          <LogoSlider />
+        </div>
       </div>
     </section>
   );
@@ -287,7 +290,6 @@ function RegisterSection() {
   return (
     <Wrap bg={COLORS.gray100}>
       <div id="register" style={{ display: "grid", gridTemplateColumns: m ? "1fr" : "1fr 1fr", gap: m ? 32 : 64, alignItems: "start" }}>
-        {/* Left side - Seats progress bar */}
         <div>
           <H2>Register for the webinar</H2>
           <div style={{ marginTop: 28, borderRadius: 16, background: "#fff", padding: 24, display: "flex", flexDirection: "column", gap: 16 }}>
@@ -295,7 +297,6 @@ function RegisterSection() {
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14 }}><span style={{ color: COLORS.muted }}>Time</span><span style={{ fontWeight: 600, color: COLORS.ink }}>{CONFIG.timeLabel}</span></div>
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14 }}><span style={{ color: COLORS.muted }}>Format</span><span style={{ fontWeight: 600, color: COLORS.ink }}>Live + recording</span></div>
             
-            {/* Seats Progress Bar on Left */}
             <div>
               <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, fontWeight: 600, marginBottom: 8, color: COLORS.ink }}>
                 <span>Seats Available</span>
@@ -318,7 +319,6 @@ function RegisterSection() {
           </div>
         </div>
 
-        {/* Right side - Registration form */}
         <form onSubmit={(e) => { e.preventDefault(); setShowModal(true); }} style={{ background: "#fff", borderRadius: 20, boxShadow: "0 1px 0 rgba(0,0,0,0.05), 0 20px 40px rgba(0,0,0,0.08)", padding: 32, display: "flex", flexDirection: "column", gap: 18 }}>
           {error && <div style={{ padding: "12px 14px", borderRadius: 10, background: "#fee", color: "#c33", fontSize: 14 }}>{error}</div>}
           <Field label="Full Name"><input type="text" required placeholder="Jane Doe" style={fieldInput} value={basic.name} onChange={set("name")} /></Field>
