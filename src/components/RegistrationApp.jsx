@@ -284,12 +284,12 @@ function DetailsModal({ onClose, onComplete }) {
         </div>
         <form onSubmit={handleSubmit} style={{ marginTop: 26, display: "flex", flexDirection: "column", gap: 18 }}>
           {error && <div style={{ padding: "12px 14px", borderRadius: 10, background: "#fee", color: "#c33", fontSize: 14 }}>{error}</div>}
-          <Field label="Company Website"><input type="url" required placeholder="https://yourcompany.com" style={fieldInput} value={d.website} onChange={set("website")} /></Field>
+          <Field label="Company Website"><div style={{ position: "relative" }}><div style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", fontSize: 14, fontWeight: 600, color: COLORS.muted, pointerEvents: "none" }}>https://</div><input type="text" required placeholder="yourcompany.com" style={{ ...fieldInput, paddingLeft: 90 }} value={d.website} onChange={set("website")} /></div></Field>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
             <Field label="Role"><select required style={fieldInput} value={d.role} onChange={set("role")}><option value="" disabled>Select role</option><option>Lab Manager</option><option>Quality Director</option><option>R&D Engineer</option><option>VP Operations</option><option>Plant Manager</option><option>Other</option></select></Field>
             <Field label="Industry"><select required style={fieldInput} value={d.industry} onChange={set("industry")}><option value="" disabled>Select industry</option><option>Rubber & Elastomers</option><option>Plastics & Polymers</option><option>Automotive</option><option>Aerospace</option><option>Composites</option><option>Other</option></select></Field>
           </div>
-          <Field label="Materials You Test"><input type="text" required placeholder="e.g. EPDM, Nylon 66, TPU" style={fieldInput} value={d.materials} onChange={set("materials")} /></Field>
+          <Field label="Materials You Test"><input type="text" placeholder="e.g. EPDM, Nylon 66, TPU" style={fieldInput} value={d.materials} onChange={set("materials")} /></Field>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
             <Field label="Daily Test Volume"><select required style={fieldInput} value={d.volume} onChange={set("volume")}><option value="" disabled>Select range</option><option>1–10 samples/day</option><option>11–50 samples/day</option><option>51–150 samples/day</option><option>150+ samples/day</option></select></Field>
             <Field label="Laboratory Location"><input type="text" required placeholder="City, Country" style={fieldInput} value={d.location} onChange={set("location")} /></Field>
@@ -316,7 +316,8 @@ function RegisterSection() {
   async function complete(details) {
     setIsSubmitting(true);
     setError("");
-    const payload = { ...basic, ...details, webinar: CONFIG.title, timestamp: new Date().toISOString() };
+    const website = details.website.startsWith('http') ? details.website : `https://${details.website}`;
+    const payload = { ...basic, ...details, website, webinar: CONFIG.title, timestamp: new Date().toISOString() };
     try {
       console.log("Submitting to:", CONFIG.submitEndpoint);
       const response = await fetch(CONFIG.submitEndpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
