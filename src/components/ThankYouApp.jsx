@@ -44,22 +44,36 @@ function VideoPlaceholder({ label }) {
 
 function Hero() {
   const m = useM();
+  const calendarButtons = [
+    { name: "Google", href: CONFIG.calendarLinks.google, logo: "G", color: "#4285F4" },
+    { name: "Outlook", href: CONFIG.calendarLinks.outlook, logo: "O", color: "#0078D4" },
+    { name: "Apple", href: CONFIG.calendarLinks.apple, logo: "A", color: "#555" }
+  ];
+
   return (
     <section style={{ background: "#000", color: "#fff" }}>
-      <div style={{ maxWidth: 900, margin: "0 auto", padding: m ? "56px 20px 48px" : "88px 64px 64px", textAlign: "center" }}>
-        <span style={{ width: 56, height: 56, borderRadius: "50%", background: COLORS.teal, display: "inline-flex", alignItems: "center", justifyContent: "center", marginBottom: 24 }}>
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4 10-11" stroke="#000" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
-        </span>
-        <h1 style={{ fontWeight: 700, fontSize: m ? 32 : 48, letterSpacing: "-0.02em", lineHeight: 1.1, margin: 0 }}>You're registered.</h1>
-        <p style={{ margin: "18px auto 0", maxWidth: 520, fontWeight: 300, fontSize: m ? 15 : 18, lineHeight: 1.55, color: "rgba(255,255,255,0.55)" }}>A confirmation email with your calendar invite and join link is on its way to your inbox.</p>
-        <div style={{ marginTop: 32, display: "inline-flex", flexDirection: "column", gap: 6, padding: "18px 28px", borderRadius: 14, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}>
-          <span style={{ fontWeight: 600, fontSize: 15 }}>{CONFIG.title}</span>
-          <span style={{ fontSize: 13, color: "rgba(255,255,255,0.5)" }}>{CONFIG.dateLabel} · {CONFIG.timeLabel}</span>
+      <div style={{ maxWidth: 1312, margin: "0 auto", padding: m ? "48px 20px 64px" : "80px 64px 100px", display: "grid", gridTemplateColumns: m ? "1fr" : "1fr 1fr", gap: m ? 32 : 56, alignItems: "center" }}>
+        <div>
+          <span style={{ width: 56, height: 56, borderRadius: "50%", background: COLORS.teal, display: "inline-flex", alignItems: "center", justifyContent: "center", marginBottom: 24 }}>
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4 10-11" stroke="#000" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          </span>
+          <h1 style={{ fontWeight: 700, fontSize: m ? 32 : 48, letterSpacing: "-0.02em", lineHeight: 1.1, margin: 0 }}>You're registered.</h1>
+          <p style={{ margin: "18px 0 0", maxWidth: 480, fontWeight: 300, fontSize: m ? 15 : 18, lineHeight: 1.55, color: "rgba(255,255,255,0.55)" }}>A confirmation email with your calendar invite and join link is on its way to your inbox.</p>
+          <div style={{ marginTop: 32, flexDirection: "column", gap: 6, padding: "18px 22px", borderRadius: 14, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", display: "flex" }}>
+            <span style={{ fontWeight: 600, fontSize: 15 }}>{CONFIG.title}</span>
+            <span style={{ fontSize: 13, color: "rgba(255,255,255,0.5)" }}>{CONFIG.dateLabel} · {CONFIG.timeLabel}</span>
+          </div>
+          <div style={{ display: "flex", gap: 12, marginTop: 28, flexWrap: "wrap" }}>
+            {calendarButtons.map((btn) => (
+              <a key={btn.name} href={btn.href} target="_blank" rel="noopener noreferrer" style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 500, color: "#fff", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 999, padding: "10px 16px", textDecoration: "none", transition: "all 0.2s" }}>
+                <div style={{ width: 18, height: 18, borderRadius: 4, background: btn.color, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: "#fff" }}>{btn.logo}</div>
+                <span>{btn.name}</span>
+              </a>
+            ))}
+          </div>
         </div>
-        <div style={{ display: "flex", justifyContent: "center", gap: 12, marginTop: 28, flexWrap: "wrap" }}>
-          <a href={CONFIG.calendarLinks.google} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, fontWeight: 500, color: "#fff", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 999, padding: "10px 18px", textDecoration: "none" }}>Google Calendar</a>
-          <a href={CONFIG.calendarLinks.outlook} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, fontWeight: 500, color: "#fff", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 999, padding: "10px 18px", textDecoration: "none" }}>Outlook</a>
-          <a href={CONFIG.calendarLinks.apple} style={{ fontSize: 13, fontWeight: 500, color: "#fff", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 999, padding: "10px 18px", textDecoration: "none" }}>Apple Calendar</a>
+        <div style={{ display: "flex", flexDirection: "column", gap: 0, minWidth: 0 }}>
+          <VideoPlaceholder label="Event Preview" />
         </div>
       </div>
     </section>
