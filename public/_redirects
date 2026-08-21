@@ -2,6 +2,11 @@
 # (/_astro/*, /assets/*, /uploads/*, /robots.txt, /sitemap*.xml) are real files,
 # so Netlify serves them directly — the rule below never touches them.
 #
+# /api/* is served by this site's own Netlify Functions. It MUST stay above the
+# catch-all below: the first matching rule wins, and without this the webinar
+# registration POST is proxied to Webflow, which answers 405 Not Allowed.
+/api/webinar/register  /.netlify/functions/webinar-register  200
+
 # Every OTHER path is invisibly proxied (status 200 = rewrite, not redirect) to
 # the Webflow site published at site.labscubed.com, so all existing
 # labscubed.com/... pages keep working at the exact same URLs.
