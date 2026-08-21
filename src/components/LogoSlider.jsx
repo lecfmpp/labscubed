@@ -38,19 +38,25 @@ const LogoSlider = () => {
             alignItems: 'center',
             height: 50,
           }}>
-            <img 
-              src={logo.src} 
+            <img
+              src={logo.src}
               alt={logo.alt}
               style={{
                 height: 40,
                 width: 'auto',
                 objectFit: 'contain',
-                filter: 'grayscale(1)',
-                opacity: 0.6,
-                transition: 'opacity 0.3s ease',
+                filter: 'grayscale(1) brightness(1.3) invert(1)',
+                opacity: 0.7,
+                transition: 'opacity 0.3s ease, filter 0.3s ease',
               }}
-              onMouseEnter={(e) => e.target.style.opacity = '1'}
-              onMouseLeave={(e) => e.target.style.opacity = '0.6'}
+              onMouseEnter={(e) => {
+                e.target.style.opacity = '1';
+                e.target.style.filter = 'grayscale(0.5) brightness(1.4) invert(1)';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.opacity = '0.7';
+                e.target.style.filter = 'grayscale(1) brightness(1.3) invert(1)';
+              }}
             />
           </div>
         ))}
