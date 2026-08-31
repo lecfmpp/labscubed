@@ -9,7 +9,7 @@ import Footer from '../../../components/Footer.astro';
   {/* No countdown bar here — they have already registered. The header still
       sticks, matching the registration page. */}
   <div class="lc-sticky-top">
-    <Nav client:load inFlow />
+    <Nav client:load inFlow showQuote={false} />
   </div>
   <main class="lc-page">
     <ThankYouApp client:only="react" />

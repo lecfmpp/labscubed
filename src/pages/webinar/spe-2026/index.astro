@@ -13,7 +13,7 @@ import Footer from '../../../components/Footer.astro';
       readable once the page scrolls past the dark hero. */}
   <div class="lc-sticky-top">
     <WebinarTopBar client:only="react" />
-    <Nav client:load inFlow />
+    <Nav client:load inFlow showQuote={false} />
   </div>
   <main class="lc-page">
     <RegistrationApp client:only="react" />

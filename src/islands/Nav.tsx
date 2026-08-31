@@ -18,12 +18,15 @@ const resourceLinks: [string, string][] = [
 ];
 const QUOTE = 'https://www.labscubed.com/get-a-quote';
 
-/* `inFlow` takes the bar out of overlay mode. By default it is absolutely
+/* `showQuote` hides the Get a Quote button. The webinar funnel turns it off so
+   the page carries exactly one call to action — registering.
+
+   `inFlow` takes the bar out of overlay mode. By default it is absolutely
    positioned so it floats transparently over the dark hero (the homepage).
    Pages that stack it under something else — e.g. the webinar countdown bar —
    pass inFlow so the two sit one above the other instead of on top of each
    other. */
-export default function Nav({ inFlow = false }: { inFlow?: boolean }) {
+export default function Nav({ inFlow = false, showQuote = true }: { inFlow?: boolean; showQuote?: boolean }) {
   const m = useIsMobile();
   const [open, setOpen] = React.useState(false);
   const [resOpen, setResOpen] = React.useState(false);
@@ -51,7 +54,7 @@ export default function Nav({ inFlow = false }: { inFlow?: boolean }) {
             {resourceLinks.map(([l, href]) => (
               <a key={l} href={href} style={{ color: "rgba(255,255,255,0.85)", fontSize: 15, textDecoration: "none", padding: "10px 0 10px 12px", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>{l}</a>
             ))}
-            <div style={{ marginTop: 16 }}><Button variant="primary" size="sm" href={QUOTE}>Get a Quote</Button></div>
+            {showQuote && <div style={{ marginTop: 16 }}><Button variant="primary" size="sm" href={QUOTE}>Get a Quote</Button></div>}
           </div>
         )}
       </div>
@@ -82,7 +85,7 @@ export default function Nav({ inFlow = false }: { inFlow?: boolean }) {
             </div>
           </div>
         </nav>
-        <Button variant="primary" size="sm" href={QUOTE}>Get a Quote</Button>
+        {showQuote && <Button variant="primary" size="sm" href={QUOTE}>Get a Quote</Button>}
       </div>
     </div>
   );
