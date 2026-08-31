@@ -118,7 +118,11 @@ function Hero() {
   const scrollToForm = scrollToRegister;
 
   const badge = (
-    <span style={{ display: "inline-block", fontSize: m ? 11 : 12, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", padding: "6px 12px", borderRadius: 999, background: "rgba(255,255,255,0.1)", color: "#fff" }}>{CONFIG.badgeLabel}</span>
+    <span style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: m ? 11 : 12, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", padding: m ? "7px 13px" : "8px 15px", borderRadius: 999, background: "#dc2626", color: "#fff" }}>
+      {/* White dot, not red — a red dot on a red pill would be invisible. */}
+      <span className="lc-live-dot" style={{ width: 7, height: 7, borderRadius: "50%", background: "#fff", flexShrink: 0 }} />
+      Live webinar
+    </span>
   );
   const headline = (
     <h1 style={{ fontWeight: 700, fontSize: m ? 30 : 56, lineHeight: 1.1, letterSpacing: "-0.02em", margin: m ? "16px 0 0" : "20px 0 0" }}>{CONFIG.title}</h1>
@@ -150,9 +154,18 @@ function Hero() {
     </div>
   );
 
+  const livePulse = (
+    <style>{`
+      .lc-live-dot { animation: lcLivePulse 1.8s ease-in-out infinite; }
+      @keyframes lcLivePulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+      @media (prefers-reduced-motion: reduce) { .lc-live-dot { animation: none; } }
+    `}</style>
+  );
+
   if (m) {
     return (
       <section style={{ background: "#000", color: "#fff" }}>
+        {livePulse}
         <div style={{ padding: "32px 20px 48px", display: "flex", flexDirection: "column", gap: 20 }}>
           <div>{badge}{headline}</div>
           {media}
@@ -167,6 +180,7 @@ function Hero() {
 
   return (
     <section style={{ background: "#000", color: "#fff" }}>
+      {livePulse}
       <div style={{ maxWidth: 1312, margin: "0 auto", padding: "72px 64px 100px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 56, alignItems: "center" }}>
         <div>
           {badge}

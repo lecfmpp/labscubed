@@ -63,7 +63,6 @@ export const WEBINARS = {
     title: "The Hidden Cost of Manual Plastics Testing",
     dateLabel: "Tuesday, October 20, 2026",
     timeLabel: "11:00 AM EST · 50 minutes, including Q&A",
-    badgeLabel: "Webinar · October 20",
     startUTC: "2026-10-20T15:00:00Z",
     endUTC: "2026-10-20T15:50:00Z",
     heroCopy:
@@ -117,7 +116,6 @@ export const WEBINARS = {
     title: "Automation, AI and Industry 4.0 in the Testing Lab",
     dateLabel: "Wednesday, November 18, 2026",
     timeLabel: "11:00 AM EST · 50 minutes, including Q&A",
-    badgeLabel: "Webinar · November 18",
     startUTC: "2026-11-18T16:00:00Z",
     endUTC: "2026-11-18T16:50:00Z",
     heroCopy:
