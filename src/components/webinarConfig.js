@@ -107,6 +107,9 @@ export const WEBINARS = {
     // placeholder.
     heroVideoUrl: null,
     onDemandVideoUrl: "https://www.youtube.com/embed/EA0jUa83Qjs",
+    // Set once the session has aired and the recording is up; until then the
+    // hub shows "recording coming soon" for a past webinar.
+    recordingUrl: null,
     // Cross-promoted on the registration page and the thank-you page.
     nextWebinarSlug: "automation-ai-nov-2026",
   }),
@@ -157,6 +160,7 @@ export const WEBINARS = {
     exploreCtaHref: "https://labscubed.com/plastic-testing",
     heroVideoUrl: null,
     onDemandVideoUrl: "https://www.youtube.com/embed/EA0jUa83Qjs",
+    recordingUrl: null,
     nextWebinarSlug: null,
   }),
 };

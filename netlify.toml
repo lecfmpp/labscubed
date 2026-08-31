@@ -37,3 +37,11 @@
   for = "/webinar/*"
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
+
+# The hub itself, which the glob above does not cover. This path was proxied to
+# Webflow until now, so an edge-cached answer from before could otherwise
+# outlive the page.
+[[headers]]
+  for = "/webinar"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"

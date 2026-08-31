@@ -1,0 +1,186 @@
+---
+// Webinar hub — everything scheduled, and every recording.
+//
+// Both lists come from the registry in webinarConfig, so adding a webinar there
+// puts it here automatically. The upcoming/past split is decided at build time
+// from startUTC; a small inline script re-checks it in the browser so a session
+// that has aired since the last deploy cannot keep showing a Register button.
+import Base from '../../layouts/Base.astro';
+import Nav from '../../islands/Nav.tsx';
+import Footer from '../../components/Footer.astro';
+import { WEBINARS, youTubeId } from '../../components/webinarConfig.js';
+
+const all = Object.values(WEBINARS).sort(
+  (a, b) => new Date(a.startUTC) - new Date(b.startUTC),
+);
+const now = Date.now();
+const upcoming = all.filter((w) => new Date(w.startUTC).getTime() > now);
+const past = all
+  .filter((w) => new Date(w.startUTC).getTime() <= now)
+  .reverse();
+---
+
+<Base
+  title="Webinars — LabsCubed"
+  description="Live LabsCubed webinars on automated tensile testing, plus recordings of past sessions. Automation, data quality and Industry 4.0 for polymer and elastomer labs."
+>
+  <Nav client:load />
+
+  <main class="lc-page wh">
+    <section class="wh-hero">
+      <div class="wh-inner">
+        <span class="wh-badge">Webinars</span>
+        <h1 class="wh-h1">Live sessions and recordings</h1>
+        <p class="wh-lede">
+          Practical sessions on automated tensile testing — where manual work costs you
+          time and consistency, and what automation changes. Join live to ask questions,
+          or catch up on a recording.
+        </p>
+      </div>
+    </section>
+
+    <section class="wh-sec">
+      <div class="wh-inner">
+        <h2 class="wh-h2">Upcoming</h2>
+        {upcoming.length === 0 ? (
+          <p class="wh-empty">
+            No live sessions scheduled right now — the recordings below are all available
+            on demand.
+          </p>
+        ) : (
+          <div class="wh-list">
+            {upcoming.map((w) => (
+              <article class="wh-card" data-start={w.startUTC}>
+                <div class="wh-when">
+                  <span class="wh-date">{w.dateLabel}</span>
+                  <span class="wh-time">{w.timeLabel}</span>
+                </div>
+                <div class="wh-body">
+                  <h3 class="wh-title">{w.title}</h3>
+                  <p class="wh-desc">{w.heroCopy}</p>
+                  <div class="wh-speaker">{w.speakerName} · {w.speakerTitle}</div>
+                </div>
+                <div class="wh-action">
+                  <a class="wh-btn" href={w.registrationUrl} data-register>Save my seat</a>
+                  <span class="wh-aired" hidden>This session has aired — recording coming soon.</span>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
+
+    <section class="wh-sec wh-sec-alt">
+      <div class="wh-inner">
+        <h2 class="wh-h2">Watch on demand</h2>
+        {past.length === 0 ? (
+          <p class="wh-empty">
+            Recordings appear here after each session airs.
+          </p>
+        ) : (
+          <div class="wh-grid">
+            {past.map((w) => {
+              const id = youTubeId(w.recordingUrl);
+              return (
+                <article class="wh-rec">
+                  <div class="wh-rec-media">
+                    {id ? (
+                      <iframe
+                        src={`https://www.youtube.com/embed/${id}`}
+                        title={w.title}
+                        loading="lazy"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        referrerpolicy="strict-origin-when-cross-origin"
+                        allowfullscreen
+                      ></iframe>
+                    ) : (
+                      <div class="wh-rec-soon">
+                        <span class="wh-rec-soon-dot"></span>
+                        Recording coming soon
+                      </div>
+                    )}
+                  </div>
+                  <div class="wh-rec-body">
+                    <span class="wh-rec-date">{w.dateLabel}</span>
+                    <h3 class="wh-rec-title">{w.title}</h3>
+                    <p class="wh-rec-desc">{w.heroCopy}</p>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Base>
+
+<script is:inline>
+  /* The upcoming/past split above is baked in at build time. If a session has
+     aired since the last deploy, swap its Register button for a note rather
+     than inviting registration to an event that has already happened. */
+  for (const card of document.querySelectorAll('.wh-card[data-start]')) {
+    if (new Date(card.dataset.start).getTime() > Date.now()) continue;
+    const register = card.querySelector('[data-register]');
+    const aired = card.querySelector('.wh-aired');
+    if (register) register.hidden = true;
+    if (aired) aired.hidden = false;
+  }
+</script>
+
+<style>
+  .wh-inner { max-width: 1312px; margin: 0 auto; padding: 0 64px; box-sizing: border-box; }
+
+  .wh-hero { background: #000; color: #fff; padding: 96px 0 88px; }
+  .wh-badge { display: inline-flex; background: rgba(255,255,255,0.1); color: #fff; border-radius: 4px; padding: 5px 12px; font-weight: 700; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; line-height: 1; }
+  .wh-h1 { font-weight: 700; font-size: 56px; letter-spacing: -0.03em; line-height: 1.08; margin: 20px 0 0; max-width: 780px; }
+  .wh-lede { margin: 20px 0 0; max-width: 620px; font-weight: 300; font-size: 18px; line-height: 1.55; color: rgba(255,255,255,0.55); }
+
+  .wh-sec { padding: 88px 0; background: #fff; }
+  .wh-sec-alt { background: var(--lc-gray-100); }
+  .wh-h2 { font-weight: 700; font-size: 40px; letter-spacing: -0.03em; line-height: 1.1; margin: 0 0 36px; color: var(--lc-ink); }
+  .wh-empty { margin: 0; font-weight: 300; font-size: 17px; line-height: 1.6; color: var(--text-muted); max-width: 620px; }
+
+  .wh-list { display: flex; flex-direction: column; }
+  .wh-card { display: grid; grid-template-columns: 210px 1fr auto; gap: 32px; align-items: center; padding: 28px 0; border-top: 1px solid var(--lc-line); }
+  .wh-card:last-child { border-bottom: 1px solid var(--lc-line); }
+  .wh-when { display: flex; flex-direction: column; gap: 4px; }
+  .wh-date { font-size: 14px; font-weight: 600; color: var(--lc-ink); }
+  .wh-time { font-size: 13px; font-weight: 300; color: var(--text-muted); }
+  .wh-title { margin: 0; font-weight: 600; font-size: 21px; letter-spacing: -0.01em; color: var(--lc-ink); }
+  .wh-desc { margin: 8px 0 0; max-width: 620px; font-weight: 300; font-size: 15px; line-height: 1.55; color: var(--text-muted); }
+  .wh-speaker { margin-top: 10px; font-size: 13px; font-weight: 500; color: var(--lc-teal-deep); }
+  .wh-action { display: flex; align-items: center; }
+  .wh-btn { display: inline-block; white-space: nowrap; background: var(--lc-teal, #17ddc5); color: #000; border-radius: 999px; padding: 12px 24px; font-weight: 600; font-size: 13px; text-decoration: none; }
+  .wh-aired { font-size: 13px; font-weight: 500; color: var(--text-muted); max-width: 190px; }
+
+  .wh-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 32px; }
+  .wh-rec { background: #fff; border: 1px solid var(--lc-line); border-radius: 20px; overflow: hidden; box-shadow: 0 1px 0 rgba(0,0,0,0.04); }
+  .wh-rec-media { position: relative; width: 100%; aspect-ratio: 16 / 9; background: #000; }
+  .wh-rec-media iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .wh-rec-soon { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 10px; background: linear-gradient(160deg, #1a1b1f, #000); color: rgba(255,255,255,0.55); font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+  .wh-rec-soon-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--lc-teal, #17ddc5); }
+  .wh-rec-body { padding: 22px 26px 26px; }
+  .wh-rec-date { font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--lc-teal-deep); }
+  .wh-rec-title { margin: 8px 0 0; font-weight: 600; font-size: 20px; letter-spacing: -0.01em; color: var(--lc-ink); }
+  .wh-rec-desc { margin: 8px 0 0; font-weight: 300; font-size: 14.5px; line-height: 1.55; color: var(--text-muted); }
+
+  @media (max-width: 980px) {
+    .wh-grid { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 760px) {
+    .wh-inner { padding: 0 20px; }
+    .wh-hero { padding: 56px 0 48px; }
+    .wh-h1 { font-size: 32px; }
+    .wh-lede { font-size: 15px; }
+    .wh-sec { padding: 56px 0; }
+    .wh-h2 { font-size: 28px; margin-bottom: 24px; }
+    .wh-card { grid-template-columns: 1fr; gap: 14px; align-items: flex-start; padding: 24px 0; }
+    .wh-when { flex-direction: row; align-items: baseline; gap: 10px; }
+    .wh-title { font-size: 18px; }
+  }
+</style>
