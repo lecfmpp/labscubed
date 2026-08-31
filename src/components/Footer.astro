@@ -15,6 +15,13 @@ const cols = [
   { h: 'Help', items: [['FAQs', 'https://www.labscubed.com/#faqs'], ['Get a Quote', 'https://www.labscubed.com/get-a-quote']] },
   { h: 'Access', items: [['Request Demo', 'https://www.labscubed.com/get-a-quote'], ['Privacy Policy', 'https://www.labscubed.com/privacy-policy']] },
 ];
+
+/* With the CTA off, drop every link that points at the quote page from the
+   columns too, so the funnel pages carry no route to a quote anywhere. Filtered
+   on href rather than label because "Request Demo" points there as well. */
+const columns = showCta
+  ? cols
+  : cols.map((c) => ({ ...c, items: c.items.filter(([, href]) => !href.includes('get-a-quote')) }));
 ---
 <footer class="ft">
   <div class="ft-inner">
@@ -29,7 +36,7 @@ const cols = [
       <div class="ft-logo-col">
         <img src="/assets/img/logo.webp" alt="LabsCubed" class="ft-logo" width="419" height="104" />
       </div>
-      {cols.map((c) => (
+      {columns.map((c) => (
         <div class="ft-col">
           <div class="ft-col-h">{c.h}</div>
           {c.items.map(([label, href]) => <a href={href} class="lc-footlink ft-link">{label}</a>)}
