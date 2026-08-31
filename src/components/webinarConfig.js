@@ -8,7 +8,7 @@
 // label says "EST" because that is how the audience reads it, but the machine
 // times below are the true local-11am instants.
 const startUTC = "2026-10-20T15:00:00Z";
-const endUTC = "2026-10-20T16:00:00Z";
+const endUTC = "2026-10-20T15:50:00Z";
 
 // Path slug. The funnel lives at /webinar/<slug>/ so the URL states both that
 // it is a webinar and which one — reused for every future webinar.
@@ -23,7 +23,7 @@ export const CONFIG = {
   slug,
   title,
   dateLabel: "Tuesday, October 20, 2026",
-  timeLabel: "11:00 AM EST · 60 minutes",
+  timeLabel: "11:00 AM EST · 50 minutes, including Q&A",
   targetISO: startUTC,
   startUTC,
   endUTC,
@@ -33,6 +33,8 @@ export const CONFIG = {
   speakerTitle: "CEO and Founder, LabsCubed",
   speakerInitials: "KB",
   speakerPhoto: "/assets/img/team/khaled-boqaileh.webp",
+  speakerBio:
+    "Khaled Boqaileh is the co-founder and CEO of LabsCubed, a company founded seven years ago. His motivation to start the company came during his master's degree in material development, where he spent countless hours performing repetitive and tedious testing in the lab. Determined to eliminate redundant and error-prone work, Khaled built LabsCubed to provide innovative automation and software solutions that make advanced lab technology accessible to all.",
   // Trailing slashes on purpose — without them Netlify answers a 301 first.
   registrationUrl: `/webinar/${slug}/`,
   thankYouUrl: `/webinar/${slug}/thank-you/`,

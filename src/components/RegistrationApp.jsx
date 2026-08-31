@@ -169,6 +169,40 @@ function Agenda() {
   );
 }
 
+/* Speaker bio. Sits between the agenda and the audience section so the "who is
+   telling me this" question is answered before the "is this for me" one. */
+function Speaker() {
+  const m = useM();
+  const badge = {
+    display: "inline-flex",
+    background: COLORS.gray100,
+    color: COLORS.muted,
+    borderRadius: 4,
+    padding: "5px 12px",
+    fontWeight: 700,
+    fontSize: 11,
+    letterSpacing: "0.2em",
+    textTransform: "uppercase",
+    lineHeight: 1,
+  };
+
+  return (
+    <section style={{ background: "#fff" }}>
+      <div style={{ maxWidth: 1312, margin: "0 auto", padding: m ? "48px 20px" : "72px 64px" }}>
+        <span style={badge}>Your speaker</span>
+        <div style={{ marginTop: m ? 22 : 28, display: "grid", gridTemplateColumns: m ? "1fr" : "auto 1fr", gap: m ? 20 : 36, alignItems: "start" }}>
+          <SpeakerAvatar size={m ? 88 : 132} />
+          <div>
+            <h3 style={{ fontWeight: 700, fontSize: m ? 22 : 28, letterSpacing: "-0.02em", color: COLORS.ink, margin: 0 }}>{CONFIG.speakerName}</h3>
+            <div style={{ marginTop: 4, fontSize: m ? 14 : 15, fontWeight: 500, color: COLORS.tealDeep }}>{CONFIG.speakerTitle}</div>
+            <p style={{ margin: "16px 0 0", maxWidth: 720, fontWeight: 300, fontSize: m ? 15 : 16.5, lineHeight: 1.65, color: COLORS.muted }}>{CONFIG.speakerBio}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 /* Compact audience section. Uses two design-system primitives rather than
    bespoke ornament: the bordered card (.lc-icard) for the four roles, and the
    subtle uppercase chip (.lc-badge-subtle) for the industry list. No icons —
@@ -468,5 +502,5 @@ function RegisterSection() {
 }
 
 export default function App() {
-  return <div><Hero /><Agenda /><WhoIsThisFor /><UpcomingWebinars /><RegisterSection /></div>;
+  return <div><Hero /><Agenda /><Speaker /><WhoIsThisFor /><UpcomingWebinars /><RegisterSection /></div>;
 }

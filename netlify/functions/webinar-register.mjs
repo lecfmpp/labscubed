@@ -68,8 +68,14 @@ export default async (request) => {
       console.error('Resend sync failed:', syncError);
     }
   } else {
-    syncError = 'RESEND_API_KEY not set';
-    console.log('RESEND_API_KEY not set — skipping Resend');
+    // Name-only diagnostic (never values), so a misconfigured Netlify variable
+    // is visible in the stored row instead of needing another deploy to find.
+    const visible = Object.keys(process.env)
+      .filter((k) => /RESEND|SUPABASE|WEBINAR/i.test(k))
+      .sort()
+      .join(',');
+    syncError = `RESEND_API_KEY not set (visible: ${visible || 'none'})`;
+    console.log(syncError);
   }
 
   let stored = false;
