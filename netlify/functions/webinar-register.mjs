@@ -6,15 +6,23 @@
 // untouched, and the /api/webinar/register rule in _redirects (which sits
 // ABOVE the catch-all) is what stops the POST being handed to Webflow.
 //
-// Registrants go to Resend, added to a per-webinar segment so each webinar has
-// its own list. Sync is best-effort: until RESEND_API_KEY is set in the Netlify
-// environment the registration is only logged, and the caller still gets a 200
-// so the funnel works end to end. A Resend outage must never cost us a signup.
+// A registration goes to two places:
+//   1. Resend  — a per-webinar segment, for sending.
+//   2. Supabase — public.webinar_registrations, tagged with the webinar slug,
+//                 as the durable record.
+//
+// Supabase is written LAST and always, including when Resend failed, so the
+// registration survives a marketing-tool outage and the failure is visible in
+// the row rather than only in the logs. Neither sync can cost us a signup: the
+// visitor gets a 200 as long as their input was valid.
 
 const REQUIRED = ['name', 'email', 'company', 'website', 'role', 'industry', 'volume', 'location'];
 
-// Resend segment "Webinar: SPE 2026". One segment per webinar — a new webinar
-// means a new segment id here, alongside the new slug in webinarConfig.js.
+// Per-webinar identity. A new webinar means new values here and a new Resend
+// segment — everything else, including the Supabase tagging, follows from the
+// slug. Both are overridable by environment so a webinar can be switched
+// without a deploy.
+const WEBINAR_SLUG = process.env.WEBINAR_SLUG || 'spe-2026';
 const SEGMENT_ID = process.env.RESEND_WEBINAR_SEGMENT_ID || 'd7b053f5-67b3-4747-807e-1e8db27c45a1';
 
 const json = (status, body) =>
@@ -44,24 +52,36 @@ export default async (request) => {
   console.log('Webinar registration:', {
     email: data.email,
     company: data.company,
-    webinar: data.webinar,
+    webinar: WEBINAR_SLUG,
   });
 
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) {
-    console.log('RESEND_API_KEY not set — skipping list sync');
-    return json(200, { success: true, synced: false });
+  let resendSynced = false;
+  let syncError = null;
+
+  const resendKey = process.env.RESEND_API_KEY;
+  if (resendKey) {
+    try {
+      await addToResend(data, resendKey);
+      resendSynced = true;
+    } catch (error) {
+      syncError = String(error);
+      console.error('Resend sync failed:', syncError);
+    }
+  } else {
+    syncError = 'RESEND_API_KEY not set';
+    console.log('RESEND_API_KEY not set — skipping Resend');
   }
 
+  let stored = false;
   try {
-    await addToResend(data, apiKey);
-    return json(200, { success: true, synced: true });
+    stored = await recordInSupabase(data, resendSynced, syncError);
   } catch (error) {
-    // Log the whole payload so a failed sync can be replayed by hand rather
-    // than lost.
-    console.error('Resend sync failed:', error, JSON.stringify(data));
-    return json(200, { success: true, synced: false });
+    // Both destinations are down. Log the whole payload as the last resort so
+    // the registration can be replayed by hand rather than lost.
+    console.error('Supabase write failed:', error, JSON.stringify(data));
   }
+
+  return json(200, { success: true, synced: resendSynced, stored });
 };
 
 async function addToResend(data, apiKey) {
@@ -111,4 +131,52 @@ async function addToResend(data, apiKey) {
   }
 
   return contact.json();
+}
+
+async function recordInSupabase(data, resendSynced, syncError) {
+  const url = process.env.SUPABASE_URL;
+  // The RPC is granted to anon, so the publishable key is enough; the service
+  // key is preferred when present.
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_KEY;
+
+  if (!url || !key) {
+    console.log('SUPABASE_URL/KEY not set — skipping Supabase');
+    return false;
+  }
+
+  // Writes go through a security-definer RPC rather than the table, so the
+  // table itself stays closed to anon and the only exposed surface is a single
+  // upsert of one row.
+  const response = await fetch(`${url}/rest/v1/rpc/record_webinar_registration`, {
+    method: 'POST',
+    headers: {
+      apikey: key,
+      Authorization: `Bearer ${key}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      payload: {
+        webinar_slug: WEBINAR_SLUG,
+        webinar_title: data.webinar || null,
+        name: data.name,
+        email: data.email,
+        company: data.company,
+        website: data.website,
+        role: data.role,
+        industry: data.industry,
+        materials: data.materials || '',
+        test_volume: data.volume,
+        location: data.location,
+        resend_synced: resendSynced,
+        sync_error: syncError,
+        submitted_at: data.timestamp || new Date().toISOString(),
+      },
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Supabase ${response.status}: ${await response.text()}`);
+  }
+
+  return true;
 }
