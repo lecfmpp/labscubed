@@ -3,9 +3,11 @@ import Base from '../../../layouts/Base.astro';
 import WebinarTopBar from '../../../components/WebinarTopBar.jsx';
 import RegistrationApp from '../../../components/RegistrationApp.jsx';
 import Footer from '../../../components/Footer.astro';
+import ScrollTopOnLoad from '../../../components/ScrollTopOnLoad.astro';
 ---
 
 <Base title="Automation, AI and Industry 4.0 in the Testing Lab — LabsCubed Webinar" description="Free webinar, Wednesday November 18 2026 at 11:00 AM EST. What it takes to make a testing lab smart: automating the repetitive work, producing data clean enough to analyse, and connecting the two.">
+  <ScrollTopOnLoad />
   {/* No site header on this page on purpose: every link in it is a way to
       leave, and the page has one job — registration. The countdown bar stays,
       sticky on its own. The thank-you page keeps the header, since by then the

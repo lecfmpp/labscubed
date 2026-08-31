@@ -3,9 +3,11 @@ import Base from '../../../layouts/Base.astro';
 import WebinarTopBar from '../../../components/WebinarTopBar.jsx';
 import RegistrationApp from '../../../components/RegistrationApp.jsx';
 import Footer from '../../../components/Footer.astro';
+import ScrollTopOnLoad from '../../../components/ScrollTopOnLoad.astro';
 ---
 
 <Base title="The Hidden Cost of Manual Plastics Testing — LabsCubed Webinar" description="Free webinar, Tuesday October 20 2026 at 11:00 AM EST. Where the hidden costs and variability sit in manual plastics tensile testing, and what automation changes. With real CubeTen data on HIPS and polypropylene.">
+  <ScrollTopOnLoad />
   {/* No site header on this page on purpose: every link in it is a way to
       leave, and the page has one job — registration. The countdown bar stays,
       sticky on its own. The thank-you page keeps the header, since by then the

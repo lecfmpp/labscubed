@@ -5,25 +5,26 @@ import React from 'react';
 import { useIsMobile, Button } from '../lib/ui';
 
 const HOME = 'https://www.labscubed.com/';
+// Root-relative paths are used for anything this Netlify build serves or
+// proxies, so the visitor stays on the host that has the page. www.labscubed.com
+// 301s to the apex, so an absolute www URL costs a redirect hop.
 const mainLinks: [string, string][] = [
   ['Rubber Testing', 'https://www.labscubed.com/rubber-testing'],
   ['Plastic Testing', 'https://www.labscubed.com/plastic-testing'],
-  // Relative on purpose. The other entries are absolute www URLs because those
-  // pages live on the Webflow site; the webinar hub is served by this Netlify
-  // build, so a root-relative path keeps the visitor on the host that actually
-  // has it.
   ['Webinars', '/webinar/'],
+  // Promoted out of the Resources dropdown — it was the most useful thing in
+  // there and invisible behind a hover.
+  ['Blog', 'https://www.labscubed.com/blog'],
   ['About Us', 'https://www.labscubed.com/about-us'],
   ['Testimonials', 'https://www.labscubed.com/#testimonials'],
 ];
 const resourceLinks: [string, string][] = [
   ['ASTM D638', 'https://www.labscubed.com/astm-d638-iso527-tensile-testing'],
   ['ASTM D412', 'https://www.labscubed.com/astm-d412-iso37-how-to-run-tensile-testing-for-rubber'],
-  ['Blog', 'https://www.labscubed.com/blog'],
 ];
-const QUOTE = 'https://www.labscubed.com/get-a-quote';
+const WHITEPAPER = '/white-paper-automation-vs-manual-testing';
 
-/* `showQuote` hides the Get a Quote button. The webinar funnel turns it off so
+/* `showQuote` hides the header's primary button. The webinar funnel turns it off so
    the page carries exactly one call to action — registering.
 
    `inFlow` takes the bar out of overlay mode. By default it is absolutely
@@ -59,7 +60,7 @@ export default function Nav({ inFlow = false, showQuote = true }: { inFlow?: boo
             {resourceLinks.map(([l, href]) => (
               <a key={l} href={href} style={{ color: "rgba(255,255,255,0.85)", fontSize: 15, textDecoration: "none", padding: "10px 0 10px 12px", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>{l}</a>
             ))}
-            {showQuote && <div style={{ marginTop: 16 }}><Button variant="primary" size="sm" href={QUOTE}>Get a Quote</Button></div>}
+            {showQuote && <div style={{ marginTop: 16 }}><Button variant="primary" size="sm" href={WHITEPAPER}>Download our White-Paper</Button></div>}
           </div>
         )}
       </div>
@@ -91,7 +92,7 @@ export default function Nav({ inFlow = false, showQuote = true }: { inFlow?: boo
           </div>
         </nav>
         {showQuote
-          ? <Button variant="primary" size="sm" href={QUOTE}>Get a Quote</Button>
+          ? <Button variant="primary" size="sm" href={WHITEPAPER}>Download our White-Paper</Button>
           : <img src="/assets/img/logo.webp" alt="" aria-hidden="true" width={419} height={104} style={{ height: 34, width: "auto", display: "block", visibility: "hidden" }} />}
       </div>
     </div>

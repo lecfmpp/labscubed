@@ -1,0 +1,18 @@
+---
+// Included by pages whose content is client:only.
+//
+// On reload the browser restores the previous scroll offset. These pages render
+// entirely in the browser, so at the moment it restores, the document is just
+// the countdown bar and the footer — the restored offset therefore lands at the
+// bottom, and once React fills the page in the reader is left staring at the
+// footer. Turning restoration off starts every load at the top instead.
+//
+// A #hash is still honoured: this only suppresses restoring a previous
+// position, not fragment navigation.
+---
+<script is:inline>
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  window.addEventListener('load', function () {
+    if (!window.location.hash) window.scrollTo(0, 0);
+  });
+</script>
