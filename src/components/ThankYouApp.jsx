@@ -87,6 +87,11 @@ function Hero() {
     <section style={{ background: "#000", color: "#fff" }}>
       <div style={{ maxWidth: 1312, margin: "0 auto", padding: m ? "48px 20px 64px" : "80px 64px 100px", display: "grid", gridTemplateColumns: m ? "1fr" : "1fr 1fr", gap: m ? 32 : 56, alignItems: "center" }}>
         <div>
+          <nav aria-label="Breadcrumb" style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, marginBottom: m ? 18 : 22 }}>
+            <a href="/webinar/" style={{ color: "rgba(255,255,255,0.65)", textDecoration: "none", borderBottom: "1px solid rgba(255,255,255,0.25)", paddingBottom: 1 }}>All webinars</a>
+            <span aria-hidden="true" style={{ color: "rgba(255,255,255,0.3)" }}>/</span>
+            <span style={{ color: "rgba(255,255,255,0.45)" }}>Registered</span>
+          </nav>
           <span style={{ width: 56, height: 56, borderRadius: "50%", background: COLORS.teal, display: "inline-flex", alignItems: "center", justifyContent: "center", marginBottom: 24 }}>
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4 10-11" stroke="#000" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
           </span>

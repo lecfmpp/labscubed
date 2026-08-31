@@ -8,6 +8,11 @@ const HOME = 'https://www.labscubed.com/';
 const mainLinks: [string, string][] = [
   ['Rubber Testing', 'https://www.labscubed.com/rubber-testing'],
   ['Plastic Testing', 'https://www.labscubed.com/plastic-testing'],
+  // Relative on purpose. The other entries are absolute www URLs because those
+  // pages live on the Webflow site; the webinar hub is served by this Netlify
+  // build, so a root-relative path keeps the visitor on the host that actually
+  // has it.
+  ['Webinars', '/webinar/'],
   ['About Us', 'https://www.labscubed.com/about-us'],
   ['Testimonials', 'https://www.labscubed.com/#testimonials'],
 ];

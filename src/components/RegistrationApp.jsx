@@ -117,6 +117,16 @@ function Hero() {
   const m = useM();
   const scrollToForm = scrollToRegister;
 
+  /* These pages carry no site header on purpose, so this is the only route
+     back out — to the hub, where the other webinars are. */
+  const breadcrumb = (
+    <nav aria-label="Breadcrumb" style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, marginBottom: m ? 16 : 20 }}>
+      <a href="/webinar/" style={{ color: "rgba(255,255,255,0.65)", textDecoration: "none", borderBottom: "1px solid rgba(255,255,255,0.25)", paddingBottom: 1 }}>All webinars</a>
+      <span aria-hidden="true" style={{ color: "rgba(255,255,255,0.3)" }}>/</span>
+      <span style={{ color: "rgba(255,255,255,0.45)" }}>{CONFIG.dateLabel.replace(/^\w+, /, "")}</span>
+    </nav>
+  );
+
   const badge = (
     <span style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: m ? 11 : 12, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", padding: m ? "7px 13px" : "8px 15px", borderRadius: 999, background: "#dc2626", color: "#fff" }}>
       {/* White dot, not red — a red dot on a red pill would be invisible. */}
@@ -167,7 +177,7 @@ function Hero() {
       <section style={{ background: "#000", color: "#fff" }}>
         {livePulse}
         <div style={{ padding: "32px 20px 48px", display: "flex", flexDirection: "column", gap: 20 }}>
-          <div>{badge}{headline}</div>
+          <div>{breadcrumb}{badge}{headline}</div>
           {media}
           {cta}
           {copy}
@@ -183,6 +193,7 @@ function Hero() {
       {livePulse}
       <div style={{ maxWidth: 1312, margin: "0 auto", padding: "72px 64px 100px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 56, alignItems: "center" }}>
         <div>
+          {breadcrumb}
           {badge}
           {headline}
           <div style={{ marginTop: 20 }}>{copy}</div>

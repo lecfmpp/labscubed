@@ -43,7 +43,7 @@ const LogoSlider = () => {
         width: 'max-content',
       }}>
         {doubled.map((logo, i) => (
-          <div key={i} style={{
+          <div key={i} className="lc-logo-item" style={{
             flexShrink: 0,
             display: 'flex',
             alignItems: 'center',
@@ -52,34 +52,43 @@ const LogoSlider = () => {
             <img
               src={logo.src}
               alt={logo.alt}
-              style={{
-                height: logoHeight,
-                width: 'auto',
-                objectFit: 'contain',
-                filter: 'grayscale(1) brightness(1.3) invert(1)',
-                opacity: 0.7,
-                transition: 'opacity 0.3s ease, filter 0.3s ease',
-              }}
-              onMouseEnter={(e) => {
-                e.target.style.opacity = '1';
-                e.target.style.filter = 'grayscale(0.5) brightness(1.4) invert(1)';
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.opacity = '0.7';
-                e.target.style.filter = 'grayscale(1) brightness(1.3) invert(1)';
-              }}
+              style={{ height: logoHeight }}
             />
           </div>
         ))}
       </div>
       <style>{`
         @keyframes scroll {
-          0% {
-            transform: translateX(0);
-          }
-          100% {
-            transform: translateX(-50%);
-          }
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+
+        /* At rest the marks are a monochrome wash so they read as one row on the
+           dark hero. On hover the filter is dropped entirely, so each logo shows
+           its OWN brand colours rather than a recoloured version of them.
+           The white chip is what makes that possible: several of these marks are
+           dark artwork, and without a light backing they would vanish against
+           the black once the inversion is removed. */
+        .lc-logo-item {
+          padding: 6px 10px;
+          border-radius: 8px;
+          background: transparent;
+          transition: background 0.25s ease;
+        }
+        .lc-logo-item img {
+          width: auto;
+          object-fit: contain;
+          display: block;
+          filter: grayscale(1) brightness(1.3) invert(1);
+          opacity: 0.7;
+          transition: opacity 0.25s ease, filter 0.25s ease;
+        }
+        .lc-logo-item:hover {
+          background: #fff;
+        }
+        .lc-logo-item:hover img {
+          filter: none;
+          opacity: 1;
         }
       `}</style>
     </div>

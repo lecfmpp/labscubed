@@ -33,7 +33,11 @@ const doubled = [...partners, ...partners];
   .trust-h2 { font-weight: 700; font-size: 56px; line-height: 1.18; letter-spacing: -0.02em; margin: 0; max-width: 1014px; }
   .trust-mask { margin-top: 80px; overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 7%, #000 93%, transparent 100%); mask-image: linear-gradient(90deg, transparent 0, #000 7%, #000 93%, transparent 100%); }
   .trust-track { display: flex; align-items: center; width: max-content; animation: lcMarquee 34s linear infinite; }
-  .trust-track img { height: var(--h); width: auto; object-fit: contain; flex: none; margin-right: 72px; filter: grayscale(1); opacity: 0.5; }
+  .trust-track img { height: var(--h); width: auto; object-fit: contain; flex: none; margin-right: 72px; filter: grayscale(1); opacity: 0.5; transition: filter .25s ease, opacity .25s ease; }
+  /* Hovering a mark drops the greyscale so it shows the client's own brand
+     colours rather than a treated version of them. This row sits on white, so
+     unlike the dark hero slider it needs no backing to stay legible. */
+  .trust-track img:hover { filter: none; opacity: 1; }
   .trust-hr { height: 1px; background: var(--lc-line-strong); margin-top: 90px; }
 
   @media (max-width: 760px) {
