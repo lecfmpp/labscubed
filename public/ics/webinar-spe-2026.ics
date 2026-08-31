@@ -3,15 +3,15 @@ VERSION:2.0
 PRODID:-//LabsCubed//Webinar//EN
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
-X-WR-CALNAME:LabsCubed Webinar - Automating ASTM D638 & ISO 527 Tensile Testing
+X-WR-CALNAME:LabsCubed Webinar - The Hidden Cost of Manual Plastics Testing
 X-WR-TIMEZONE:America/New_York
 BEGIN:VEVENT
 UID:webinar-spe-2026@labscubed.com
 DTSTAMP:20260831T000000Z
 DTSTART:20261020T150000Z
 DTEND:20261020T155000Z
-SUMMARY:Automating ASTM D638 & ISO 527 Tensile Testing - LabsCubed Webinar
-DESCRIPTION:With Khaled Boqaileh, CEO and Founder. See how automated sample handling and video-extensometer strain capture cut technician time by up to 95%.
+SUMMARY:The Hidden Cost of Manual Plastics Testing - LabsCubed Webinar
+DESCRIPTION:With Khaled Boqaileh, co-founder and CEO of LabsCubed. Where the hidden costs and sources of variability sit in manual plastics tensile testing, and what an automation-first workflow changes. Includes real CubeTen data on HIPS and polypropylene, and a short live demonstration.
 LOCATION:Online
 URL:https://labscubed.com/webinar/spe-2026/
 STATUS:CONFIRMED

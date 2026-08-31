@@ -64,7 +64,7 @@ export default function Nav({ inFlow = false, showQuote = true }: { inFlow?: boo
     <div style={{ position, top: 0, left: 0, right: 0, zIndex: 10, display: "flex", justifyContent: "center" }}>
       <div style={{ width: "100%", maxWidth: 1392, padding: "18px 26px", boxSizing: "border-box", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <a href={HOME}><img src="/assets/img/logo.webp" alt="LabsCubed" width={419} height={104} style={{ height: 34, width: "auto", display: "block" }} /></a>
-        <nav style={{ display: "flex", gap: 26, alignItems: "center" }}>
+        <nav style={{ display: "flex", gap: 26, alignItems: "center", ...(showQuote ? {} : { flex: 1, justifyContent: "center" }) }}>
           {mainLinks.map(([l, href]) => (
             <a key={l} href={href} style={{ color: "rgba(255,255,255,0.85)", fontSize: 13, textDecoration: "none" }} className="lc-navlink">{l}</a>
           ))}
@@ -85,7 +85,9 @@ export default function Nav({ inFlow = false, showQuote = true }: { inFlow?: boo
             </div>
           </div>
         </nav>
-        {showQuote && <Button variant="primary" size="sm" href={QUOTE}>Get a Quote</Button>}
+        {showQuote
+          ? <Button variant="primary" size="sm" href={QUOTE}>Get a Quote</Button>
+          : <img src="/assets/img/logo.webp" alt="" aria-hidden="true" width={419} height={104} style={{ height: 34, width: "auto", display: "block", visibility: "hidden" }} />}
       </div>
     </div>
   );

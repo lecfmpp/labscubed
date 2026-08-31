@@ -14,7 +14,7 @@ const endUTC = "2026-10-20T15:50:00Z";
 // it is a webinar and which one — reused for every future webinar.
 const slug = "spe-2026";
 
-const title = "Automating ASTM D638 & ISO 527 Tensile Testing";
+const title = "The Hidden Cost of Manual Plastics Testing";
 
 // Google and Outlook want different shapes for the same instant.
 const compact = (iso) => iso.replace(/[-:]/g, "").replace(/\.\d{3}/, "");
@@ -30,7 +30,7 @@ export const CONFIG = {
   seatsTotal: 200,
   seatsLeft: 87,
   speakerName: "Khaled Boqaileh",
-  speakerTitle: "CEO and Founder, LabsCubed",
+  speakerTitle: "Co-founder & CEO, LabsCubed",
   speakerInitials: "KB",
   speakerPhoto: "/assets/img/team/khaled-boqaileh.webp",
   speakerBio:

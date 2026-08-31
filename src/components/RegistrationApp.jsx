@@ -96,7 +96,7 @@ function Hero() {
     <button onClick={scrollToForm} style={{ background: COLORS.teal, color: "#000", border: "none", borderRadius: 999, padding: m ? "15px 28px" : "14px 28px", fontWeight: 600, fontSize: m ? 16 : 15, cursor: "pointer", width: m ? "100%" : "auto" }}>Save My Seat</button>
   );
   const copy = (
-    <p style={{ margin: 0, maxWidth: 480, fontWeight: 300, fontSize: m ? 15 : 18, lineHeight: 1.55, color: "rgba(255,255,255,0.55)" }}>See how automated sample handling and video-extensometer strain capture cut technician time by up to 95% — and what it takes to bring it into your lab.</p>
+    <p style={{ margin: 0, maxWidth: 480, fontWeight: 300, fontSize: m ? 15 : 18, lineHeight: 1.55, color: "rgba(255,255,255,0.55)" }}>Measuring, positioning, gripping and processing every specimen by hand quietly consumes technician time and opens the door to variability. See where those costs hide — and what an automation-first workflow actually changes.</p>
   );
   const schedule = (
     <div style={{ display: "flex", flexWrap: "wrap", gap: "8px 16px", fontSize: 14, color: "rgba(255,255,255,0.65)" }}>
@@ -148,15 +148,16 @@ function Hero() {
 function Agenda() {
   const m = useM();
   const items = [
-    ["01", "Automated Sample Handling", "How robotic loading and measurement remove manual variability from tensile testing."],
-    ["02", "Video-Extensometer Strain Capture", "Setting up automated strain measurement compliant with ASTM D638 and ISO 527."],
-    ["03", "From Test to Data", "Getting results into your LIMS or ERP without manual re-entry."]
+    ["01", "The hidden costs of manual testing", "How manual specimen measurement, positioning, gripping, testing and data processing consume technician time and introduce opportunities for variability."],
+    ["02", "Where variability enters plastics tensile testing", "The factors that affect testing consistency, and the difference between accuracy, repeatability and reproducibility."],
+    ["03", "What automation can actually change", "How an automation-first workflow standardises the key steps — specimen measurement, gripping, deformation measurement, testing and analysis — and the impact on technician time and reproducibility."],
+    ["04", "From testing data to a smarter lab workflow", "Practical CubeTen examples with HIPS and polypropylene, covering ASTM/ISO requirements, calibration, service and support, cybersecurity and data integration."]
   ];
 
   return (
     <Wrap bg={COLORS.gray100}>
       <H2>What we'll cover</H2>
-      <div style={{ marginTop: m ? 28 : 44, display: "grid", gridTemplateColumns: m ? "1fr" : "repeat(3, 1fr)", gap: m ? 24 : 32 }}>
+      <div style={{ marginTop: m ? 28 : 44, display: "grid", gridTemplateColumns: m ? "1fr" : "repeat(2, 1fr)", gap: m ? 24 : 36 }}>
         {items.map(([n, t, d]) => (
           <div key={n}>
             <div style={{ fontSize: 13, fontWeight: 700, color: COLORS.tealDeep, letterSpacing: "0.1em" }}>{n}</div>
@@ -203,25 +204,57 @@ function Speaker() {
   );
 }
 
+/* What attendees walk away with. Content is the doc's section 5 verbatim in
+   substance — outcomes first, then what the session actually contains. */
+function WhatToExpect() {
+  const m = useM();
+  const included = [
+    "Real-world CubeTen plastics testing data",
+    "Examples using HIPS and polypropylene (PP)",
+    "The automated workflow, from specimen measurement through data analysis",
+    "A short demonstration of CubeTen in operation",
+    "Measurement reproducibility and technician-time savings",
+    "ASTM/ISO testing, calibration, service, cybersecurity and data integration",
+    "Guidance for evaluating whether automation makes sense for your lab",
+  ];
+
+  return (
+    <Wrap bg={COLORS.gray100}>
+      <H2>What to expect</H2>
+      <p style={{ margin: m ? "14px 0 0" : "18px 0 0", maxWidth: 720, fontWeight: 300, fontSize: m ? 15 : 17, lineHeight: 1.6, color: COLORS.muted }}>
+        You'll leave with a practical understanding of where the hidden costs and sources of variability sit in manual plastics tensile testing, and how automation addresses them.
+      </p>
+      <div style={{ marginTop: m ? 24 : 34, display: "grid", gridTemplateColumns: m ? "1fr" : "1fr 1fr", gap: m ? 12 : "14px 40px" }}>
+        {included.map((item) => (
+          <div key={item} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0, marginTop: 2 }}>
+              <circle cx="12" cy="12" r="11" fill={COLORS.teal} opacity="0.18" />
+              <path d="M7 12.5l3.2 3.2L17 9" stroke={COLORS.tealDeep} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <span style={{ fontSize: m ? 14.5 : 15.5, fontWeight: 300, lineHeight: 1.55, color: COLORS.ink }}>{item}</span>
+          </div>
+        ))}
+      </div>
+    </Wrap>
+  );
+}
+
 /* Compact audience section. Uses two design-system primitives rather than
-   bespoke ornament: the bordered card (.lc-icard) for the four roles, and the
-   subtle uppercase chip (.lc-badge-subtle) for the industry list. No icons —
-   at this density they read as clutter. */
+   bespoke ornament: the bordered card for the four primary roles, and the
+   subtle chip for the wider list. No icons — at this density they read as
+   clutter. */
 function WhoIsThisFor() {
   const m = useM();
   const roles = [
-    ["Lab Managers", "QA labs in manufacturing or R&D"],
-    ["Quality Directors", "Testing compliance and cost"],
-    ["R&D Engineers", "New materials and formulations"],
-    ["Operations Leaders", "Lab throughput and efficiency"],
+    ["Testing technicians", "Materials and polymer testing"],
+    ["R&D & materials engineers", "Developing and characterising materials"],
+    ["QC / QA professionals", "Holding the line on consistency"],
+    ["Lab managers & supervisors", "Throughput, cost and capacity"],
   ];
-  const industries = [
-    "Rubber & Elastomers",
-    "Plastics & Polymers",
-    "Automotive Suppliers",
-    "Aerospace",
-    "Advanced Composites",
-    "Contract Manufacturers",
+  const also = [
+    "Testing & characterisation professionals",
+    "Technical & engineering managers",
+    "Anyone evaluating automation for plastics testing",
   ];
 
   const badge = {
@@ -243,7 +276,7 @@ function WhoIsThisFor() {
         <span style={badge}>Audience</span>
         <h2 style={{ fontWeight: 700, fontSize: m ? 26 : 34, letterSpacing: "-0.02em", lineHeight: 1.15, margin: "14px 0 0", color: COLORS.ink }}>Who is this for?</h2>
         <p style={{ margin: "10px 0 0", maxWidth: 620, fontWeight: 300, fontSize: m ? 15 : 16, lineHeight: 1.55, color: COLORS.muted }}>
-          Labs testing elastomers, plastics and composites that want to cut manual work without giving up data quality.
+          Plastics and polymer testing professionals who want more consistency, efficiency or throughput from their lab.
         </p>
 
         <div style={{ marginTop: m ? 28 : 36, display: "grid", gridTemplateColumns: m ? "1fr" : "repeat(4, 1fr)", gap: m ? 10 : 16, alignItems: "stretch" }}>
@@ -256,104 +289,13 @@ function WhoIsThisFor() {
         </div>
 
         <div style={{ marginTop: m ? 24 : 32, display: "flex", alignItems: "center", flexWrap: "wrap", gap: m ? 8 : 10 }}>
-          <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(29,29,31,0.45)", marginRight: 4 }}>Industries</span>
-          {industries.map((name) => (
+          <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(29,29,31,0.45)", marginRight: 4 }}>Also for</span>
+          {also.map((name) => (
             <span key={name} style={{ fontSize: m ? 12.5 : 13, fontWeight: 500, color: COLORS.ink, background: COLORS.gray100, border: `1px solid ${COLORS.line}`, borderRadius: 999, padding: m ? "6px 12px" : "7px 14px", lineHeight: 1 }}>{name}</span>
           ))}
         </div>
       </div>
     </section>
-  );
-}
-
-/* Mirrors the FAQ accordion: native <details name> gives exclusive single-open
-   with no JS and stays crawlable. Collapsed rows still carry the date and time
-   so the schedule is readable without opening anything. */
-function UpcomingWebinars() {
-  const m = useM();
-  const items = [
-    {
-      date: "October 8, 2026",
-      time: "2:00 PM EST · 45 min",
-      title: "Rubber Testing 101: ASTM D412 & ISO 37 for QA Teams",
-      body: "A ground-up walkthrough of the two standards most rubber QA teams live in — specimen prep, grip selection, and the strain-rate details that quietly cost you repeatability.",
-      points: ["Die C specimen prep and common defects", "Grip slip: spotting it in the curve", "Reporting tensile strength and elongation at break"],
-      href: "/webinar/rubber-testing-2026/",
-    },
-    {
-      date: "October 29, 2026",
-      time: "2:00 PM EST · 60 min",
-      title: "Cutting Technician Time: A Live CubeOne Walkthrough",
-      body: "An unedited run of a full sample set on CubeOne, from loading the magazine to exporting results — including what the operator still has to do.",
-      points: ["Loading and running an unattended batch", "Where the 95% time saving actually comes from", "Live Q&A with the engineering team"],
-      href: "/webinar/cubeone-walkthrough-2026/",
-    },
-    {
-      date: "November 12, 2026",
-      time: "2:00 PM EST · 45 min",
-      title: "Getting Clean Data Out of Your Testing Lab",
-      body: "Most labs lose more time to transcription and rework than to testing. This session covers getting results into a LIMS or ERP without manual re-entry.",
-      points: ["Structuring results for downstream systems", "Audit trails that survive a customer audit", "Cutting manual re-entry from the workflow"],
-      href: "/webinar/clean-data-2026/",
-    },
-  ];
-
-  return (
-    <Wrap>
-      <H2>Upcoming webinars</H2>
-      <div style={{ marginTop: m ? 24 : 36 }}>
-        {items.map((item, i) => (
-          <details key={item.href} className="wbn-item" name="upcoming-webinars" open={i === 0}>
-            <summary className="wbn-summary">
-              <span className="wbn-meta">
-                <span className="wbn-date">{item.date}</span>
-                <span className="wbn-time">{item.time}</span>
-              </span>
-              <span className="wbn-title">{item.title}</span>
-              <span className="wbn-icon">
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                  <path d="M1 7h12" stroke={COLORS.ink} strokeWidth="1.6" strokeLinecap="round" />
-                  <path className="wbn-vbar" d="M7 1v12" stroke={COLORS.ink} strokeWidth="1.6" strokeLinecap="round" />
-                </svg>
-              </span>
-            </summary>
-            <div className="wbn-body">
-              <p className="wbn-text">{item.body}</p>
-              <ul className="wbn-points">
-                {item.points.map((pt) => <li key={pt}>{pt}</li>)}
-              </ul>
-              <a href={item.href} className="wbn-cta">Register</a>
-            </div>
-          </details>
-        ))}
-      </div>
-      <style>{`
-        .wbn-item { border-bottom: 1px solid ${COLORS.line}; }
-        .wbn-summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 24px; padding: 20px 0; }
-        .wbn-summary::-webkit-details-marker { display: none; }
-        .wbn-meta { display: flex; flex-direction: column; gap: 3px; min-width: 168px; flex: none; }
-        .wbn-date { font-size: 13px; font-weight: 600; color: ${COLORS.ink}; }
-        .wbn-time { font-size: 12px; font-weight: 300; color: ${COLORS.muted}; }
-        .wbn-title { flex: 1; font-size: 17px; font-weight: 500; letter-spacing: -0.01em; color: ${COLORS.ink}; }
-        .wbn-icon { width: 32px; height: 32px; flex: none; border-radius: 9999px; background: ${COLORS.gray100}; display: inline-flex; align-items: center; justify-content: center; }
-        .wbn-vbar { opacity: 1; transition: opacity .2s ease; }
-        .wbn-item[open] .wbn-vbar { opacity: 0; }
-        .wbn-body { padding: 0 56px 24px 192px; }
-        .wbn-text { margin: 0; max-width: 640px; font-size: 15px; font-weight: 300; line-height: 1.6; color: ${COLORS.muted}; }
-        .wbn-points { margin: 14px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 7px; }
-        .wbn-points li { position: relative; padding-left: 18px; font-size: 14px; font-weight: 300; line-height: 1.5; color: ${COLORS.muted}; }
-        .wbn-points li::before { content: ""; position: absolute; left: 0; top: 8px; width: 6px; height: 6px; border-radius: 50%; background: ${COLORS.teal}; }
-        .wbn-cta { display: inline-block; margin-top: 20px; font-size: 13px; font-weight: 600; color: #000; background: ${COLORS.teal}; border-radius: 999px; padding: 10px 20px; text-decoration: none; }
-
-        @media (max-width: 760px) {
-          .wbn-summary { gap: 14px; align-items: flex-start; padding: 18px 0; flex-wrap: wrap; }
-          .wbn-meta { flex-direction: row; align-items: baseline; gap: 8px; min-width: 0; width: calc(100% - 46px); }
-          .wbn-title { flex: 1 0 100%; font-size: 15.5px; order: 3; }
-          .wbn-icon { margin-left: auto; }
-          .wbn-body { padding: 0 0 20px; }
-        }
-      `}</style>
-    </Wrap>
   );
 }
 
@@ -502,5 +444,5 @@ function RegisterSection() {
 }
 
 export default function App() {
-  return <div><Hero /><Agenda /><Speaker /><WhoIsThisFor /><UpcomingWebinars /><RegisterSection /></div>;
+  return <div><Hero /><Agenda /><WhatToExpect /><Speaker /><WhoIsThisFor /><RegisterSection /></div>;
 }
