@@ -230,7 +230,7 @@ function UpcomingWebinars() {
       title: "Rubber Testing 101: ASTM D412 & ISO 37 for QA Teams",
       body: "A ground-up walkthrough of the two standards most rubber QA teams live in — specimen prep, grip selection, and the strain-rate details that quietly cost you repeatability.",
       points: ["Die C specimen prep and common defects", "Grip slip: spotting it in the curve", "Reporting tensile strength and elongation at break"],
-      href: "/webinar/rubber-testing",
+      href: "/webinar/rubber-testing-2026/",
     },
     {
       date: "October 29, 2026",
@@ -238,7 +238,7 @@ function UpcomingWebinars() {
       title: "Cutting Technician Time: A Live CubeOne Walkthrough",
       body: "An unedited run of a full sample set on CubeOne, from loading the magazine to exporting results — including what the operator still has to do.",
       points: ["Loading and running an unattended batch", "Where the 95% time saving actually comes from", "Live Q&A with the engineering team"],
-      href: "/webinar/cubeone-walkthrough",
+      href: "/webinar/cubeone-walkthrough-2026/",
     },
     {
       date: "November 12, 2026",
@@ -246,7 +246,7 @@ function UpcomingWebinars() {
       title: "Getting Clean Data Out of Your Testing Lab",
       body: "Most labs lose more time to transcription and rework than to testing. This session covers getting results into a LIMS or ERP without manual re-entry.",
       points: ["Structuring results for downstream systems", "Audit trails that survive a customer audit", "Cutting manual re-entry from the workflow"],
-      href: "/webinar/clean-data",
+      href: "/webinar/clean-data-2026/",
     },
   ];
 

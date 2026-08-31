@@ -1,20 +1,49 @@
-// Single source of truth for the webinar's details. Shared by the countdown
-// bar (WebinarTopBar) and the registration page (RegistrationApp) so the date
-// on screen and the date the countdown runs to can never drift apart.
+// Single source of truth for the webinar. Everything that mentions the date —
+// the countdown, the on-page labels, the Google/Outlook deeplinks and the .ics
+// — derives from startUTC/endUTC below, so rescheduling means editing one pair
+// of timestamps.
+//
+// On the date of this event the US Eastern zone is on DST (UTC-4); DST does not
+// end until Nov 1, 2026. 11:00 local Eastern is therefore 15:00 UTC. The visible
+// label says "EST" because that is how the audience reads it, but the machine
+// times below are the true local-11am instants.
+const startUTC = "2026-10-20T15:00:00Z";
+const endUTC = "2026-10-20T16:00:00Z";
+
+// Path slug. The funnel lives at /webinar/<slug>/ so the URL states both that
+// it is a webinar and which one — reused for every future webinar.
+const slug = "spe-2026";
+
+const title = "Automating ASTM D638 & ISO 527 Tensile Testing";
+
+// Google and Outlook want different shapes for the same instant.
+const compact = (iso) => iso.replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+
 export const CONFIG = {
-  title: "Automating ASTM D638 & ISO 527 Tensile Testing",
-  dateLabel: "Thursday, October 20, 2026",
-  timeLabel: "2:00 PM EST · 60 minutes",
-  targetISO: "2026-10-20T18:00:00Z",
+  slug,
+  title,
+  dateLabel: "Tuesday, October 20, 2026",
+  timeLabel: "11:00 AM EST · 60 minutes",
+  targetISO: startUTC,
+  startUTC,
+  endUTC,
   seatsTotal: 200,
   seatsLeft: 87,
   speakerName: "Khaled Boqaileh",
   speakerTitle: "CEO and Founder, LabsCubed",
   speakerInitials: "KB",
   speakerPhoto: "/assets/img/team/khaled-boqaileh.webp",
-  // Trailing slash on purpose — without it Netlify answers a 301 first.
-  thankYouUrl: "/webinar/thank-you/",
+  // Trailing slashes on purpose — without them Netlify answers a 301 first.
+  registrationUrl: `/webinar/${slug}/`,
+  thankYouUrl: `/webinar/${slug}/thank-you/`,
   submitEndpoint: "/api/webinar/register",
+  calendarLinks: {
+    google: `https://calendar.google.com/calendar/u/0/r/eventedit?text=${encodeURIComponent(title)}&dates=${compact(startUTC)}/${compact(endUTC)}`,
+    outlook: `https://outlook.live.com/calendar/0/deeplink/compose?subject=${encodeURIComponent(title)}&startdt=${startUTC}&enddt=${endUTC}`,
+    apple: `/ics/webinar-${slug}.ics`,
+  },
+  exploreCtaLabel: "Explore CubeTen",
+  exploreCtaHref: "/products",
 };
 
 export const COLORS = {

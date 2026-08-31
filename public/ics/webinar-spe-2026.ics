@@ -1,0 +1,19 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//LabsCubed//Webinar//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:LabsCubed Webinar - Automating ASTM D638 & ISO 527 Tensile Testing
+X-WR-TIMEZONE:America/New_York
+BEGIN:VEVENT
+UID:webinar-spe-2026@labscubed.com
+DTSTAMP:20260831T000000Z
+DTSTART:20261020T150000Z
+DTEND:20261020T160000Z
+SUMMARY:Automating ASTM D638 & ISO 527 Tensile Testing - LabsCubed Webinar
+DESCRIPTION:With Khaled Boqaileh, CEO and Founder. See how automated sample handling and video-extensometer strain capture cut technician time by up to 95%.
+LOCATION:Online
+URL:https://labscubed.com/webinar/spe-2026/
+STATUS:CONFIRMED
+END:VEVENT
+END:VCALENDAR

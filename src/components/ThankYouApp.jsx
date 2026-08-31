@@ -1,20 +1,8 @@
 import React from 'react';
+import { CONFIG, COLORS } from './webinarConfig.js';
 
-const CONFIG = {
-  title: "Automating ASTM D638 & ISO 527 Tensile Testing",
-  dateLabel: "Thursday, October 20, 2026",
-  timeLabel: "2:00 PM EST · 60 minutes",
-  calendarLinks: {
-    google: "https://calendar.google.com/calendar/u/0/r/eventedit?text=Automating+ASTM+D638+%26+ISO+527+Tensile+Testing&dates=20261020T180000Z/20261020T190000Z",
-    outlook: "https://outlook.live.com/calendar/0/deeplink/compose?subject=Automating%20ASTM%20D638%20%26%20ISO%20527%20Tensile%20Testing&startdt=2026-10-20T18:00:00&enddt=2026-10-20T19:00:00",
-    apple: "/ics/webinar-oct20.ics"
-  },
-  exploreCtaLabel: "Explore CubeTen",
-  exploreCtaHref: "/products"
-};
-
-const COLORS = { teal: "#17ddc5", tealDeep: "#0d9488", ink: "#1d1d1f", muted: "#86868b", gray100: "#f5f5f7" };
-
+// Date, time, title and calendar links all come from the shared config so this
+// page can never disagree with the registration page.
 function useM(bp = 760) {
   const [m, setM] = React.useState(window.innerWidth <= bp);
   React.useEffect(() => { const on = () => setM(window.innerWidth <= bp); window.addEventListener("resize", on); return () => window.removeEventListener("resize", on); }, [bp]);
