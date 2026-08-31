@@ -18,12 +18,19 @@
 
 const REQUIRED = ['name', 'email', 'company', 'website', 'role', 'industry', 'volume', 'location'];
 
-// Per-webinar identity. A new webinar means new values here and a new Resend
-// segment — everything else, including the Supabase tagging, follows from the
-// slug. Both are overridable by environment so a webinar can be switched
-// without a deploy.
-const WEBINAR_SLUG = process.env.WEBINAR_SLUG || 'spe-2026';
-const SEGMENT_ID = process.env.RESEND_WEBINAR_SEGMENT_ID || 'd7b053f5-67b3-4747-807e-1e8db27c45a1';
+// Per-webinar routing. The client posts webinar_slug; this map decides which
+// Resend segment the registrant joins. Adding a webinar means creating a Resend
+// segment and adding one line here — the Supabase tagging follows from the slug
+// automatically.
+//
+// An unknown slug is rejected rather than defaulted, so a typo cannot quietly
+// file registrants under the wrong webinar.
+const WEBINARS = {
+  'spe-2026': { segmentId: 'd7b053f5-67b3-4747-807e-1e8db27c45a1' },
+  'automation-ai-2026': { segmentId: 'ca2a167f-e3c6-483b-90f0-8590d69ad2a1' },
+};
+
+const DEFAULT_SLUG = 'spe-2026';
 
 const json = (status, body) =>
   new Response(JSON.stringify(body), {
@@ -49,10 +56,17 @@ export default async (request) => {
     }
   }
 
+  const slug = data.webinar_slug || DEFAULT_SLUG;
+  const webinar = WEBINARS[slug];
+  if (!webinar) {
+    console.error('Unknown webinar slug:', slug);
+    return json(400, { error: `Unknown webinar: ${slug}` });
+  }
+
   console.log('Webinar registration:', {
     email: data.email,
     company: data.company,
-    webinar: WEBINAR_SLUG,
+    webinar: slug,
   });
 
   let resendSynced = false;
@@ -61,7 +75,7 @@ export default async (request) => {
   const resendKey = process.env.RESEND_API_KEY;
   if (resendKey) {
     try {
-      await addToResend(data, resendKey);
+      await addToResend(data, resendKey, webinar.segmentId);
       resendSynced = true;
     } catch (error) {
       syncError = String(error);
@@ -80,7 +94,7 @@ export default async (request) => {
 
   let stored = false;
   try {
-    stored = await recordInSupabase(data, resendSynced, syncError);
+    stored = await recordInSupabase(data, slug, resendSynced, syncError);
   } catch (error) {
     // Both destinations are down. Log the whole payload as the last resort so
     // the registration can be replayed by hand rather than lost.
@@ -90,7 +104,7 @@ export default async (request) => {
   return json(200, { success: true, synced: resendSynced, stored });
 };
 
-async function addToResend(data, apiKey) {
+async function addToResend(data, apiKey, segmentId) {
   const [firstName, ...rest] = data.name.trim().split(/\s+/);
   const headers = {
     Authorization: `Bearer ${apiKey}`,
@@ -128,7 +142,7 @@ async function addToResend(data, apiKey) {
   // Segment membership is a separate call: passing `segments` on the upsert
   // above does not attach them (verified against the live API).
   const segment = await fetch(
-    `https://api.resend.com/contacts/${encodeURIComponent(data.email)}/segments/${SEGMENT_ID}`,
+    `https://api.resend.com/contacts/${encodeURIComponent(data.email)}/segments/${segmentId}`,
     { method: 'POST', headers },
   );
 
@@ -139,7 +153,7 @@ async function addToResend(data, apiKey) {
   return contact.json();
 }
 
-async function recordInSupabase(data, resendSynced, syncError) {
+async function recordInSupabase(data, slug, resendSynced, syncError) {
   const url = process.env.SUPABASE_URL;
   // The RPC is granted to anon, so the publishable key is enough; the service
   // key is preferred when present.
@@ -162,7 +176,7 @@ async function recordInSupabase(data, resendSynced, syncError) {
     },
     body: JSON.stringify({
       payload: {
-        webinar_slug: WEBINAR_SLUG,
+        webinar_slug: slug,
         webinar_title: data.webinar || null,
         name: data.name,
         email: data.email,

@@ -1,9 +1,15 @@
 import React from 'react';
 import LogoSlider from './LogoSlider.jsx';
-import { CONFIG, COLORS } from './webinarConfig.js';
+import { getWebinar, COLORS } from './webinarConfig.js';
 
 // The countdown strip is NOT rendered here — it sits above the site header, so
-// registration.astro renders <WebinarTopBar /> in its sticky stack instead.
+// the .astro page renders <WebinarTopBar /> in its sticky stack instead.
+
+/* Which webinar this page is for. The root component resolves it from the slug
+   the .astro page passes in; everything below reads it from context, so adding
+   a webinar needs no component changes. */
+const WebinarContext = React.createContext(null);
+const useWebinar = () => React.useContext(WebinarContext);
 
 function useM(bp = 760) {
   const [m, setM] = React.useState(window.innerWidth <= bp);
@@ -63,6 +69,7 @@ function VideoPlaceholder({ label }) {
 /* Falls back to the speaker's initials if the photo 404s, so a missing or
    renamed asset degrades to the old avatar instead of a broken image. */
 function SpeakerAvatar({ size = 44 }) {
+  const CONFIG = useWebinar();
   const [failed, setFailed] = React.useState(false);
   const base = { width: size, height: size, borderRadius: "50%", flexShrink: 0 };
 
@@ -77,11 +84,12 @@ function SpeakerAvatar({ size = 44 }) {
    same pieces sit in the usual two columns. The two branches share the piece
    definitions below so the copy can't drift between layouts. */
 function Hero() {
+  const CONFIG = useWebinar();
   const m = useM();
   const scrollToForm = scrollToRegister;
 
   const badge = (
-    <span style={{ display: "inline-block", fontSize: m ? 11 : 12, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", padding: "6px 12px", borderRadius: 999, background: "rgba(255,255,255,0.1)", color: "#fff" }}>Webinar · October 20</span>
+    <span style={{ display: "inline-block", fontSize: m ? 11 : 12, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", padding: "6px 12px", borderRadius: 999, background: "rgba(255,255,255,0.1)", color: "#fff" }}>{CONFIG.badgeLabel}</span>
   );
   const headline = (
     <h1 style={{ fontWeight: 700, fontSize: m ? 30 : 56, lineHeight: 1.1, letterSpacing: "-0.02em", margin: m ? "16px 0 0" : "20px 0 0" }}>{CONFIG.title}</h1>
@@ -96,7 +104,7 @@ function Hero() {
     <button onClick={scrollToForm} style={{ background: COLORS.teal, color: "#000", border: "none", borderRadius: 999, padding: m ? "15px 28px" : "14px 28px", fontWeight: 600, fontSize: m ? 16 : 15, cursor: "pointer", width: m ? "100%" : "auto" }}>Save My Seat</button>
   );
   const copy = (
-    <p style={{ margin: 0, maxWidth: 480, fontWeight: 300, fontSize: m ? 15 : 18, lineHeight: 1.55, color: "rgba(255,255,255,0.55)" }}>Measuring, positioning, gripping and processing every specimen by hand quietly consumes technician time and opens the door to variability. See where those costs hide — and what an automation-first workflow actually changes.</p>
+    <p style={{ margin: 0, maxWidth: 480, fontWeight: 300, fontSize: m ? 15 : 18, lineHeight: 1.55, color: "rgba(255,255,255,0.55)" }}>{CONFIG.heroCopy}</p>
   );
   const schedule = (
     <div style={{ display: "flex", flexWrap: "wrap", gap: "8px 16px", fontSize: 14, color: "rgba(255,255,255,0.65)" }}>
@@ -146,13 +154,9 @@ function Hero() {
 }
 
 function Agenda() {
+  const CONFIG = useWebinar();
   const m = useM();
-  const items = [
-    ["01", "The hidden costs of manual testing", "How manual specimen measurement, positioning, gripping, testing and data processing consume technician time and introduce opportunities for variability."],
-    ["02", "Where variability enters plastics tensile testing", "The factors that affect testing consistency, and the difference between accuracy, repeatability and reproducibility."],
-    ["03", "What automation can actually change", "How an automation-first workflow standardises the key steps — specimen measurement, gripping, deformation measurement, testing and analysis — and the impact on technician time and reproducibility."],
-    ["04", "From testing data to a smarter lab workflow", "Practical CubeTen examples with HIPS and polypropylene, covering ASTM/ISO requirements, calibration, service and support, cybersecurity and data integration."]
-  ];
+  const items = CONFIG.agenda;
 
   return (
     <Wrap bg={COLORS.gray100}>
@@ -173,6 +177,7 @@ function Agenda() {
 /* Speaker bio. Sits between the agenda and the audience section so the "who is
    telling me this" question is answered before the "is this for me" one. */
 function Speaker() {
+  const CONFIG = useWebinar();
   const m = useM();
   const badge = {
     display: "inline-flex",
@@ -207,22 +212,15 @@ function Speaker() {
 /* What attendees walk away with. Content is the doc's section 5 verbatim in
    substance — outcomes first, then what the session actually contains. */
 function WhatToExpect() {
+  const CONFIG = useWebinar();
   const m = useM();
-  const included = [
-    "Real-world CubeTen plastics testing data",
-    "Examples using HIPS and polypropylene (PP)",
-    "The automated workflow, from specimen measurement through data analysis",
-    "A short demonstration of CubeTen in operation",
-    "Measurement reproducibility and technician-time savings",
-    "ASTM/ISO testing, calibration, service, cybersecurity and data integration",
-    "Guidance for evaluating whether automation makes sense for your lab",
-  ];
+  const included = CONFIG.expect;
 
   return (
     <Wrap bg={COLORS.gray100}>
       <H2>What to expect</H2>
       <p style={{ margin: m ? "14px 0 0" : "18px 0 0", maxWidth: 720, fontWeight: 300, fontSize: m ? 15 : 17, lineHeight: 1.6, color: COLORS.muted }}>
-        You'll leave with a practical understanding of where the hidden costs and sources of variability sit in manual plastics tensile testing, and how automation addresses them.
+        {CONFIG.expectIntro}
       </p>
       <div style={{ marginTop: m ? 24 : 34, display: "grid", gridTemplateColumns: m ? "1fr" : "1fr 1fr", gap: m ? 12 : "14px 40px" }}>
         {included.map((item) => (
@@ -244,18 +242,10 @@ function WhatToExpect() {
    subtle chip for the wider list. No icons — at this density they read as
    clutter. */
 function WhoIsThisFor() {
+  const CONFIG = useWebinar();
   const m = useM();
-  const roles = [
-    ["Testing technicians", "Materials and polymer testing"],
-    ["R&D & materials engineers", "Developing and characterising materials"],
-    ["QC / QA professionals", "Holding the line on consistency"],
-    ["Lab managers & supervisors", "Throughput, cost and capacity"],
-  ];
-  const also = [
-    "Testing & characterisation professionals",
-    "Technical & engineering managers",
-    "Anyone evaluating automation for plastics testing",
-  ];
+  const roles = CONFIG.roles;
+  const also = CONFIG.alsoFor;
 
   const badge = {
     display: "inline-flex",
@@ -276,7 +266,7 @@ function WhoIsThisFor() {
         <span style={badge}>Audience</span>
         <h2 style={{ fontWeight: 700, fontSize: m ? 26 : 34, letterSpacing: "-0.02em", lineHeight: 1.15, margin: "14px 0 0", color: COLORS.ink }}>Who is this for?</h2>
         <p style={{ margin: "10px 0 0", maxWidth: 620, fontWeight: 300, fontSize: m ? 15 : 16, lineHeight: 1.55, color: COLORS.muted }}>
-          Plastics and polymer testing professionals who want more consistency, efficiency or throughput from their lab.
+          {CONFIG.audienceIntro}
         </p>
 
         <div style={{ marginTop: m ? 28 : 36, display: "grid", gridTemplateColumns: m ? "1fr" : "repeat(4, 1fr)", gap: m ? 10 : 16, alignItems: "stretch" }}>
@@ -296,6 +286,29 @@ function WhoIsThisFor() {
         </div>
       </div>
     </section>
+  );
+}
+
+/* Cross-promotes the next webinar, if this one has a successor in the registry.
+   Renders nothing when it does not, so the last webinar in a series needs no
+   special casing. */
+function NextWebinar() {
+  const CONFIG = useWebinar();
+  const m = useM();
+  const next = CONFIG.nextWebinarSlug ? getWebinar(CONFIG.nextWebinarSlug) : null;
+  if (!next) return null;
+
+  return (
+    <Wrap bg={COLORS.gray100}>
+      <div style={{ display: "flex", flexDirection: m ? "column" : "row", alignItems: m ? "flex-start" : "center", justifyContent: "space-between", gap: m ? 18 : 32 }}>
+        <div>
+          <span style={{ display: "inline-flex", background: "#fff", color: COLORS.muted, border: `1px solid ${COLORS.line}`, borderRadius: 4, padding: "5px 12px", fontWeight: 700, fontSize: 11, letterSpacing: "0.2em", textTransform: "uppercase", lineHeight: 1 }}>Next in the series</span>
+          <h3 style={{ margin: "14px 0 0", fontWeight: 700, fontSize: m ? 20 : 26, letterSpacing: "-0.02em", lineHeight: 1.25, color: COLORS.ink, maxWidth: 640 }}>{next.title}</h3>
+          <div style={{ marginTop: 8, fontSize: 14, fontWeight: 500, color: COLORS.tealDeep }}>{next.dateLabel} · {next.timeLabel}</div>
+        </div>
+        <a href={next.registrationUrl} style={{ flex: "none", fontSize: 13, fontWeight: 600, color: "#000", background: COLORS.teal, borderRadius: 999, padding: "12px 24px", textDecoration: "none", whiteSpace: "nowrap" }}>Register</a>
+      </div>
+    </Wrap>
   );
 }
 
@@ -360,6 +373,7 @@ function DetailsModal({ onClose, onComplete }) {
 }
 
 function RegisterSection() {
+  const CONFIG = useWebinar();
   const m = useM();
   const [basic, setBasic] = React.useState({ name: "", email: "", company: "" });
   const [showModal, setShowModal] = React.useState(false);
@@ -372,7 +386,7 @@ function RegisterSection() {
     setIsSubmitting(true);
     setError("");
     const website = details.website.startsWith('http') ? details.website : `https://${details.website}`;
-    const payload = { ...basic, ...details, website, webinar: CONFIG.title, timestamp: new Date().toISOString() };
+    const payload = { ...basic, ...details, website, webinar: CONFIG.title, webinar_slug: CONFIG.slug, timestamp: new Date().toISOString() };
     try {
       console.log("Submitting to:", CONFIG.submitEndpoint);
       const response = await fetch(CONFIG.submitEndpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
@@ -443,6 +457,11 @@ function RegisterSection() {
   );
 }
 
-export default function App() {
-  return <div><Hero /><Agenda /><WhatToExpect /><Speaker /><WhoIsThisFor /><RegisterSection /></div>;
+export default function App({ slug }) {
+  const webinar = React.useMemo(() => getWebinar(slug), [slug]);
+  return (
+    <WebinarContext.Provider value={webinar}>
+      <Hero /><Agenda /><WhatToExpect /><Speaker /><WhoIsThisFor /><NextWebinar /><RegisterSection />
+    </WebinarContext.Provider>
+  );
 }

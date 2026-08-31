@@ -1,0 +1,19 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//LabsCubed//Webinar//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:LabsCubed Webinar - Automation, AI and Industry 4.0 in the Testing Lab
+X-WR-TIMEZONE:America/New_York
+BEGIN:VEVENT
+UID:webinar-automation-ai-2026@labscubed.com
+DTSTAMP:20260831T000000Z
+DTSTART:20261118T160000Z
+DTEND:20261118T165000Z
+SUMMARY:Automation, AI and Industry 4.0 in the Testing Lab - LabsCubed Webinar
+DESCRIPTION:With Khaled Boqaileh, co-founder and CEO of LabsCubed. What it takes to make a testing lab smart: automating the repetitive work, producing data clean enough to be worth analysing, and connecting the two.
+LOCATION:Online
+URL:https://labscubed.com/webinar/automation-ai-2026/
+STATUS:CONFIRMED
+END:VEVENT
+END:VCALENDAR

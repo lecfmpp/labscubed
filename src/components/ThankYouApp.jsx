@@ -1,5 +1,8 @@
 import React from 'react';
-import { CONFIG, COLORS } from './webinarConfig.js';
+import { getWebinar, COLORS } from './webinarConfig.js';
+
+const WebinarContext = React.createContext(null);
+const useWebinar = () => React.useContext(WebinarContext);
 
 // Date, time, title and calendar links all come from the shared config so this
 // page can never disagree with the registration page.
@@ -43,6 +46,7 @@ function CalendarIcon({ icon, letter, color, name }) {
 }
 
 function Hero() {
+  const CONFIG = useWebinar();
   const m = useM();
   const calendarButtons = [
     { name: "Google", href: CONFIG.calendarLinks.google, icon: "/assets/img/calendar/google-calendar.svg", letter: "G", color: "#4285F4" },
@@ -81,6 +85,7 @@ function Hero() {
 }
 
 function NextSteps() {
+  const CONFIG = useWebinar();
   const m = useM();
   const steps = [
     ["01", "Check your inbox", "Your confirmation email has the calendar invite and join link."],
@@ -100,13 +105,77 @@ function NextSteps() {
           </div>
         ))}
       </div>
-      <div style={{ marginTop: m ? 40 : 56, textAlign: "center" }}>
+    </Wrap>
+  );
+}
+
+/* Something to do between registering and the live session: the automation in
+   action, then the way through to the product page. */
+function WatchWhileYouWait() {
+  const CONFIG = useWebinar();
+  const m = useM();
+
+  return (
+    <Wrap bg={COLORS.gray100}>
+      <div style={{ maxWidth: 840, margin: "0 auto", textAlign: "center" }}>
+        <H2>See the automation for yourself</H2>
+        <p style={{ margin: m ? "14px 0 0" : "18px 0 0", fontWeight: 300, fontSize: m ? 15 : 17, lineHeight: 1.6, color: COLORS.muted }}>
+          While you wait for {CONFIG.dateLabel.replace(/^\w+, /, "").replace(/, \d{4}$/, "")}, here is CubeTen running a full tray — the same automated workflow Khaled walks through on the day.
+        </p>
+      </div>
+
+      {/* Padding-bottom ratio keeps the iframe 16:9 at every width. */}
+      <div style={{ maxWidth: 840, margin: m ? "28px auto 0" : "40px auto 0" }}>
+        <div style={{ position: "relative", width: "100%", paddingBottom: "56.25%", borderRadius: 20, overflow: "hidden", background: "#000", boxShadow: "0 20px 40px rgba(0,0,0,0.12)" }}>
+          <iframe
+            src={`https://www.youtube.com/embed/${CONFIG.onDemandVideoId}`}
+            title="LabsCubed CubeTen automated tensile testing"
+            loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerPolicy="strict-origin-when-cross-origin"
+            allowFullScreen
+            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: 0 }}
+          />
+        </div>
+      </div>
+
+      <div style={{ marginTop: m ? 28 : 36, textAlign: "center" }}>
         <a href={CONFIG.exploreCtaHref} style={{ display: "inline-block", background: "#1a1b1f", color: "#fff", borderRadius: 999, padding: "14px 28px", fontWeight: 600, fontSize: 14, textTransform: "uppercase", letterSpacing: "0.05em", textDecoration: "none" }}>{CONFIG.exploreCtaLabel}</a>
       </div>
     </Wrap>
   );
 }
 
-export default function App() {
-  return <div><Hero /><NextSteps /></div>;
+/* Next webinar in the series, from the registry. Renders nothing for the last
+   one in a series. */
+function UpcomingWebinar() {
+  const CONFIG = useWebinar();
+  const m = useM();
+  const next = CONFIG.nextWebinarSlug ? getWebinar(CONFIG.nextWebinarSlug) : null;
+  if (!next) return null;
+
+  return (
+    <Wrap>
+      <div style={{ maxWidth: 840, margin: "0 auto" }}>
+        <span style={{ display: "inline-flex", background: COLORS.gray100, color: COLORS.muted, borderRadius: 4, padding: "5px 12px", fontWeight: 700, fontSize: 11, letterSpacing: "0.2em", textTransform: "uppercase", lineHeight: 1 }}>Next in the series</span>
+        <div style={{ marginTop: 16, display: "flex", flexDirection: m ? "column" : "row", gap: m ? 6 : 20, alignItems: m ? "flex-start" : "baseline" }}>
+          <span style={{ fontSize: 14, fontWeight: 600, color: COLORS.tealDeep, whiteSpace: "nowrap" }}>{next.dateLabel.replace(/^\w+, /, "")}</span>
+          <h3 style={{ margin: 0, fontWeight: 700, fontSize: m ? 22 : 28, letterSpacing: "-0.02em", lineHeight: 1.2, color: COLORS.ink }}>{next.title}</h3>
+        </div>
+        <p style={{ margin: "14px 0 0", fontWeight: 300, fontSize: m ? 15 : 16.5, lineHeight: 1.6, color: COLORS.muted }}>{next.heroCopy}</p>
+        <div style={{ marginTop: 22 }}>
+          <a href={next.registrationUrl} style={{ display: "inline-block", fontSize: 13, fontWeight: 600, color: "#000", background: COLORS.teal, borderRadius: 999, padding: "12px 24px", textDecoration: "none" }}>Save my seat</a>
+        </div>
+      </div>
+    </Wrap>
+  );
+}
+
+export default function App({ slug }) {
+  const webinar = React.useMemo(() => getWebinar(slug), [slug]);
+  return (
+    <WebinarContext.Provider value={webinar}>
+      <Hero /><NextSteps /><WatchWhileYouWait /><UpcomingWebinar />
+    </WebinarContext.Provider>
+  );
 }

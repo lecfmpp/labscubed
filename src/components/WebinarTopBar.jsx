@@ -1,5 +1,5 @@
 import React from 'react';
-import { CONFIG, COLORS } from './webinarConfig.js';
+import { getWebinar, COLORS } from './webinarConfig.js';
 
 // The teal countdown strip. It lives ABOVE the site header rather than inside
 // the page body, so it is rendered by the .astro page directly and not by
@@ -27,7 +27,8 @@ function useCountdown(targetISO) {
 
 const pad = (n) => String(n).padStart(2, "0");
 
-export default function WebinarTopBar() {
+export default function WebinarTopBar({ slug }) {
+  const CONFIG = getWebinar(slug);
   const m = useIsMobile();
   const left = useCountdown(CONFIG.targetISO);
 

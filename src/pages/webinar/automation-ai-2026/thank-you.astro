@@ -5,14 +5,14 @@ import ThankYouApp from '../../../components/ThankYouApp.jsx';
 import Footer from '../../../components/Footer.astro';
 ---
 
-<Base title="You're Registered — The Hidden Cost of Manual Plastics Testing" description="You are registered for the LabsCubed webinar on Tuesday October 20 2026 at 11:00 AM EST.">
+<Base title="You're Registered — Automation, AI and Industry 4.0 in the Testing Lab" description="You are registered for the LabsCubed webinar on Wednesday November 18 2026 at 11:00 AM EST.">
   {/* No countdown bar here — they have already registered. The header still
       sticks, matching the registration page. */}
   <div class="lc-sticky-top">
     <Nav client:load inFlow showQuote={false} />
   </div>
   <main class="lc-page">
-    <ThankYouApp slug="spe-2026" client:only="react" />
+    <ThankYouApp slug="automation-ai-2026" client:only="react" />
   </main>
   <Footer showCta={false} />
 </Base>
