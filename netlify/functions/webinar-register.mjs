@@ -26,11 +26,11 @@ const REQUIRED = ['name', 'email', 'company', 'website', 'role', 'industry', 'vo
 // An unknown slug is rejected rather than defaulted, so a typo cannot quietly
 // file registrants under the wrong webinar.
 const WEBINARS = {
-  'spe-2026': { segmentId: 'd7b053f5-67b3-4747-807e-1e8db27c45a1' },
-  'automation-ai-2026': { segmentId: 'ca2a167f-e3c6-483b-90f0-8590d69ad2a1' },
+  'spe-oct-2026': { segmentId: 'd7b053f5-67b3-4747-807e-1e8db27c45a1' },
+  'automation-ai-nov-2026': { segmentId: 'ca2a167f-e3c6-483b-90f0-8590d69ad2a1' },
 };
 
-const DEFAULT_SLUG = 'spe-2026';
+const DEFAULT_SLUG = 'spe-oct-2026';
 
 const json = (status, body) =>
   new Response(JSON.stringify(body), {

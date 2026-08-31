@@ -2,13 +2,22 @@
 # (/_astro/*, /assets/*, /uploads/*, /robots.txt, /sitemap*.xml) are real files,
 # so Netlify serves them directly — the rule below never touches them.
 #
-# The webinar funnel moved to the /webinar/<slug>/ convention so the URL names
-# which webinar it is. These keep any already-shared links working. Above the
+# Webinar URLs are /webinar/<topic>-<mon>-<year>/ so the path says which webinar
+# AND when it ran — next year's SPE gets its own URL rather than colliding.
+# These keep every earlier shape of the URL working. They must stay above the
 # catch-all, or they would be proxied to Webflow and 404.
-/webinar/registration      /webinar/spe-2026/             301
-/webinar/registration/     /webinar/spe-2026/             301
-/webinar/thank-you         /webinar/spe-2026/thank-you/   301
-/webinar/thank-you/        /webinar/spe-2026/thank-you/   301
+/webinar/registration              /webinar/spe-oct-2026/                    301
+/webinar/registration/             /webinar/spe-oct-2026/                    301
+/webinar/thank-you                 /webinar/spe-oct-2026/thank-you/          301
+/webinar/thank-you/                /webinar/spe-oct-2026/thank-you/          301
+/webinar/spe-2026                  /webinar/spe-oct-2026/                    301
+/webinar/spe-2026/                 /webinar/spe-oct-2026/                    301
+/webinar/spe-2026/thank-you        /webinar/spe-oct-2026/thank-you/          301
+/webinar/spe-2026/thank-you/       /webinar/spe-oct-2026/thank-you/          301
+/webinar/automation-ai-2026        /webinar/automation-ai-nov-2026/          301
+/webinar/automation-ai-2026/       /webinar/automation-ai-nov-2026/          301
+/webinar/automation-ai-2026/thank-you   /webinar/automation-ai-nov-2026/thank-you/  301
+/webinar/automation-ai-2026/thank-you/  /webinar/automation-ai-nov-2026/thank-you/  301
 
 # /api/* is served by this site's own Netlify Functions. It MUST stay above the
 # catch-all below: the first matching rule wins, and without this the webinar

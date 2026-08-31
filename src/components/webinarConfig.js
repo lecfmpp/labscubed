@@ -1,5 +1,9 @@
 // Registry of every webinar funnel. One entry per webinar, keyed by slug.
 //
+// Slug convention: <topic>-<mon>-<year>, e.g. spe-oct-2026. Always carrying the
+// month and year means the URL says which webinar AND when it ran, and a repeat
+// of the same event next year gets its own URL instead of colliding.
+//
 // The slug is the single identifier that ties everything together: the URL
 // (/webinar/<slug>/), the Resend segment, the Supabase webinar_slug tag, and
 // the .ics filename. Adding a webinar means adding an entry here, creating a
@@ -39,8 +43,8 @@ const KHALED = {
 };
 
 export const WEBINARS = {
-  "spe-2026": build({
-    slug: "spe-2026",
+  "spe-oct-2026": build({
+    slug: "spe-oct-2026",
     title: "The Hidden Cost of Manual Plastics Testing",
     dateLabel: "Tuesday, October 20, 2026",
     timeLabel: "11:00 AM EST · 50 minutes, including Q&A",
@@ -86,11 +90,11 @@ export const WEBINARS = {
     exploreCtaHref: "https://labscubed.com/plastic-testing",
     onDemandVideoId: "EA0jUa83Qjs",
     // Cross-promoted on the registration page and the thank-you page.
-    nextWebinarSlug: "automation-ai-2026",
+    nextWebinarSlug: "automation-ai-nov-2026",
   }),
 
-  "automation-ai-2026": build({
-    slug: "automation-ai-2026",
+  "automation-ai-nov-2026": build({
+    slug: "automation-ai-nov-2026",
     title: "Automation, AI and Industry 4.0 in the Testing Lab",
     dateLabel: "Wednesday, November 18, 2026",
     timeLabel: "11:00 AM EST · 50 minutes, including Q&A",
