@@ -15,10 +15,24 @@ function useM(bp = 760) {
   return m;
 }
 
-function Wrap({ children, bg = "#fff" }) {
+/* Scrolls the registration section to just under the sticky countdown+header
+   stack. scrollIntoView alone lands the target beneath that stack, and the
+   anchor sits on the section rather than the inner grid so the scroll stops at
+   the top of the section with the whole form in view. The header is measured
+   at click time because it is a different height on mobile and desktop. */
+function scrollToRegister() {
+  const target = document.getElementById("register");
+  if (!target) return;
+  const header = document.querySelector(".lc-sticky-top");
+  const offset = header ? header.getBoundingClientRect().height : 0;
+  const top = target.getBoundingClientRect().top + window.scrollY - offset - 12;
+  window.scrollTo({ top: Math.max(top, 0), behavior: "smooth" });
+}
+
+function Wrap({ children, bg = "#fff", id }) {
   const m = useM();
   return (
-    <section style={{ background: bg }}>
+    <section id={id} style={{ background: bg }}>
       <div style={{ maxWidth: 1312, margin: "0 auto", padding: m ? "64px 20px" : "100px 64px" }}>
         {children}
       </div>
@@ -64,7 +78,7 @@ function SpeakerAvatar({ size = 44 }) {
    definitions below so the copy can't drift between layouts. */
 function Hero() {
   const m = useM();
-  const scrollToForm = () => document.getElementById("register")?.scrollIntoView({ behavior: "smooth" });
+  const scrollToForm = scrollToRegister;
 
   const badge = (
     <span style={{ display: "inline-block", fontSize: m ? 11 : 12, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", padding: "6px 12px", borderRadius: 999, background: "rgba(255,255,255,0.1)", color: "#fff" }}>Webinar · October 20</span>
@@ -409,8 +423,8 @@ function RegisterSection() {
   const percentFilled = (seatsUsed / CONFIG.seatsTotal) * 100;
 
   return (
-    <Wrap bg={COLORS.gray100}>
-      <div id="register" style={{ display: "grid", gridTemplateColumns: m ? "1fr" : "1fr 1fr", gap: m ? 32 : 64, alignItems: "start" }}>
+    <Wrap bg={COLORS.gray100} id="register">
+      <div style={{ display: "grid", gridTemplateColumns: m ? "1fr" : "1fr 1fr", gap: m ? 32 : 64, alignItems: "start" }}>
         <div>
           <H2>Register for the webinar</H2>
           <div style={{ marginTop: 28, borderRadius: 16, background: "#fff", padding: 24, display: "flex", flexDirection: "column", gap: 16 }}>

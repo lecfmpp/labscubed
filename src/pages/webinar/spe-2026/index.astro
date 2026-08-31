@@ -28,4 +28,18 @@ import Footer from '../../../components/Footer.astro';
     z-index: 50;
     background: #000;
   }
+
+  /* Belt-and-braces for arrivals that skip the JS scroll helper — a
+     /webinar/spe-2026/#register link, or an in-page anchor. Keeps the top of
+     the registration section clear of the sticky stack. Values track the
+     stack's real height: countdown bar + header. */
+  #register {
+    scroll-margin-top: 160px;
+  }
+
+  @media (max-width: 760px) {
+    #register {
+      scroll-margin-top: 130px;
+    }
+  }
 </style>
