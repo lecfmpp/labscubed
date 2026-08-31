@@ -27,3 +27,13 @@
   for = "/assets/img/*"
   [headers.values]
     Cache-Control = "public, max-age=2592000, stale-while-revalidate=86400"
+
+# The catch-all in public/_redirects proxies every non-file path to the Webflow
+# site, so a path that does not yet exist here is answered by Webflow — and its
+# response, redirects included, can be cached at Netlify's edge. That cached
+# answer then keeps being served AFTER the real page ships. These pages must
+# therefore always be revalidated rather than held at the edge.
+[[headers]]
+  for = "/webinar/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
