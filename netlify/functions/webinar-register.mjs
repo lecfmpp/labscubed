@@ -6,11 +6,16 @@
 // untouched, and the /api/webinar/register rule in _redirects (which sits
 // ABOVE the catch-all) is what stops the POST being handed to Webflow.
 //
-// HubSpot sync is best-effort: until HUBSPOT_API_KEY is set in the Netlify
-// environment the registration is only logged, and the caller still gets a
-// 200 so the funnel works end to end.
+// Registrants go to Resend, added to a per-webinar segment so each webinar has
+// its own list. Sync is best-effort: until RESEND_API_KEY is set in the Netlify
+// environment the registration is only logged, and the caller still gets a 200
+// so the funnel works end to end. A Resend outage must never cost us a signup.
 
 const REQUIRED = ['name', 'email', 'company', 'website', 'role', 'industry', 'volume', 'location'];
+
+// Resend segment "Webinar: SPE 2026". One segment per webinar — a new webinar
+// means a new segment id here, alongside the new slug in webinarConfig.js.
+const SEGMENT_ID = process.env.RESEND_WEBINAR_SEGMENT_ID || 'd7b053f5-67b3-4747-807e-1e8db27c45a1';
 
 const json = (status, body) =>
   new Response(JSON.stringify(body), {
@@ -42,63 +47,68 @@ export default async (request) => {
     webinar: data.webinar,
   });
 
-  const apiKey = process.env.HUBSPOT_API_KEY;
+  const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
-    console.log('HUBSPOT_API_KEY not set — skipping CRM sync');
+    console.log('RESEND_API_KEY not set — skipping list sync');
     return json(200, { success: true, synced: false });
   }
 
   try {
-    await syncToHubSpot(data, apiKey);
+    await addToResend(data, apiKey);
     return json(200, { success: true, synced: true });
   } catch (error) {
-    // A CRM failure must not cost us the registration — log it and let the
-    // visitor through to the thank-you page.
-    console.error('HubSpot sync failed:', error);
+    // Log the whole payload so a failed sync can be replayed by hand rather
+    // than lost.
+    console.error('Resend sync failed:', error, JSON.stringify(data));
     return json(200, { success: true, synced: false });
   }
 };
 
-async function syncToHubSpot(data, apiKey) {
-  const properties = {
-    firstname: data.name.split(' ')[0],
-    lastname: data.name.split(' ').slice(1).join(' '),
-    email: data.email,
-    company: data.company,
-    website: data.website,
-    jobtitle: data.role,
-    industry: data.industry,
-  };
-
+async function addToResend(data, apiKey) {
+  const [firstName, ...rest] = data.name.trim().split(/\s+/);
   const headers = {
     Authorization: `Bearer ${apiKey}`,
     'Content-Type': 'application/json',
   };
 
-  const search = await fetch('https://api.hubapi.com/crm/v3/objects/contacts/search', {
+  // POST /contacts upserts on email — a repeat registrant returns the same
+  // contact id rather than erroring, so this is safe to call every time.
+  const contact = await fetch('https://api.resend.com/contacts', {
     method: 'POST',
     headers,
     body: JSON.stringify({
-      filterGroups: [{ filters: [{ propertyName: 'email', operator: 'EQ', value: data.email }] }],
-      limit: 1,
+      email: data.email,
+      first_name: firstName,
+      last_name: rest.join(' '),
+      unsubscribed: false,
+      properties: {
+        company_name: data.company,
+        company_website: data.website,
+        job_title: data.role,
+        industry: data.industry,
+        test_volume: data.volume,
+        lab_location: data.location,
+        // Optional on the form, so it can legitimately be empty.
+        materials_tested: data.materials || '',
+        added_to_list_on: new Date().toISOString().slice(0, 10),
+      },
     }),
   });
 
-  const existingId = search.ok ? (await search.json()).results?.[0]?.id : null;
-
-  const url = existingId
-    ? `https://api.hubapi.com/crm/v3/objects/contacts/${existingId}`
-    : 'https://api.hubapi.com/crm/v3/objects/contacts';
-
-  const response = await fetch(url, {
-    method: existingId ? 'PATCH' : 'POST',
-    headers,
-    body: JSON.stringify({ properties }),
-  });
-
-  if (!response.ok) {
-    throw new Error(`HubSpot ${response.status}: ${await response.text()}`);
+  if (!contact.ok) {
+    throw new Error(`Resend contact ${contact.status}: ${await contact.text()}`);
   }
-}
 
-export const config = { path: '/api/webinar/register' };
+  // Segment membership is a separate call: passing `segments` on the upsert
+  // above does not attach them (verified against the live API).
+  const segment = await fetch(
+    `https://api.resend.com/contacts/${encodeURIComponent(data.email)}/segments/${SEGMENT_ID}`,
+    { method: 'POST', headers },
+  );
+
+  if (!segment.ok) {
+    throw new Error(`Resend segment ${segment.status}: ${await segment.text()}`);
+  }
+
+  return contact.json();
+}
