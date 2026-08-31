@@ -2,6 +2,13 @@
 // Footer — static. Links/contact verbatim from ui-lib.jsx Footer.
 import Button from './Button.astro';
 
+/* showCta hides the big Get a Quote button. The webinar funnel turns it off so
+   the only call to action on the page is registering. The Get a Quote / Request
+   Demo entries in the link columns below stay — those are navigation, not a
+   competing CTA. */
+interface Props { showCta?: boolean }
+const { showCta = true } = Astro.props;
+
 // Links replicate the live labscubed.com Webflow footer (absolute www URLs).
 const cols = [
   { h: 'Company', items: [['Home', 'https://www.labscubed.com/'], ['Rubber Testing', 'https://www.labscubed.com/rubber-testing'], ['Plastic Testing', 'https://www.labscubed.com/plastic-testing'], ['Testimonials', 'https://www.labscubed.com/#testimonials']] },
@@ -16,7 +23,7 @@ const cols = [
         <h2 class="ft-h2">Building the Autonomous Tensile Lab.</h2>
         <p class="ft-p">We build the automated systems that bring true autonomy to tensile testing. Remove repetitive manual work from your workflows and empower your lab to run around the clock with precision.</p>
       </div>
-      <div class="ft-cta"><Button variant="solid" arrow={false} href="https://www.labscubed.com/get-a-quote">Get a Quote</Button></div>
+      {showCta && <div class="ft-cta"><Button variant="solid" arrow={false} href="https://www.labscubed.com/get-a-quote">Get a Quote</Button></div>}
     </div>
     <div class="ft-cols">
       <div class="ft-logo-col">
