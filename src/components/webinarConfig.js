@@ -17,6 +17,21 @@
 
 const compact = (iso) => iso.replace(/[-:]/g, "").replace(/\.\d{3}/, "");
 
+/* Accepts whatever a YouTube URL happens to look like — a watch link, a youtu.be
+   share link, an /embed/ URL, a Shorts or live URL, a bare 11-character id, or a
+   whole <iframe ...> embed snippet pasted in verbatim — and returns just the id.
+   Returns null for anything it cannot read, which is what makes the video slots
+   fall back to the placeholder. */
+export function youTubeId(input) {
+  if (!input) return null;
+  const raw = String(input).trim();
+  if (/^[A-Za-z0-9_-]{11}$/.test(raw)) return raw;
+  const match = raw.match(
+    /(?:youtu\.be\/|youtube(?:-nocookie)?\.com\/(?:embed\/|shorts\/|live\/|v\/|watch\?(?:[^"'\s]*&)?v=))([A-Za-z0-9_-]{11})/
+  );
+  return match ? match[1] : null;
+}
+
 function build(w) {
   return {
     ...w,
@@ -88,7 +103,11 @@ export const WEBINARS = {
     ],
     exploreCtaLabel: "Explore CubeTen",
     exploreCtaHref: "https://labscubed.com/plastic-testing",
-    onDemandVideoId: "EA0jUa83Qjs",
+    // Video slots. Paste a YouTube URL, a share link, or the whole <iframe>
+    // embed snippet — anything youTubeId() can read. Leave null for the
+    // placeholder.
+    heroVideoUrl: null,
+    onDemandVideoUrl: "https://www.youtube.com/embed/EA0jUa83Qjs",
     // Cross-promoted on the registration page and the thank-you page.
     nextWebinarSlug: "automation-ai-nov-2026",
   }),
@@ -138,7 +157,8 @@ export const WEBINARS = {
     ],
     exploreCtaLabel: "Explore CubeTen",
     exploreCtaHref: "https://labscubed.com/plastic-testing",
-    onDemandVideoId: "EA0jUa83Qjs",
+    heroVideoUrl: null,
+    onDemandVideoUrl: "https://www.youtube.com/embed/EA0jUa83Qjs",
     nextWebinarSlug: null,
   }),
 };

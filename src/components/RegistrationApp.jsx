@@ -1,6 +1,6 @@
 import React from 'react';
 import LogoSlider from './LogoSlider.jsx';
-import { getWebinar, COLORS } from './webinarConfig.js';
+import { getWebinar, youTubeId, COLORS } from './webinarConfig.js';
 
 // The countdown strip is NOT rendered here — it sits above the site header, so
 // the .astro page renders <WebinarTopBar /> in its sticky stack instead.
@@ -55,9 +55,38 @@ function H2({ children }) {
   );
 }
 
-function VideoPlaceholder({ label }) {
+/* One slot for the hero media: plays the configured YouTube video when the
+   webinar has one, and shows the placeholder until then. Set heroVideoUrl in
+   webinarConfig to fill it — a URL, a share link or a pasted <iframe> all work. */
+function HeroVideo({ label, video }) {
+  const id = youTubeId(video);
+  const frame = {
+    position: "relative",
+    width: "100%",
+    aspectRatio: "16/9",
+    borderRadius: 20,
+    overflow: "hidden",
+    border: "1px solid rgba(255,255,255,0.1)",
+  };
+
+  if (id) {
+    return (
+      <div style={{ ...frame, background: "#000" }}>
+        <iframe
+          src={`https://www.youtube.com/embed/${id}`}
+          title={label}
+          loading="lazy"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerPolicy="strict-origin-when-cross-origin"
+          allowFullScreen
+          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: 0 }}
+        />
+      </div>
+    );
+  }
+
   return (
-    <div style={{ position: "relative", width: "100%", aspectRatio: "16/9", borderRadius: 20, overflow: "hidden", background: "linear-gradient(160deg, #1a1b1f, #000)", border: "1px solid rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+    <div style={{ ...frame, background: "linear-gradient(160deg, #1a1b1f, #000)", display: "flex", alignItems: "center", justifyContent: "center" }}>
       <span style={{ width: 72, height: 72, borderRadius: "50%", background: COLORS.teal, display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
         <svg width="24" height="24" viewBox="0 0 24 24" fill="#000"><path d="M8 5v14l11-7z" /></svg>
       </span>
@@ -96,7 +125,7 @@ function Hero() {
   );
   const media = (
     <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
-      <VideoPlaceholder label="Webinar Preview" />
+      <HeroVideo label="Webinar preview" video={CONFIG.heroVideoUrl} />
       <LogoSlider />
     </div>
   );
