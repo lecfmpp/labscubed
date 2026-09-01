@@ -105,7 +105,10 @@ export const WEBINARS = {
     // Video slots. Paste a YouTube URL, a share link, or the whole <iframe>
     // embed snippet — anything youTubeId() can read. Leave null for the
     // placeholder.
-    heroVideoUrl: null,
+    heroVideoUrl: "https://youtu.be/wuEurbhcKUw",
+    // The confirmation page's own hero video. Falls back to heroVideoUrl when
+    // null, so a webinar with a single video needs only the one field.
+    thankYouVideoUrl: "https://youtu.be/agUsIcHPaoU",
     onDemandVideoUrl: "https://www.youtube.com/embed/EA0jUa83Qjs",
     // Set once the session has aired and the recording is up; until then the
     // hub shows "recording coming soon" for a past webinar.
@@ -159,6 +162,7 @@ export const WEBINARS = {
     exploreCtaLabel: "Explore CubeTen",
     exploreCtaHref: "https://labscubed.com/plastic-testing",
     heroVideoUrl: null,
+    thankYouVideoUrl: null,
     onDemandVideoUrl: "https://www.youtube.com/embed/EA0jUa83Qjs",
     recordingUrl: null,
     nextWebinarSlug: null,

@@ -111,7 +111,7 @@ function Hero() {
           </div>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 0, minWidth: 0 }}>
-          <HeroVideo label="Event preview" video={CONFIG.heroVideoUrl} />
+          <HeroVideo label="Event preview" video={CONFIG.thankYouVideoUrl || CONFIG.heroVideoUrl} />
         </div>
       </div>
     </section>
