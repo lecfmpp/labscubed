@@ -244,18 +244,21 @@ const STATUS_LABEL = { recorded: 'Highlights available', pending: 'Highlights co
   .wh-empty { margin: 0; font-weight: 300; font-size: 17px; line-height: 1.6; color: var(--text-muted); max-width: 620px; }
 
   .wh-list { display: flex; flex-direction: column; }
-  .wh-card { display: grid; grid-template-columns: 260px 190px 1fr auto; gap: 28px; align-items: stretch; padding: 28px 0; border-top: 1px solid var(--lc-line); }
+  /* min-height plus a clamped description keep every row the same size, so a
+     show with a shorter blurb does not render a shorter card than its
+     neighbours. */
+  .wh-card { display: grid; grid-template-columns: 260px 190px 1fr auto; gap: 28px; align-items: stretch; padding: 28px 0; min-height: 230px; box-sizing: border-box; border-top: 1px solid var(--lc-line); }
   /* Fills the row top to bottom so it lines up with the title and the booth
      line rather than floating as a small chip. */
   .wh-thumb { display: block; border-radius: 12px; overflow: hidden; line-height: 0; background: #000; min-height: 100%; }
-  .wh-thumb img { width: 100%; height: 100%; min-height: 148px; object-fit: cover; display: block; }
+  .wh-thumb img { width: 100%; height: 100%; min-height: 174px; object-fit: cover; display: block; }
   .wh-card:last-child { border-bottom: 1px solid var(--lc-line); }
   .wh-when { display: flex; flex-direction: column; gap: 4px; align-self: center; }
   .wh-date { font-size: 14px; font-weight: 600; color: var(--lc-ink); }
   .wh-time { font-size: 13px; font-weight: 300; color: var(--text-muted); }
   .wh-body { align-self: center; }
   .wh-title { margin: 0; font-weight: 600; font-size: 21px; letter-spacing: -0.01em; color: var(--lc-ink); }
-  .wh-desc { margin: 8px 0 0; max-width: 620px; font-weight: 300; font-size: 15px; line-height: 1.55; color: var(--text-muted); }
+  .wh-desc { margin: 8px 0 0; max-width: 620px; font-weight: 300; font-size: 15px; line-height: 1.55; color: var(--text-muted); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
   .wh-speaker { margin-top: 10px; font-size: 13px; font-weight: 500; color: var(--lc-teal-deep); }
   .wh-action { display: flex; align-items: center; align-self: center; }
   .wh-btn { display: inline-block; white-space: nowrap; background: var(--lc-teal, #17ddc5); color: #000; border-radius: 999px; padding: 12px 24px; font-weight: 600; font-size: 13px; text-decoration: none; }
@@ -303,7 +306,7 @@ const STATUS_LABEL = { recorded: 'Highlights available', pending: 'Highlights co
     .wh-lede { font-size: 15px; }
     .wh-sec { padding: 56px 0; }
     .wh-h2 { font-size: 28px; margin-bottom: 24px; }
-    .wh-card { grid-template-columns: 1fr; gap: 14px; align-items: flex-start; padding: 24px 0; }
+    .wh-card { grid-template-columns: 1fr; gap: 14px; align-items: flex-start; padding: 24px 0; min-height: 0; }
     .wh-thumb { width: 100%; max-width: 100%; min-height: 0; }
     .wh-thumb img { min-height: 0; aspect-ratio: 16 / 9; }
     .wh-when { flex-direction: row; align-items: baseline; gap: 10px; }

@@ -10,9 +10,11 @@ import Nav from '../../islands/Nav.tsx';
 import Footer from '../../components/Footer.astro';
 import { WEBINARS, youTubeId } from '../../components/webinarConfig.js';
 
-const all = Object.values(WEBINARS).sort(
-  (a, b) => new Date(a.startUTC) - new Date(b.startUTC),
-);
+// Webinars only. The registry also holds tradeshows, which belong on /events/ —
+// without this filter they leak onto this page.
+const all = Object.values(WEBINARS)
+  .filter((w) => w.kind !== 'tradeshow')
+  .sort((a, b) => new Date(a.startUTC) - new Date(b.startUTC));
 const now = Date.now();
 const upcoming = all.filter((w) => new Date(w.startUTC).getTime() > now);
 // The library lists EVERY session, not only past ones, so the section is never
