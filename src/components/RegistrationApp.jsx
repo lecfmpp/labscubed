@@ -222,6 +222,41 @@ function Hero() {
   );
 }
 
+/* Tradeshow stand-in for the agenda: what the event is and why we are there,
+   so a visitor can judge whether it is worth their time. Driven entirely by
+   CONFIG.about, so every future show gets one by filling that in. */
+function EventSummary() {
+  const CONFIG = useWebinar();
+  const m = useM();
+  const about = CONFIG.about;
+  if (!about) return null;
+
+  return (
+    <Wrap bg={COLORS.gray100}>
+      <H2>{about.heading}</H2>
+      <div style={{ marginTop: m ? 28 : 44, display: "grid", gridTemplateColumns: m ? "1fr" : "1fr 1fr", gap: m ? 24 : 56, alignItems: "start" }}>
+        {about.imageUrl && (
+          <div style={{ borderRadius: 20, overflow: "hidden", background: "#000", aspectRatio: "16/9" }}>
+            <img
+              src={about.imageUrl}
+              alt={about.imageAlt || about.heading}
+              width={800}
+              height={450}
+              loading="lazy"
+              style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+            />
+          </div>
+        )}
+        <div style={{ display: "flex", flexDirection: "column", gap: m ? 14 : 18 }}>
+          {about.paragraphs.map((para) => (
+            <p key={para} style={{ margin: 0, fontSize: m ? 15 : 16.5, lineHeight: 1.65, fontWeight: 300, color: COLORS.muted }}>{para}</p>
+          ))}
+        </div>
+      </div>
+    </Wrap>
+  );
+}
+
 function Agenda() {
   const CONFIG = useWebinar();
   const m = useM();
@@ -532,7 +567,7 @@ export default function App({ slug }) {
   const webinar = React.useMemo(() => getWebinar(slug), [slug]);
   return (
     <WebinarContext.Provider value={webinar}>
-      <Hero /><Agenda /><WhatToExpect />{webinar.showSpeaker !== false && <Speaker />}<WhoIsThisFor /><NextWebinar /><RegisterSection />
+      <Hero />{webinar.kind === "tradeshow" ? <EventSummary /> : <Agenda />}<WhatToExpect />{webinar.showSpeaker !== false && <Speaker />}<WhoIsThisFor /><NextWebinar /><RegisterSection />
     </WebinarContext.Provider>
   );
 }

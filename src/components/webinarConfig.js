@@ -204,6 +204,20 @@ export const WEBINARS = {
     ctaLabel: "Book my demo",
     registerHeading: "Book your custom demo",
     registerSubmitLabel: "Book my demo",
+    /* Replaces "What we'll cover" on a tradeshow: what the show is, and why we
+       exhibit at it. Every tradeshow entry should carry one. Facts are from the
+       organiser's own event page — deliberately no attendance figure, since the
+       "5K" on their materials is the fun run, not the headcount. */
+    about: {
+      heading: "About the Global Polymer Summit",
+      imageUrl: "/assets/img/events/gps-2025-panel.webp",
+      imageAlt: "LabsCubed speaking on a panel at a previous Global Polymer Summit",
+      paragraphs: [
+        "The Global Polymer Summit brings the International Elastomer Conference and the International Tire Exposition & Conference together into one event, presented by IEC and ITEC at the Kentucky International Convention Center in Louisville.",
+        "Over three days it runs an expo floor alongside a technical and business programme, an educational symposium and a full networking schedule, drawing manufacturers, suppliers, distributors, researchers and engineers from across the rubber, elastomer and tire industries.",
+        "That mix is exactly why we exhibit. The people who carry the cost of manual tensile testing are in the room — QA teams holding consistency, lab managers under throughput pressure, and engineers characterising new compounds. We bring CubeOne so those conversations happen over a working machine instead of a slide.",
+      ],
+    },
     agenda: [
       ["01", "Get hands-on with CubeOne", "See CubeOne run a live demonstration on the show floor. Watch it, test it, and put your hands on it yourself."],
       ["02", "Your lab, your challenges", "Every lab has its own workflow and priorities, so we would rather not give you a one-size-fits-all demonstration. Tell us what you are working with and we will build the demo around it."],
