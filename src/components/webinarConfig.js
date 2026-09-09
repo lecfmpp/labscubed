@@ -195,9 +195,9 @@ export const WEBINARS = {
     // Not a speaker — the person you'll actually meet at the booth.
     showSpeaker: true,
     speakerHeading: "Who you'll meet",
-    speakerName: "Guyth",
-    speakerTitle: "LabsCubed · Booth #815",
-    speakerInitials: "G",
+    speakerName: "Guyth Abouyouniss",
+    speakerTitle: "Account Executive, LabsCubed",
+    speakerInitials: "GA",
     speakerPhoto: "/assets/img/team/guyth.webp",
     speakerBio:
       "Guyth will be running CubeOne demonstrations at Booth #815 across all three days. Book a slot and he'll build the demonstration around your own materials and workflow rather than running through a script.",
