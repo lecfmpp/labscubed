@@ -1,0 +1,67 @@
+---
+// Standalone white-paper landing page — re-platformed off Webflow onto the
+// same Astro design system as the homepage. The hero IS the homepage's
+// CTABanner component, reused verbatim (not duplicated) so the email-capture
+// form, its Supabase `download-request` wiring, and its visual language stay
+// identical and drift-free between the two surfaces.
+import Base from '../layouts/Base.astro';
+import Nav from '../islands/Nav.tsx';
+import CTABanner from '../components/CTABanner.astro';
+import Trust from '../components/Trust.astro';
+import Section from '../components/Section.astro';
+import Footer from '../components/Footer.astro';
+
+const title = 'Automation vs. Manual Testing - Download Now | LabsCubed';
+const description =
+  'Download the free LabsCubed white paper on automated testing, a quantitative study on lab ROI. Access the data you need to slash costs, eliminate errors, and build the business case for automation.';
+
+const points = [
+  {
+    h: 'Quantified cost reduction',
+    p: 'Real ROI data comparing manual vs. automated tensile testing — labor hours, throughput, and cost-per-specimen.',
+  },
+  {
+    h: 'Eliminating human error',
+    p: 'How operator-dependent variability shows up in manual testing, and what automation removes from the equation.',
+  },
+  {
+    h: 'The business case, built for you',
+    p: 'The exact data points QA and Ops leaders use internally to justify the switch to automation.',
+  },
+];
+---
+<Base title={title} description={description}>
+  <Nav client:load />
+  <main class="lc-page">
+    <CTABanner />
+    <Section bg="#fff">
+      <div class="wp-points">
+        <h2 class="wp-points-h2">What's inside the white paper.</h2>
+        <div class="wp-points-grid">
+          {points.map((pt) => (
+            <div class="wp-point">
+              <h3 class="wp-point-h3">{pt.h}</h3>
+              <p class="wp-point-p">{pt.p}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </Section>
+    <Trust />
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .wp-points { padding: 120px 0; }
+  .wp-points-h2 { font-weight: 700; font-size: var(--text-h2); line-height: 1.18; letter-spacing: -0.02em; margin: 0; max-width: 700px; color: var(--text-primary); }
+  .wp-points-grid { margin-top: 64px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 48px; }
+  .wp-point-h3 { font-weight: 600; font-size: 21px; letter-spacing: -0.01em; margin: 0 0 12px; color: var(--text-primary); }
+  .wp-point-p { font-size: var(--text-body); line-height: var(--leading-body); color: var(--text-muted); margin: 0; }
+
+  @media (max-width: 760px) {
+    .wp-points { padding: 70px 0; }
+    .wp-points-h2 { font-size: 30px; }
+    .wp-points-grid { grid-template-columns: 1fr; gap: 36px; margin-top: 40px; }
+  }
+</style>
