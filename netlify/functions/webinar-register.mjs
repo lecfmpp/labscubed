@@ -96,7 +96,7 @@ export default async (request) => {
 
   let stored = false;
   try {
-    stored = await recordInSupabase(data, slug, resendSynced, syncError);
+    stored = await recordInSupabase(data, slug, webinar.kind || 'webinar', resendSynced, syncError);
   } catch (error) {
     // Both destinations are down. Log the whole payload as the last resort so
     // the registration can be replayed by hand rather than lost.
@@ -155,7 +155,7 @@ async function addToResend(data, apiKey, segmentId) {
   return contact.json();
 }
 
-async function recordInSupabase(data, slug, resendSynced, syncError) {
+async function recordInSupabase(data, slug, kind, resendSynced, syncError) {
   const url = process.env.SUPABASE_URL;
   // The RPC is granted to anon, so the publishable key is enough; the service
   // key is preferred when present.
@@ -179,8 +179,8 @@ async function recordInSupabase(data, slug, resendSynced, syncError) {
     body: JSON.stringify({
       payload: {
         webinar_slug: slug,
-        // 'webinar' unless the entry above says otherwise.
-        kind: webinar.kind || 'webinar',
+        // 'webinar' unless the WEBINARS entry says otherwise.
+        kind,
         webinar_title: data.webinar || null,
         name: data.name,
         email: data.email,
