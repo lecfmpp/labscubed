@@ -1,0 +1,18 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//LabsCubed//Events//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:LabsCubed at the Global Polymer Summit 2026
+BEGIN:VEVENT
+UID:gps-sep-2026@labscubed.com
+DTSTAMP:20260909T000000Z
+DTSTART;VALUE=DATE:20260928
+DTEND;VALUE=DATE:20261001
+SUMMARY:LabsCubed at the Global Polymer Summit 2026 - Booth #815
+DESCRIPTION:Get hands-on with CubeOne at Booth #815. Live automated tensile testing demonstrations built around your lab's workflow and materials.
+LOCATION:Louisville, Kentucky
+URL:https://labscubed.com/events/gps-sep-2026/
+STATUS:CONFIRMED
+END:VEVENT
+END:VCALENDAR

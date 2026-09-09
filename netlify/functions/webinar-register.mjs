@@ -28,6 +28,8 @@ const REQUIRED = ['name', 'email', 'company', 'website', 'role', 'industry', 'vo
 const WEBINARS = {
   'spe-oct-2026': { segmentId: 'd7b053f5-67b3-4747-807e-1e8db27c45a1' },
   'automation-ai-nov-2026': { segmentId: 'ca2a167f-e3c6-483b-90f0-8590d69ad2a1' },
+  // Tradeshow demo bookings, not a webinar — same funnel, its own list.
+  'gps-sep-2026': { segmentId: '316f18d8-86ba-459f-817a-67cd921e4e2d', kind: 'tradeshow' },
 };
 
 const DEFAULT_SLUG = 'spe-oct-2026';
@@ -177,6 +179,8 @@ async function recordInSupabase(data, slug, resendSynced, syncError) {
     body: JSON.stringify({
       payload: {
         webinar_slug: slug,
+        // 'webinar' unless the entry above says otherwise.
+        kind: webinar.kind || 'webinar',
         webinar_title: data.webinar || null,
         name: data.name,
         email: data.email,

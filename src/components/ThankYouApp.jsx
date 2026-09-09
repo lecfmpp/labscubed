@@ -76,6 +76,7 @@ function CalendarIcon({ icon, letter, color, name }) {
 
 function Hero() {
   const CONFIG = useWebinar();
+  const isShow = CONFIG.kind === "tradeshow";
   const m = useM();
   const calendarButtons = [
     { name: "Google", href: CONFIG.calendarLinks.google, icon: "/assets/img/calendar/google-calendar.svg", letter: "G", color: "#4285F4" },
@@ -88,15 +89,17 @@ function Hero() {
       <div style={{ maxWidth: 1312, margin: "0 auto", padding: m ? "48px 20px 64px" : "80px 64px 100px", display: "grid", gridTemplateColumns: m ? "1fr" : "1fr 1fr", gap: m ? 32 : 56, alignItems: "center" }}>
         <div>
           <nav aria-label="Breadcrumb" style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, marginBottom: m ? 18 : 22 }}>
-            <a href="/webinar/" style={{ color: "rgba(255,255,255,0.65)", textDecoration: "none", borderBottom: "1px solid rgba(255,255,255,0.25)", paddingBottom: 1 }}>All webinars</a>
+            <a href={isShow ? "https://labscubed.com/" : "/webinar/"} style={{ color: "rgba(255,255,255,0.65)", textDecoration: "none", borderBottom: "1px solid rgba(255,255,255,0.25)", paddingBottom: 1 }}>{isShow ? "LabsCubed" : "All webinars"}</a>
             <span aria-hidden="true" style={{ color: "rgba(255,255,255,0.3)" }}>/</span>
-            <span style={{ color: "rgba(255,255,255,0.45)" }}>Registered</span>
+            <span style={{ color: "rgba(255,255,255,0.45)" }}>{isShow ? "Demo booked" : "Registered"}</span>
           </nav>
           <span style={{ width: 56, height: 56, borderRadius: "50%", background: COLORS.teal, display: "inline-flex", alignItems: "center", justifyContent: "center", marginBottom: 24 }}>
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4 10-11" stroke="#000" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
           </span>
-          <h1 style={{ fontWeight: 700, fontSize: m ? 32 : 48, letterSpacing: "-0.02em", lineHeight: 1.1, margin: 0 }}>You're registered.</h1>
-          <p style={{ margin: "18px 0 0", maxWidth: 480, fontWeight: 300, fontSize: m ? 15 : 18, lineHeight: 1.55, color: "rgba(255,255,255,0.55)" }}>A confirmation email with your calendar invite and join link is on its way to your inbox.</p>
+          <h1 style={{ fontWeight: 700, fontSize: m ? 32 : 48, letterSpacing: "-0.02em", lineHeight: 1.1, margin: 0 }}>{isShow ? "Your demo is booked." : "You're registered."}</h1>
+          <p style={{ margin: "18px 0 0", maxWidth: 480, fontWeight: 300, fontSize: m ? 15 : 18, lineHeight: 1.55, color: "rgba(255,255,255,0.55)" }}>{isShow
+              ? `A confirmation email is on its way. We'll be in touch before the show to agree a time, and you'll find us at ${CONFIG.boothLabel}.`
+              : "A confirmation email with your calendar invite and join link is on its way to your inbox."}</p>
           <div style={{ marginTop: 32, flexDirection: "column", gap: 6, padding: "18px 22px", borderRadius: 14, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", display: "flex" }}>
             <span style={{ fontWeight: 600, fontSize: 15 }}>{CONFIG.title}</span>
             <span style={{ fontSize: 13, color: "rgba(255,255,255,0.5)" }}>{CONFIG.dateLabel} · {CONFIG.timeLabel}</span>
@@ -111,7 +114,7 @@ function Hero() {
           </div>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 0, minWidth: 0 }}>
-          <HeroVideo label="Event preview" video={CONFIG.thankYouVideoUrl || CONFIG.heroVideoUrl} />
+          <HeroVideo label={isShow ? "CubeOne in action" : "Event preview"} video={CONFIG.thankYouVideoUrl || CONFIG.heroVideoUrl} />
         </div>
       </div>
     </section>
@@ -120,12 +123,19 @@ function Hero() {
 
 function NextSteps() {
   const CONFIG = useWebinar();
+  const isShow = CONFIG.kind === "tradeshow";
   const m = useM();
-  const steps = [
-    ["01", "Check your inbox", "Your confirmation email has the calendar invite and join link."],
-    ["02", "Save the date", "Add it to your calendar so it doesn't slip past you."],
-    ["03", "Join 5 minutes early", "We'll open the room ahead of time for a live Q&A warm-up."]
-  ];
+  const steps = isShow
+    ? [
+        ["01", "Check your inbox", "Your confirmation email has the show dates and our booth number."],
+        ["02", "Tell us about your lab", "Reply with your materials and workflow and we'll build the demonstration around them."],
+        ["03", `Come and find us at ${CONFIG.boothLabel}`, "Bring your questions. We'll bring CubeOne."],
+      ]
+    : [
+        ["01", "Check your inbox", "Your confirmation email has the calendar invite and join link."],
+        ["02", "Save the date", "Add it to your calendar so it doesn't slip past you."],
+        ["03", "Join 5 minutes early", "We'll open the room ahead of time for a live Q&A warm-up."],
+      ];
 
   return (
     <Wrap>
@@ -147,6 +157,7 @@ function NextSteps() {
    action, then the way through to the product page. */
 function WatchWhileYouWait() {
   const CONFIG = useWebinar();
+  const isShow = CONFIG.kind === "tradeshow";
   const m = useM();
 
   return (
@@ -154,7 +165,9 @@ function WatchWhileYouWait() {
       <div style={{ maxWidth: 840, margin: "0 auto", textAlign: "center" }}>
         <H2>See the automation for yourself</H2>
         <p style={{ margin: m ? "14px 0 0" : "18px 0 0", fontWeight: 300, fontSize: m ? 15 : 17, lineHeight: 1.6, color: COLORS.muted }}>
-          While you wait for {CONFIG.dateLabel.replace(/^\w+, /, "").replace(/, \d{4}$/, "")}, here is CubeTen running a full tray — the same automated workflow Khaled walks through on the day.
+          {isShow
+            ? "Before the show, here is the automation running a full tray end to end — the same workflow you'll get your hands on at the booth."
+            : `While you wait for ${CONFIG.dateLabel.replace(/^\w+, /, "").replace(/, \d{4}$/, "")}, here is CubeTen running a full tray — the same automated workflow Khaled walks through on the day.`}
         </p>
       </div>
 

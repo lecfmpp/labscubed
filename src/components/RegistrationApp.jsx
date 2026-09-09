@@ -121,7 +121,7 @@ function Hero() {
      back out — to the hub, where the other webinars are. */
   const breadcrumb = (
     <nav aria-label="Breadcrumb" style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, marginBottom: m ? 16 : 20 }}>
-      <a href="/webinar/" style={{ color: "rgba(255,255,255,0.65)", textDecoration: "none", borderBottom: "1px solid rgba(255,255,255,0.25)", paddingBottom: 1 }}>All webinars</a>
+      <a href={CONFIG.kind === "tradeshow" ? "https://labscubed.com/" : "/webinar/"} style={{ color: "rgba(255,255,255,0.65)", textDecoration: "none", borderBottom: "1px solid rgba(255,255,255,0.25)", paddingBottom: 1 }}>{CONFIG.kind === "tradeshow" ? "LabsCubed" : "All webinars"}</a>
       <span aria-hidden="true" style={{ color: "rgba(255,255,255,0.3)" }}>/</span>
       <span style={{ color: "rgba(255,255,255,0.45)" }}>{CONFIG.dateLabel.replace(/^\w+, /, "")}</span>
     </nav>
@@ -131,7 +131,7 @@ function Hero() {
     <span style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: m ? 11 : 12, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", padding: m ? "7px 13px" : "8px 15px", borderRadius: 999, background: "#dc2626", color: "#fff" }}>
       {/* White dot, not red — a red dot on a red pill would be invisible. */}
       <span className="lc-live-dot" style={{ width: 7, height: 7, borderRadius: "50%", background: "#fff", flexShrink: 0 }} />
-      Live webinar
+      {CONFIG.kind === "tradeshow" ? "Live demo" : "Live webinar"}
     </span>
   );
   const headline = (
@@ -139,12 +139,12 @@ function Hero() {
   );
   const media = (
     <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
-      <HeroVideo label="Webinar preview" video={CONFIG.heroVideoUrl} />
+      <HeroVideo label={CONFIG.kind === "tradeshow" ? "CubeOne in action" : "Webinar preview"} video={CONFIG.heroVideoUrl} />
       <LogoSlider />
     </div>
   );
   const cta = (
-    <button onClick={scrollToForm} style={{ background: COLORS.teal, color: "#000", border: "none", borderRadius: 999, padding: m ? "15px 28px" : "14px 28px", fontWeight: 600, fontSize: m ? 16 : 15, cursor: "pointer", width: m ? "100%" : "auto" }}>Save My Seat</button>
+    <button onClick={scrollToForm} style={{ background: COLORS.teal, color: "#000", border: "none", borderRadius: 999, padding: m ? "15px 28px" : "14px 28px", fontWeight: 600, fontSize: m ? 16 : 15, cursor: "pointer", width: m ? "100%" : "auto" }}>{CONFIG.ctaLabel || "Save My Seat"}</button>
   );
   const copy = (
     <p style={{ margin: 0, maxWidth: 480, fontWeight: 300, fontSize: m ? 15 : 18, lineHeight: 1.55, color: "rgba(255,255,255,0.55)" }}>{CONFIG.heroCopy}</p>
@@ -152,6 +152,7 @@ function Hero() {
   const schedule = (
     <div style={{ display: "flex", flexWrap: "wrap", gap: "8px 16px", fontSize: 14, color: "rgba(255,255,255,0.65)" }}>
       <span>{CONFIG.dateLabel}</span><span style={{ color: "rgba(255,255,255,0.3)" }}>·</span><span>{CONFIG.timeLabel}</span>
+      {CONFIG.eventLabel && (<><span style={{ color: "rgba(255,255,255,0.3)" }}>·</span><span>{CONFIG.eventLabel}</span></>)}
     </div>
   );
   const speaker = (
@@ -440,7 +441,7 @@ function RegisterSection() {
     setIsSubmitting(true);
     setError("");
     const website = details.website.startsWith('http') ? details.website : `https://${details.website}`;
-    const payload = { ...basic, ...details, website, webinar: CONFIG.title, webinar_slug: CONFIG.slug, timestamp: new Date().toISOString() };
+    const payload = { ...basic, ...details, website, webinar: CONFIG.title, webinar_slug: CONFIG.slug, kind: CONFIG.kind, timestamp: new Date().toISOString() };
     try {
       console.log("Submitting to:", CONFIG.submitEndpoint);
       const response = await fetch(CONFIG.submitEndpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
@@ -463,38 +464,40 @@ function RegisterSection() {
     }
   }
 
-  const seatsUsed = CONFIG.seatsTotal - CONFIG.seatsLeft;
+  const seatsUsed = (CONFIG.seatsTotal || 0) - (CONFIG.seatsLeft || 0);
   const percentFilled = (seatsUsed / CONFIG.seatsTotal) * 100;
 
   return (
     <Wrap bg={COLORS.gray100} id="register">
       <div style={{ display: "grid", gridTemplateColumns: m ? "1fr" : "1fr 1fr", gap: m ? 32 : 64, alignItems: "start" }}>
         <div>
-          <H2>Register for the webinar</H2>
+          <H2>{CONFIG.registerHeading || "Register for the webinar"}</H2>
           <div style={{ marginTop: 28, borderRadius: 16, background: "#fff", padding: 24, display: "flex", flexDirection: "column", gap: 16 }}>
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14 }}><span style={{ color: COLORS.muted }}>Date</span><span style={{ fontWeight: 600, color: COLORS.ink }}>{CONFIG.dateLabel}</span></div>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14 }}><span style={{ color: COLORS.muted }}>Time</span><span style={{ fontWeight: 600, color: COLORS.ink }}>{CONFIG.timeLabel}</span></div>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14 }}><span style={{ color: COLORS.muted }}>Format</span><span style={{ fontWeight: 600, color: COLORS.ink }}>Live + recording</span></div>
-            
-            <div>
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, fontWeight: 600, marginBottom: 8, color: COLORS.ink }}>
-                <span>Seats Available</span>
-                <span style={{ color: COLORS.tealDeep }}>{CONFIG.seatsLeft} left</span>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14 }}><span style={{ color: COLORS.muted }}>{CONFIG.kind === "tradeshow" ? "Where" : "Time"}</span><span style={{ fontWeight: 600, color: COLORS.ink }}>{CONFIG.timeLabel}</span></div>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14 }}><span style={{ color: COLORS.muted }}>{CONFIG.kind === "tradeshow" ? "Event" : "Format"}</span><span style={{ fontWeight: 600, color: COLORS.ink }}>{CONFIG.kind === "tradeshow" ? CONFIG.eventLabel : "Live + recording"}</span></div>
+
+            {CONFIG.showSeats !== false && (
+              <div>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, fontWeight: 600, marginBottom: 8, color: COLORS.ink }}>
+                  <span>Seats Available</span>
+                  <span style={{ color: COLORS.tealDeep }}>{CONFIG.seatsLeft} left</span>
+                </div>
+                <div style={{ width: "100%", height: 14, borderRadius: 8, background: "rgba(0,0,0,0.1)", overflow: "hidden" }}>
+                  <div style={{
+                    height: "100%",
+                    width: `${percentFilled}%`,
+                    background: `linear-gradient(90deg, #22c55e 0%, #f59e0b 50%, #ef4444 100%)`,
+                    transition: "width 0.3s ease",
+                    borderRadius: 8,
+                    boxShadow: "0 0 12px rgba(239, 68, 68, 0.3)"
+                  }} />
+                </div>
+                <div style={{ fontSize: 12, marginTop: 6, color: COLORS.muted }}>
+                  {seatsUsed} / {CONFIG.seatsTotal} filled
+                </div>
               </div>
-              <div style={{ width: "100%", height: 14, borderRadius: 8, background: "rgba(0,0,0,0.1)", overflow: "hidden" }}>
-                <div style={{
-                  height: "100%",
-                  width: `${percentFilled}%`,
-                  background: `linear-gradient(90deg, #22c55e 0%, #f59e0b 50%, #ef4444 100%)`,
-                  transition: "width 0.3s ease",
-                  borderRadius: 8,
-                  boxShadow: "0 0 12px rgba(239, 68, 68, 0.3)"
-                }} />
-              </div>
-              <div style={{ fontSize: 12, marginTop: 6, color: COLORS.muted }}>
-                {seatsUsed} / {CONFIG.seatsTotal} filled
-              </div>
-            </div>
+            )}
           </div>
         </div>
 
@@ -503,7 +506,7 @@ function RegisterSection() {
           <Field label="Full Name"><input type="text" required placeholder="Jane Doe" style={fieldInput} value={basic.name} onChange={set("name")} /></Field>
           <Field label="Work Email"><input type="email" required placeholder="jane@company.com" style={fieldInput} value={basic.email} onChange={set("email")} /></Field>
           <Field label="Company Name"><input type="text" required placeholder="Company Inc." style={fieldInput} value={basic.company} onChange={set("company")} /></Field>
-          <button type="submit" disabled={isSubmitting} style={{ marginTop: 4, padding: "14px 20px", borderRadius: 999, border: "none", background: isSubmitting ? "#ccc" : COLORS.teal, fontWeight: 600, fontSize: 15, cursor: isSubmitting ? "not-allowed" : "pointer", color: "#000" }}>{isSubmitting ? "Loading..." : "Register for Webinar"}</button>
+          <button type="submit" disabled={isSubmitting} style={{ marginTop: 4, padding: "14px 20px", borderRadius: 999, border: "none", background: isSubmitting ? "#ccc" : COLORS.teal, fontWeight: 600, fontSize: 15, cursor: isSubmitting ? "not-allowed" : "pointer", color: "#000" }}>{isSubmitting ? "Loading..." : (CONFIG.registerSubmitLabel || "Register for Webinar")}</button>
         </form>
       </div>
       {showModal && <DetailsModal onClose={() => setShowModal(false)} onComplete={complete} />}
@@ -515,7 +518,7 @@ export default function App({ slug }) {
   const webinar = React.useMemo(() => getWebinar(slug), [slug]);
   return (
     <WebinarContext.Provider value={webinar}>
-      <Hero /><Agenda /><WhatToExpect /><Speaker /><WhoIsThisFor /><NextWebinar /><RegisterSection />
+      <Hero /><Agenda /><WhatToExpect />{webinar.showSpeaker !== false && <Speaker />}<WhoIsThisFor /><NextWebinar /><RegisterSection />
     </WebinarContext.Provider>
   );
 }

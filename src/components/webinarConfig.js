@@ -33,12 +33,16 @@ export function youTubeId(input) {
 }
 
 function build(w) {
+  // Tradeshows live under /events/, webinars under /webinar/, so the URL says
+  // what kind of thing it is before anything loads.
+  const base = w.kind === "tradeshow" ? "events" : "webinar";
   return {
+    kind: "webinar",
     ...w,
     targetISO: w.startUTC,
     // Trailing slashes on purpose — without them Netlify answers a 301 first.
-    registrationUrl: `/webinar/${w.slug}/`,
-    thankYouUrl: `/webinar/${w.slug}/thank-you/`,
+    registrationUrl: `/${base}/${w.slug}/`,
+    thankYouUrl: `/${base}/${w.slug}/thank-you/`,
     submitEndpoint: "/api/webinar/register",
     calendarLinks: {
       google: `https://calendar.google.com/calendar/u/0/r/eventedit?text=${encodeURIComponent(w.title)}&dates=${compact(w.startUTC)}/${compact(w.endUTC)}`,
@@ -160,6 +164,69 @@ export const WEBINARS = {
       "Anyone evaluating AI for materials testing",
     ],
     exploreCtaLabel: "Explore CubeTen",
+    exploreCtaHref: "https://labscubed.com/plastic-testing",
+    heroVideoUrl: null,
+    thankYouVideoUrl: null,
+    onDemandVideoUrl: "https://www.youtube.com/embed/EA0jUa83Qjs",
+    recordingUrl: null,
+    nextWebinarSlug: null,
+  }),
+
+  /* Tradeshow, not a webinar: no speaker slot and no seat counter, a booth and
+     a city instead of a start time, and the form books a demo rather than a
+     seat. Content is the GPS campaign copy. */
+  "gps-sep-2026": build({
+    kind: "tradeshow",
+    slug: "gps-sep-2026",
+    title: "Get Hands-On With CubeOne at the Global Polymer Summit",
+    dateLabel: "September 28–30, 2026",
+    timeLabel: "Booth #815 · Louisville, Kentucky",
+    locationLabel: "Louisville, Kentucky",
+    boothLabel: "Booth #815",
+    eventLabel: "Global Polymer Summit 2026",
+    // The show floor opens on the 28th; these hours are an assumption and only
+    // drive the countdown and the calendar entry, not any published claim.
+    startUTC: "2026-09-28T13:00:00Z",
+    endUTC: "2026-09-30T21:00:00Z",
+    heroCopy:
+      "LabsCubed is heading to the Global Polymer Summit, and we are bringing CubeOne with us. Come meet the team, get hands-on with automated testing, and talk to us about how it would fit your lab.",
+    // A tradeshow has no seats to run out of, and no speaker to introduce.
+    showSeats: false,
+    showSpeaker: false,
+    ctaLabel: "Book my demo",
+    registerHeading: "Book your custom demo",
+    registerSubmitLabel: "Book my demo",
+    agenda: [
+      ["01", "Get hands-on with CubeOne", "See CubeOne run a live demonstration on the show floor. Watch it, test it, and put your hands on it yourself."],
+      ["02", "Your lab, your challenges", "Every lab has its own workflow and priorities, so we would rather not give you a one-size-fits-all demonstration. Tell us what you are working with and we will build the demo around it."],
+      ["03", "Real numbers, real ROI", "Up to 12 specimens per run, 85% of lab time recovered, ROI in 12–24 months, and 40% more consistent data. Come and see what those numbers would mean for your lab."],
+      ["04", "Talk automation with the team", "Bring your questions about throughput, standards, data and integration, and get answers from the people who build the machines."],
+    ],
+    expectIntro:
+      "Book a slot and we will tailor the demonstration to your lab rather than running through a script. Walk up without one and we will still show you CubeOne — booking just means we have the time set aside for you.",
+    expect: [
+      "A live CubeOne demonstration you can get hands-on with",
+      "Up to 12 specimens in a single run",
+      "85% of lab technician time recovered",
+      "Return on investment in 12–24 months",
+      "40% more consistent data",
+      "A demo shaped around your own workflow and materials",
+      "Straight answers on standards, integration and what automation would take in your lab",
+    ],
+    audienceIntro:
+      "Anyone at GPS 2026 who runs, manages or buys for a polymer testing lab.",
+    roles: [
+      ["Testing technicians", "Materials and polymer testing"],
+      ["R&D & materials engineers", "Developing and characterising materials"],
+      ["QC / QA professionals", "Holding the line on consistency"],
+      ["Lab managers & supervisors", "Throughput, cost and capacity"],
+    ],
+    alsoFor: [
+      "Technical & engineering managers",
+      "Anyone evaluating automation for their lab",
+      "Anyone sizing up the ROI of automated testing",
+    ],
+    exploreCtaLabel: "Explore CubeOne",
     exploreCtaHref: "https://labscubed.com/plastic-testing",
     heroVideoUrl: null,
     thankYouVideoUrl: null,
