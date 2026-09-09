@@ -106,7 +106,7 @@ function Hero() {
           </span>
           <h1 style={{ fontWeight: 700, fontSize: m ? 32 : 48, letterSpacing: "-0.02em", lineHeight: 1.1, margin: 0 }}>{isShow ? "Your demo is booked." : "You're registered."}</h1>
           <p style={{ margin: "18px 0 0", maxWidth: 480, fontWeight: 300, fontSize: m ? 15 : 18, lineHeight: 1.55, color: "rgba(255,255,255,0.55)" }}>{isShow
-              ? `A confirmation email is on its way. We'll be in touch before the show to agree a time, and you'll find us at ${CONFIG.boothLabel}.`
+              ? `A confirmation email is on its way. We'll be in touch before the show to agree a time${CONFIG.boothLabel ? `, and you'll find us at ${CONFIG.boothLabel}` : ''}.`
               : "A confirmation email with your calendar invite and join link is on its way to your inbox."}</p>
           <div style={{ marginTop: 32, flexDirection: "column", gap: 6, padding: "18px 22px", borderRadius: 14, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", display: "flex" }}>
             <span style={{ fontWeight: 600, fontSize: 15 }}>{CONFIG.title}</span>
@@ -137,7 +137,7 @@ function NextSteps() {
     ? [
         ["01", "Check your inbox", "Your confirmation email has the show dates and our booth number."],
         ["02", "Tell us about your lab", "Reply with your materials and workflow and we'll build the demonstration around them."],
-        ["03", `Come and find us at ${CONFIG.boothLabel}`, "Bring your questions. We'll bring CubeOne."],
+        ["03", CONFIG.boothLabel ? `Come and find us at ${CONFIG.boothLabel}` : `Come and find us in ${CONFIG.locationLabel}`, "Bring your questions. We'll bring CubeOne."],
       ]
     : [
         ["01", "Check your inbox", "Your confirmation email has the calendar invite and join link."],

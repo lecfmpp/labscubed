@@ -268,6 +268,154 @@ export const WEBINARS = {
     recordingUrl: null,
     nextWebinarSlug: null,
   }),
+
+  /* AMI's North American plastics week — four co-located expos, one of which is
+     the Polymer Testing World Expo, which is as close to our exact audience as
+     a show floor gets. Booth number not confirmed yet, so nothing on the page
+     claims one. */
+  "ami-nov-2026": build({
+    kind: "tradeshow",
+    slug: "ami-nov-2026",
+    title: "See CubeOne at the Compounding World Expo",
+    dateLabel: "November 11–12, 2026",
+    timeLabel: "Huntington Convention Center · Cleveland, Ohio",
+    locationLabel: "Cleveland, Ohio",
+    boothLabel: null,
+    eventLabel: "AMI Plastics World Expos North America 2026",
+    startUTC: "2026-11-11T14:00:00Z",
+    endUTC: "2026-11-12T22:00:00Z",
+    heroCopy:
+      "We're bringing CubeOne to Cleveland for AMI's plastics week. Come and put your hands on automated tensile testing, and talk to us about what it would take in your own lab.",
+    showSeats: false,
+    showSpeaker: true,
+    speakerHeading: "Who you'll meet",
+    speakerName: "Guyth Abouyouniss",
+    speakerTitle: "Account Executive, LabsCubed",
+    speakerInitials: "GA",
+    speakerPhoto: "/assets/img/team/guyth.webp",
+    speakerBio:
+      "Guyth will be running CubeOne demonstrations across both days of the show. Book a slot and he'll build the demonstration around your own materials and workflow rather than running through a script.",
+    ctaLabel: "Book my demo",
+    registerHeading: "Book your custom demo",
+    registerSubmitLabel: "Book my demo",
+    about: {
+      heading: "About the Compounding World Expo",
+      imageUrl: "/assets/img/events/gps-2025-panel.webp",
+      imageAlt: "LabsCubed exhibiting at a plastics industry show",
+      paragraphs: [
+        "The Compounding World Expo is AMI's focused North American show for plastics additives and compounding, held at the Huntington Convention Center in Cleveland — free to attend, across two days.",
+        "It runs co-located with the Plastics Recycling World Expo, the Plastics Extrusion World Expo and the Polymer Testing World Expo, with four dedicated theatres of technical presentations, industry debates and seminars alongside the exhibition floor.",
+        "The Polymer Testing World Expo sharing the hall is the reason we go. It puts the people who run and buy for testing labs in the same building as the compounders whose material they characterise — so we bring CubeOne and let the machine do the explaining.",
+      ],
+    },
+    agenda: [],
+    expectIntro:
+      "Book a slot and we'll tailor the demonstration to your lab rather than running through a script. Walk up without one and we'll still show you CubeOne — booking just means we have the time set aside for you.",
+    expect: [
+      "A live CubeOne demonstration you can get hands-on with",
+      "Up to 12 specimens in a single run",
+      "85% of lab technician time recovered",
+      "Return on investment in 12–24 months",
+      "40% more consistent data",
+      "A demo shaped around your own workflow and materials",
+      "Straight answers on standards, integration and what automation would take in your lab",
+    ],
+    audienceIntro:
+      "Anyone at the show who runs, manages or buys for a plastics testing lab.",
+    roles: [
+      ["Testing technicians", "Materials and polymer testing"],
+      ["R&D & materials engineers", "Developing and characterising materials"],
+      ["QC / QA professionals", "Holding the line on consistency"],
+      ["Lab managers & supervisors", "Throughput, cost and capacity"],
+    ],
+    alsoFor: [
+      "Compounders and additive suppliers",
+      "Technical & engineering managers",
+      "Anyone evaluating automation for their lab",
+    ],
+    exploreCtaLabel: "Explore CubeOne",
+    exploreCtaHref: "https://labscubed.com/plastic-testing",
+    heroImageUrl: null,
+    heroVideoUrl: null,
+    thankYouVideoUrl: null,
+    onDemandVideoUrl: "https://www.youtube.com/embed/EA0jUa83Qjs",
+    thumbnailUrl: null,
+    recordingUrl: null,
+    nextWebinarSlug: null,
+  }),
+
+  /* NPE runs once every three years and is the largest plastics show in the
+     Americas. Booth number not confirmed yet. */
+  "npe-may-2027": build({
+    kind: "tradeshow",
+    slug: "npe-may-2027",
+    title: "See CubeOne at NPE2027: The Plastics Show",
+    dateLabel: "May 3–7, 2027",
+    timeLabel: "Orlando, Florida",
+    locationLabel: "Orlando, Florida",
+    boothLabel: null,
+    eventLabel: "NPE2027: The Plastics Show",
+    startUTC: "2027-05-03T13:00:00Z",
+    endUTC: "2027-05-07T21:00:00Z",
+    heroCopy:
+      "NPE comes round once every three years. We'll be there with CubeOne — come and see automated tensile testing running, and talk to us about what it would change in your lab.",
+    showSeats: false,
+    showSpeaker: true,
+    speakerHeading: "Who you'll meet",
+    speakerName: "Guyth Abouyouniss",
+    speakerTitle: "Account Executive, LabsCubed",
+    speakerInitials: "GA",
+    speakerPhoto: "/assets/img/team/guyth.webp",
+    speakerBio:
+      "Guyth will be running CubeOne demonstrations across the week. Book a slot and he'll build the demonstration around your own materials and workflow rather than running through a script.",
+    ctaLabel: "Book my demo",
+    registerHeading: "Book your custom demo",
+    registerSubmitLabel: "Book my demo",
+    about: {
+      heading: "About NPE2027",
+      imageUrl: "/assets/img/events/gps-2025-panel.webp",
+      imageAlt: "LabsCubed exhibiting at a plastics industry show",
+      paragraphs: [
+        "NPE: The Plastics Show is the largest plastics event in the Americas and runs only once every three years. NPE2027 takes place in Orlando from 3–7 May, produced by the Plastics Industry Association under the theme \"NEXT IS NOW\".",
+        "The organisers expect more than 51,000 attendees and over 2,200 exhibitors from more than 130 countries, across a floor organised into technology zones covering materials, recycling and sustainability, moldmaking and manufacturing services.",
+        "A show that size only pays back if the conversations are the right ones. We go to meet the labs behind those exhibitors — the QA teams, lab managers and materials engineers who carry the testing load — and we bring CubeOne so the demonstration happens on a working machine.",
+      ],
+    },
+    agenda: [],
+    expectIntro:
+      "Book a slot and we'll tailor the demonstration to your lab rather than running through a script. Walk up without one and we'll still show you CubeOne — booking just means we have the time set aside for you.",
+    expect: [
+      "A live CubeOne demonstration you can get hands-on with",
+      "Up to 12 specimens in a single run",
+      "85% of lab technician time recovered",
+      "Return on investment in 12–24 months",
+      "40% more consistent data",
+      "A demo shaped around your own workflow and materials",
+      "Straight answers on standards, integration and what automation would take in your lab",
+    ],
+    audienceIntro:
+      "Anyone at NPE who runs, manages or buys for a plastics testing lab.",
+    roles: [
+      ["Testing technicians", "Materials and polymer testing"],
+      ["R&D & materials engineers", "Developing and characterising materials"],
+      ["QC / QA professionals", "Holding the line on consistency"],
+      ["Lab managers & supervisors", "Throughput, cost and capacity"],
+    ],
+    alsoFor: [
+      "Processors and moulders",
+      "Technical & engineering managers",
+      "Anyone evaluating automation for their lab",
+    ],
+    exploreCtaLabel: "Explore CubeOne",
+    exploreCtaHref: "https://labscubed.com/plastic-testing",
+    heroImageUrl: null,
+    heroVideoUrl: null,
+    thankYouVideoUrl: null,
+    onDemandVideoUrl: "https://www.youtube.com/embed/EA0jUa83Qjs",
+    thumbnailUrl: null,
+    recordingUrl: null,
+    nextWebinarSlug: null,
+  }),
 };
 
 export function getWebinar(slug) {

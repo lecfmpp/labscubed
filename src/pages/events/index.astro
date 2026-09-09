@@ -78,7 +78,7 @@ const STATUS_LABEL = { recorded: 'Highlights available', pending: 'Highlights co
                 <div class="wh-body">
                   <h3 class="wh-title">{w.title}</h3>
                   <p class="wh-desc">{w.heroCopy}</p>
-                  <div class="wh-speaker">{w.boothLabel} · {w.locationLabel}</div>
+                  <div class="wh-speaker">{[w.boothLabel, w.locationLabel].filter(Boolean).join(" · ")}</div>
                 </div>
                 <div class="wh-action">
                   <a class="wh-btn" href={w.registrationUrl} data-register>Book a demo</a>
