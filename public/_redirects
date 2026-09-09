@@ -19,6 +19,16 @@
 /webinar/automation-ai-2026/thank-you   /webinar/automation-ai-nov-2026/thank-you/  301
 /webinar/automation-ai-2026/thank-you/  /webinar/automation-ai-nov-2026/thank-you/  301
 
+# The two hub pages, pinned explicitly. Static files already win over a
+# non-forced redirect, so these are belt-and-braces — but they make the
+# behaviour of the bare paths unambiguous rather than leaving them to the
+# catch-all below, which answers from Webflow and whose 404 can then be cached
+# at the edge and outlive the real page.
+/events         /events/index.html          200
+/events/        /events/index.html          200
+/webinar        /webinar/index.html         200
+/webinar/       /webinar/index.html         200
+
 # /api/* is served by this site's own Netlify Functions. It MUST stay above the
 # catch-all below: the first matching rule wins, and without this the webinar
 # registration POST is proxied to Webflow, which answers 405 Not Allowed.
