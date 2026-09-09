@@ -243,6 +243,10 @@ export const WEBINARS = {
     // An image slot sits behind a video, so adding a heroVideoUrl later would
     // replace it.
     heroImageUrl: "/assets/img/events/gps-2026-banner.webp",
+    // Card artwork on the events hub — used both as the thumbnail on the
+    // upcoming row and as the media on the show's card.
+    thumbnailUrl: "/assets/img/events/gps-2025-panel.webp",
+    thumbnailAlt: "LabsCubed on a panel at a previous Global Polymer Summit",
     heroImageAlt: "LabsCubed at the Global Polymer Summit 2026 — Booth #815",
     heroVideoUrl: null,
     thankYouVideoUrl: null,

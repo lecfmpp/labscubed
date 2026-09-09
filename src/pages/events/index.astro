@@ -66,6 +66,11 @@ const STATUS_LABEL = { recorded: 'Highlights available', pending: 'Highlights co
           <div class="wh-list">
             {upcoming.map((w) => (
               <article class="wh-card" data-start={w.startUTC}>
+                {w.thumbnailUrl && (
+                  <a class="wh-thumb" href={w.registrationUrl}>
+                    <img src={w.thumbnailUrl} alt={w.thumbnailAlt || w.title} width="800" height="450" loading="lazy" />
+                  </a>
+                )}
                 <div class="wh-when">
                   <span class="wh-date">{w.dateLabel}</span>
                   <span class="wh-time">{w.timeLabel}</span>
@@ -134,6 +139,11 @@ const STATUS_LABEL = { recorded: 'Highlights available', pending: 'Highlights co
                       referrerpolicy="strict-origin-when-cross-origin"
                       allowfullscreen
                     ></iframe>
+                  ) : w.thumbnailUrl ? (
+                    <>
+                      <img class="wh-rec-photo" src={w.thumbnailUrl} alt={w.thumbnailAlt || w.title} width="800" height="450" loading="lazy" />
+                      <span class="wh-rec-chip">{STATUS_LABEL[w.status]}</span>
+                    </>
                   ) : (
                     <div class="wh-rec-soon">
                       <span class="wh-rec-soon-dot"></span>
@@ -234,7 +244,9 @@ const STATUS_LABEL = { recorded: 'Highlights available', pending: 'Highlights co
   .wh-empty { margin: 0; font-weight: 300; font-size: 17px; line-height: 1.6; color: var(--text-muted); max-width: 620px; }
 
   .wh-list { display: flex; flex-direction: column; }
-  .wh-card { display: grid; grid-template-columns: 210px 1fr auto; gap: 32px; align-items: center; padding: 28px 0; border-top: 1px solid var(--lc-line); }
+  .wh-card { display: grid; grid-template-columns: 148px 200px 1fr auto; gap: 28px; align-items: center; padding: 28px 0; border-top: 1px solid var(--lc-line); }
+  .wh-thumb { display: block; border-radius: 10px; overflow: hidden; line-height: 0; background: #000; }
+  .wh-thumb img { width: 100%; height: auto; display: block; }
   .wh-card:last-child { border-bottom: 1px solid var(--lc-line); }
   .wh-when { display: flex; flex-direction: column; gap: 4px; }
   .wh-date { font-size: 14px; font-weight: 600; color: var(--lc-ink); }
@@ -264,6 +276,8 @@ const STATUS_LABEL = { recorded: 'Highlights available', pending: 'Highlights co
   .wh-rec-link:hover { text-decoration: underline; }
   .wh-rec { background: #fff; border: 1px solid var(--lc-line); border-radius: 20px; overflow: hidden; box-shadow: 0 1px 0 rgba(0,0,0,0.04); }
   .wh-rec-media { position: relative; width: 100%; aspect-ratio: 16 / 9; background: #000; }
+  .wh-rec-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+  .wh-rec-chip { position: absolute; left: 14px; bottom: 14px; background: rgba(0,0,0,0.72); color: #fff; border-radius: 999px; padding: 6px 12px; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
   .wh-rec-media iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
   .wh-rec-soon { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 10px; background: linear-gradient(160deg, #1a1b1f, #000); color: rgba(255,255,255,0.55); font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
   .wh-rec-soon-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--lc-teal, #17ddc5); }
@@ -287,6 +301,7 @@ const STATUS_LABEL = { recorded: 'Highlights available', pending: 'Highlights co
     .wh-sec { padding: 56px 0; }
     .wh-h2 { font-size: 28px; margin-bottom: 24px; }
     .wh-card { grid-template-columns: 1fr; gap: 14px; align-items: flex-start; padding: 24px 0; }
+    .wh-thumb { width: 100%; max-width: 100%; }
     .wh-when { flex-direction: row; align-items: baseline; gap: 10px; }
     .wh-title { font-size: 18px; }
   }
