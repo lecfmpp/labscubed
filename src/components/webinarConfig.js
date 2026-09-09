@@ -190,9 +190,18 @@ export const WEBINARS = {
     endUTC: "2026-09-30T21:00:00Z",
     heroCopy:
       "LabsCubed is heading to the Global Polymer Summit, and we are bringing CubeOne with us. Come meet the team, get hands-on with automated testing, and talk to us about how it would fit your lab.",
-    // A tradeshow has no seats to run out of, and no speaker to introduce.
+    // A tradeshow has no seats to run out of.
     showSeats: false,
-    showSpeaker: false,
+    // Not a speaker — the person you'll actually meet at the booth.
+    showSpeaker: true,
+    speakerHeading: "Who you'll meet",
+    speakerName: "Guyth",
+    speakerTitle: "LabsCubed · Booth #815",
+    speakerInitials: "G",
+    // No photo on file yet, so the avatar falls back to the initial.
+    speakerPhoto: null,
+    speakerBio:
+      "Guyth will be running CubeOne demonstrations at Booth #815 across all three days. Book a slot and he'll build the demonstration around your own materials and workflow rather than running through a script.",
     ctaLabel: "Book my demo",
     registerHeading: "Book your custom demo",
     registerSubmitLabel: "Book my demo",
@@ -228,6 +237,13 @@ export const WEBINARS = {
     ],
     exploreCtaLabel: "Explore CubeOne",
     exploreCtaHref: "https://labscubed.com/plastic-testing",
+    // The banner from the first GPS email broadcast, served from the same
+    // Supabase bucket the email uses. An image slot takes priority over the
+    // placeholder but sits behind a video, so dropping a heroVideoUrl in later
+    // would replace it.
+    heroImageUrl:
+      "https://grozewxrymeiruhggcdy.supabase.co/storage/v1/object/public/newsletter-images/banner_gps_email_pre01.webp",
+    heroImageAlt: "LabsCubed at the Global Polymer Summit 2026 — Booth #815",
     heroVideoUrl: null,
     thankYouVideoUrl: null,
     onDemandVideoUrl: "https://www.youtube.com/embed/EA0jUa83Qjs",

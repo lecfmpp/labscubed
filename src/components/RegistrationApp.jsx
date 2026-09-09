@@ -58,7 +58,7 @@ function H2({ children }) {
 /* One slot for the hero media: plays the configured YouTube video when the
    webinar has one, and shows the placeholder until then. Set heroVideoUrl in
    webinarConfig to fill it — a URL, a share link or a pasted <iframe> all work. */
-function HeroVideo({ label, video }) {
+function HeroVideo({ label, video, image, imageAlt }) {
   const id = youTubeId(video);
   const frame = {
     position: "relative",
@@ -80,6 +80,20 @@ function HeroVideo({ label, video }) {
           referrerPolicy="strict-origin-when-cross-origin"
           allowFullScreen
           style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: 0 }}
+        />
+      </div>
+    );
+  }
+
+  if (image) {
+    return (
+      <div style={{ ...frame, background: "#000" }}>
+        <img
+          src={image}
+          alt={imageAlt || label}
+          width={1040}
+          height={585}
+          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", display: "block" }}
         />
       </div>
     );
@@ -121,7 +135,7 @@ function Hero() {
      back out — to the hub, where the other webinars are. */
   const breadcrumb = (
     <nav aria-label="Breadcrumb" style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, marginBottom: m ? 16 : 20 }}>
-      <a href={CONFIG.kind === "tradeshow" ? "https://labscubed.com/" : "/webinar/"} style={{ color: "rgba(255,255,255,0.65)", textDecoration: "none", borderBottom: "1px solid rgba(255,255,255,0.25)", paddingBottom: 1 }}>{CONFIG.kind === "tradeshow" ? "LabsCubed" : "All webinars"}</a>
+      <a href={CONFIG.kind === "tradeshow" ? "/events/" : "/webinar/"} style={{ color: "rgba(255,255,255,0.65)", textDecoration: "none", borderBottom: "1px solid rgba(255,255,255,0.25)", paddingBottom: 1 }}>{CONFIG.kind === "tradeshow" ? "All events" : "All webinars"}</a>
       <span aria-hidden="true" style={{ color: "rgba(255,255,255,0.3)" }}>/</span>
       <span style={{ color: "rgba(255,255,255,0.45)" }}>{CONFIG.dateLabel.replace(/^\w+, /, "")}</span>
     </nav>
@@ -139,7 +153,7 @@ function Hero() {
   );
   const media = (
     <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
-      <HeroVideo label={CONFIG.kind === "tradeshow" ? "CubeOne in action" : "Webinar preview"} video={CONFIG.heroVideoUrl} />
+      <HeroVideo label={CONFIG.kind === "tradeshow" ? "CubeOne in action" : "Webinar preview"} video={CONFIG.heroVideoUrl} image={CONFIG.heroImageUrl} imageAlt={CONFIG.heroImageAlt} />
       <LogoSlider />
     </div>
   );
@@ -250,7 +264,7 @@ function Speaker() {
   return (
     <section style={{ background: "#fff" }}>
       <div style={{ maxWidth: 1312, margin: "0 auto", padding: m ? "48px 20px" : "72px 64px" }}>
-        <span style={badge}>Your speaker</span>
+        <span style={badge}>{CONFIG.speakerHeading || "Your speaker"}</span>
         <div style={{ marginTop: m ? 22 : 28, display: "grid", gridTemplateColumns: m ? "1fr" : "auto 1fr", gap: m ? 20 : 36, alignItems: "start" }}>
           <SpeakerAvatar size={m ? 88 : 132} />
           <div>

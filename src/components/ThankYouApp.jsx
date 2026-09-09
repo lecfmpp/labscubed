@@ -25,7 +25,7 @@ function H2({ children }) {
 /* One slot for the hero media: plays the configured YouTube video when the
    webinar has one, and shows the placeholder until then. Set heroVideoUrl in
    webinarConfig to fill it — a URL, a share link or a pasted <iframe> all work. */
-function HeroVideo({ label, video }) {
+function HeroVideo({ label, video, image, imageAlt }) {
   const id = youTubeId(video);
   const frame = {
     position: "relative",
@@ -48,6 +48,14 @@ function HeroVideo({ label, video }) {
           allowFullScreen
           style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: 0 }}
         />
+      </div>
+    );
+  }
+
+  if (image) {
+    return (
+      <div style={{ ...frame, background: "#000" }}>
+        <img src={image} alt={imageAlt || label} width={1040} height={585} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
       </div>
     );
   }
@@ -89,7 +97,7 @@ function Hero() {
       <div style={{ maxWidth: 1312, margin: "0 auto", padding: m ? "48px 20px 64px" : "80px 64px 100px", display: "grid", gridTemplateColumns: m ? "1fr" : "1fr 1fr", gap: m ? 32 : 56, alignItems: "center" }}>
         <div>
           <nav aria-label="Breadcrumb" style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, marginBottom: m ? 18 : 22 }}>
-            <a href={isShow ? "https://labscubed.com/" : "/webinar/"} style={{ color: "rgba(255,255,255,0.65)", textDecoration: "none", borderBottom: "1px solid rgba(255,255,255,0.25)", paddingBottom: 1 }}>{isShow ? "LabsCubed" : "All webinars"}</a>
+            <a href={isShow ? "/events/" : "/webinar/"} style={{ color: "rgba(255,255,255,0.65)", textDecoration: "none", borderBottom: "1px solid rgba(255,255,255,0.25)", paddingBottom: 1 }}>{isShow ? "All events" : "All webinars"}</a>
             <span aria-hidden="true" style={{ color: "rgba(255,255,255,0.3)" }}>/</span>
             <span style={{ color: "rgba(255,255,255,0.45)" }}>{isShow ? "Demo booked" : "Registered"}</span>
           </nav>
@@ -114,7 +122,7 @@ function Hero() {
           </div>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 0, minWidth: 0 }}>
-          <HeroVideo label={isShow ? "CubeOne in action" : "Event preview"} video={CONFIG.thankYouVideoUrl || CONFIG.heroVideoUrl} />
+          <HeroVideo label={isShow ? "CubeOne in action" : "Event preview"} video={CONFIG.thankYouVideoUrl || CONFIG.heroVideoUrl} image={CONFIG.heroImageUrl} imageAlt={CONFIG.heroImageAlt} />
         </div>
       </div>
     </section>

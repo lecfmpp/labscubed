@@ -12,6 +12,7 @@ const mainLinks: [string, string][] = [
   ['Rubber Testing', 'https://www.labscubed.com/rubber-testing'],
   ['Plastic Testing', 'https://www.labscubed.com/plastic-testing'],
   ['Webinars', '/webinar/'],
+  ['Events', '/events/'],
   // Promoted out of the Resources dropdown — it was the most useful thing in
   // there and invisible behind a hover.
   ['Blog', 'https://www.labscubed.com/blog'],
