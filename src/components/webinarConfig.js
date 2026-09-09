@@ -198,8 +198,7 @@ export const WEBINARS = {
     speakerName: "Guyth",
     speakerTitle: "LabsCubed · Booth #815",
     speakerInitials: "G",
-    // No photo on file yet, so the avatar falls back to the initial.
-    speakerPhoto: null,
+    speakerPhoto: "/assets/img/team/guyth.webp",
     speakerBio:
       "Guyth will be running CubeOne demonstrations at Booth #815 across all three days. Book a slot and he'll build the demonstration around your own materials and workflow rather than running through a script.",
     ctaLabel: "Book my demo",
@@ -237,12 +236,13 @@ export const WEBINARS = {
     ],
     exploreCtaLabel: "Explore CubeOne",
     exploreCtaHref: "https://labscubed.com/plastic-testing",
-    // The banner from the first GPS email broadcast, served from the same
-    // Supabase bucket the email uses. An image slot takes priority over the
-    // placeholder but sits behind a video, so dropping a heroVideoUrl in later
-    // would replace it.
-    heroImageUrl:
-      "https://grozewxrymeiruhggcdy.supabase.co/storage/v1/object/public/newsletter-images/banner_gps_email_pre01.webp",
+    // The banner from the first GPS email broadcast, re-encoded for the web and
+    // served from this site rather than the Supabase bucket: the original is a
+    // 2.9 MB webp sized for email, which is far too heavy for the largest
+    // element on a campaign landing page. Same artwork, 1200px wide, ~112 KB.
+    // An image slot sits behind a video, so adding a heroVideoUrl later would
+    // replace it.
+    heroImageUrl: "/assets/img/events/gps-2026-banner.webp",
     heroImageAlt: "LabsCubed at the Global Polymer Summit 2026 — Booth #815",
     heroVideoUrl: null,
     thankYouVideoUrl: null,
