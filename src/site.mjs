@@ -1,34 +1,29 @@
 // Single source of truth for the canonical site origin.
 export const SITE_URL = 'https://labscubed.com';
 
-// Where the blog will eventually live, once /post/* stops proxying to Webflow.
-// Every published post already canonicalises to https://www.labscubed.com/post/<slug>
-// and that is what Google has indexed, so this must not change casually.
-export const BLOG_ORIGIN = 'https://www.labscubed.com';
+// The blog used to canonicalise to https://www.labscubed.com because that is
+// what Google had indexed for all 21 posts. www now hard-redirects to this
+// apex (site-wide, unrelated to the blog), so a canonical pointing at www
+// while every request 301s away from it would be a self-contradictory signal.
+// The apex is the correct target now — it's where every visitor and crawler
+// actually lands, and it matches SITE_URL used everywhere else on the site.
+export const BLOG_ORIGIN = SITE_URL;
 
 /* ------------------------------------------------------------------ *
- * Staging switch
+ * Route bases
  * ------------------------------------------------------------------ *
- * While the apex still proxies /post/* to Webflow, the Astro blog runs on the
- * lp. subdomain under a different path so it cannot collide with — or compete
- * against — anything already indexed.
- *
- * Staging pages are noindex/nofollow and canonicalise to themselves. They
- * deliberately do NOT canonicalise to www: for the 19 unpublished drafts that
- * URL 404s, and pointing at a dead page is a worse signal than none.
- *
- * TO GO LIVE, two changes:
- *   1. set BLOG_STAGING = false here
- *   2. rename src/pages/posts/ -> src/pages/post/
- * Everything else — links, canonicals, RSS, sitemap — follows BLOG_BASE and
- * BLOG_HOST automatically.
+ * Individual posts and the listing/pagination/category hub live under two
+ * different top-level paths, matching what Webflow already had indexed:
+ *   - /post/<slug>   — one page per article (src/pages/post/[slug].astro)
+ *   - /blog, /blog/2, /blog/category/<slug> — the listing (src/pages/blog/*)
+ * Both resolve to real static files, so Netlify's public/_redirects catch-all
+ * (which proxies everything else to Webflow) never touches them.
  */
-export const BLOG_STAGING = true;
+export const POST_BASE = '/post';
+export const BLOG_BASE = '/blog';
+export const BLOG_HOST = BLOG_ORIGIN;
 
-export const BLOG_BASE = BLOG_STAGING ? '/posts' : '/post';
-export const BLOG_HOST = BLOG_STAGING ? 'https://lp.labscubed.com' : BLOG_ORIGIN;
-
-/** Absolute URL for a post, correct in either mode. */
-export const postUrl = (slug) => `${BLOG_HOST}${BLOG_BASE}/${slug}`;
+/** Absolute URL for a post. */
+export const postUrl = (slug) => `${BLOG_HOST}${POST_BASE}/${slug}`;
 /** Absolute URL for the blog index. */
 export const blogUrl = () => `${BLOG_HOST}${BLOG_BASE}`;

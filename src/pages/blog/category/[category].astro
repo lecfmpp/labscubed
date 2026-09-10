@@ -9,7 +9,7 @@ import Base from '../../../layouts/Base.astro';
 import Nav from '../../../islands/Nav.tsx';
 import Footer from '../../../components/Footer.astro';
 import '../../../styles/blog.css';
-import { BLOG_HOST, BLOG_BASE, BLOG_STAGING } from '../../../site.mjs';
+import { BLOG_HOST, BLOG_BASE, POST_BASE } from '../../../site.mjs';
 import {
   getPosts,
   categoryLabel,
@@ -46,7 +46,6 @@ const categories = [...new Set(all.flatMap((p) => p.categories))].sort();
   description={description}
   canonical={canonical}
   preloadHero={false}
-  noindex={BLOG_STAGING}
   preloadFont="inter-tight"
   jsonLd={[
     {
@@ -83,7 +82,7 @@ const categories = [...new Set(all.flatMap((p) => p.categories))].sort();
     <div class="bl-list">
       <div class="bl-grid">
         {posts.map((p) => (
-          <a class="bl-card" href={`${BLOG_BASE}/${p.slug}`}>
+          <a class="bl-card" href={`${POST_BASE}/${p.slug}`}>
             {thumbImage(p) ? (
               <img
                 class="bl-card__img"
