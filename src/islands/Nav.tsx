@@ -34,60 +34,36 @@ const WHITEPAPER = '/white-paper-automation-vs-manual-testing';
    pass inFlow so the two sit one above the other instead of on top of each
    other.
 
-   `light` renders the bar for a white page — the blog listing and category
-   hubs, which have no dark hero for the default white links to sit on. It
-   goes sticky instead of floating, and swaps in the dark-on-light logo and
-   link colours. */
-export default function Nav({ inFlow = false, showQuote = true, light = false }: { inFlow?: boolean; showQuote?: boolean; light?: boolean }) {
+   `sticky` is for pages with no dark hero for the bar to float over — the
+   blog listing and category hubs. It goes position:sticky with its own solid
+   black background instead of floating transparently, but keeps the exact
+   same dark colour scheme (white logo, white links, teal CTA) as every other
+   page — there is no separate "light" theme anymore. */
+export default function Nav({ inFlow = false, showQuote = true, sticky = false }: { inFlow?: boolean; showQuote?: boolean; sticky?: boolean }) {
   const m = useIsMobile();
-  const linkColor = light ? "rgb(68,68,68)" : "rgba(255,255,255,0.85)";
-  /* The stock logo is the light-on-dark artwork and disappears on white. The
-     site ships a dedicated dark variant for light backgrounds — use that rather
-     than filtering the light one, which never gives clean brand colour. */
-  const logoSrc = light ? "/assets/img/logo-dark.webp" : "/assets/img/logo.webp";
   const [open, setOpen] = React.useState(false);
   const [resOpen, setResOpen] = React.useState(false);
-  /* Light pages sit in the flow (sticky) instead of floating over a hero, so
-     the page below is not obscured and needs no top padding. Otherwise fall
-     back to the inFlow/overlay choice used by the dark bar. */
   const position = inFlow ? ('relative' as const) : ('absolute' as const);
-  const barPos: React.CSSProperties = light
-    ? { position: "sticky", top: 0, background: "#fff", borderBottom: "1px solid #e8ebee" }
+  const barPos: React.CSSProperties = sticky
+    ? { position: "sticky", top: 0, background: "#000", borderBottom: "1px solid rgba(255,255,255,0.08)" }
     : { position, top: 0, left: 0, right: 0 };
 
   const cta = showQuote ? (
-    light ? (
-      /* Outline CTA, matching the live blog nav: a hairline border with a
-         barely-there sheen rather than the teal pill the dark nav uses. */
-      <a
-        href={WHITEPAPER}
-        className="lc-btn"
-        style={{
-          display: "inline-flex", alignItems: "center",
-          padding: "9px 15px", borderRadius: 5.5,
-          border: "1px solid rgb(223,225,231)",
-          background: "linear-gradient(140deg, rgba(255,255,255,0.08), rgba(255,255,255,0))",
-          color: "rgb(15,15,15)", fontSize: 12.83, fontWeight: 500,
-          lineHeight: 1, textDecoration: "none", whiteSpace: "nowrap",
-        }}
-      >Download our White-Paper</a>
-    ) : (
-      <Button variant="primary" size="sm" href={WHITEPAPER}>Download our White-Paper</Button>
-    )
+    <Button variant="primary" size="sm" href={WHITEPAPER}>Download our White-Paper</Button>
   ) : (
     <img src="/assets/img/logo.webp" alt="" aria-hidden="true" width={419} height={104} style={{ height: 34, width: "auto", display: "block", visibility: "hidden" }} />
   );
 
   if (m) {
     return (
-      <div style={{ ...barPos, zIndex: light ? 40 : 20 }}>
+      <div style={{ ...barPos, zIndex: sticky ? 40 : 20 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 20px" }}>
-          <a href={HOME}><img src={logoSrc} alt="LabsCubed" width={419} height={104} style={{ height: 28, width: "auto", display: "block" }} /></a>
-          <button onClick={() => setOpen((o) => !o)} aria-label="Menu" style={{ all: "unset", cursor: "pointer", width: 42, height: 42, display: "inline-flex", alignItems: "center", justifyContent: "center", borderRadius: 10, background: light ? "rgba(15,23,42,0.06)" : "rgba(255,255,255,0.1)" }}>
+          <a href={HOME}><img src="/assets/img/logo.webp" alt="LabsCubed" width={419} height={104} style={{ height: 28, width: "auto", display: "block" }} /></a>
+          <button onClick={() => setOpen((o) => !o)} aria-label="Menu" style={{ all: "unset", cursor: "pointer", width: 42, height: 42, display: "inline-flex", alignItems: "center", justifyContent: "center", borderRadius: 10, background: "rgba(255,255,255,0.1)" }}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
               {open
-                ? <path d="M6 6l12 12M18 6L6 18" stroke={light ? "#0f172a" : "#fff"} strokeWidth="2" strokeLinecap="round" />
-                : <path d="M4 7h16M4 12h16M4 17h16" stroke={light ? "#0f172a" : "#fff"} strokeWidth="2" strokeLinecap="round" />}
+                ? <path d="M6 6l12 12M18 6L6 18" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+                : <path d="M4 7h16M4 12h16M4 17h16" stroke="#fff" strokeWidth="2" strokeLinecap="round" />}
             </svg>
           </button>
         </div>
@@ -107,19 +83,19 @@ export default function Nav({ inFlow = false, showQuote = true, light = false }:
     );
   }
   return (
-    <div style={{ ...barPos, zIndex: light ? 40 : 10, display: "flex", justifyContent: "center" }}>
-      <div style={{ width: "100%", maxWidth: light ? 1253 : 1392, padding: light ? "15.7px 39px" : "18px 26px", boxSizing: "border-box", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <a href={HOME}><img src={logoSrc} alt="LabsCubed" width={419} height={104} style={{ height: 34, width: "auto", display: "block" }} /></a>
+    <div style={{ ...barPos, zIndex: sticky ? 40 : 10, display: "flex", justifyContent: "center" }}>
+      <div style={{ width: "100%", maxWidth: 1392, padding: "18px 26px", boxSizing: "border-box", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <a href={HOME}><img src="/assets/img/logo.webp" alt="LabsCubed" width={419} height={104} style={{ height: 34, width: "auto", display: "block" }} /></a>
         <nav style={{ display: "flex", gap: 26, alignItems: "center", ...(showQuote ? {} : { flex: 1, justifyContent: "center" }) }}>
           {mainLinks.map(([l, href]) => (
-            <a key={l} href={href} style={{ color: linkColor, fontSize: light ? 12.5 : 13, fontWeight: light ? 500 : 400, textDecoration: "none" }} className="lc-navlink">{l}</a>
+            <a key={l} href={href} style={{ color: "rgba(255,255,255,0.85)", fontSize: 13, textDecoration: "none" }} className="lc-navlink">{l}</a>
           ))}
           <div
             style={{ position: "relative" }}
             onMouseEnter={() => setResOpen(true)}
             onMouseLeave={() => setResOpen(false)}
           >
-            <button style={{ all: "unset", cursor: "pointer", color: linkColor, fontSize: light ? 12.5 : 13, fontWeight: light ? 500 : 400, display: "inline-flex", alignItems: "center", gap: 5 }} className="lc-navlink" aria-haspopup="true" aria-expanded={resOpen}>Resources
+            <button style={{ all: "unset", cursor: "pointer", color: "rgba(255,255,255,0.85)", fontSize: 13, display: "inline-flex", alignItems: "center", gap: 5 }} className="lc-navlink" aria-haspopup="true" aria-expanded={resOpen}>Resources
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" style={{ transform: resOpen ? "rotate(180deg)" : "none", transition: "transform .2s ease" }}><path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
             </button>
             <div style={{ position: "absolute", top: "100%", right: 0, paddingTop: 14, opacity: resOpen ? 1 : 0, visibility: resOpen ? "visible" : "hidden", transform: resOpen ? "translateY(0)" : "translateY(-6px)", transition: "opacity .18s ease, transform .18s ease, visibility .18s", pointerEvents: resOpen ? "auto" : "none" }}>
