@@ -1,0 +1,84 @@
+---
+/* /post/<slug> — one page per post, pre-rendered at build time.
+ *
+ * The route mirrors the Webflow CMS path exactly (`/post/…`, from the "post"
+ * collection slug), so every indexed URL and every internal link across the
+ * existing 21 posts keeps working unchanged after the cutover.
+ */
+import BlogPost from '../../layouts/BlogPost.astro';
+import { BLOG_HOST, BLOG_BASE, BLOG_STAGING, postUrl } from '../../site.mjs';
+import {
+  getPosts,
+  thumbImage,
+  thumbAlt,
+  extractSchemas,
+  relatedPosts,
+  categoryLabel,
+  formatDate,
+  postDate,
+  readTime,
+  type BlogPost as Post,
+} from '../../lib/blog';
+import { schemasForPost } from '../../lib/blog-schema';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post, all: posts },
+  }));
+}
+
+const { post, all } = Astro.props as { post: Post; all: Post[] };
+
+const { schemas: payload, body } = extractSchemas(post.content, post.images);
+const url = postUrl(post.slug);
+const schemas = schemasForPost(post, payload, url, BLOG_HOST);
+const related = relatedPosts(post, all, 3);
+const isDraft = post.status !== 'published';
+---
+
+<BlogPost post={post} schemas={schemas} body={body} isDraft={isDraft} noindex={BLOG_STAGING}>
+  {related.length > 0 && (
+    <section class="bp-related" slot="related">
+      <h2>Keep reading</h2>
+      <div class="bl-grid">
+        {related.map((p) => (
+          <a class="bl-card" href={`${BLOG_BASE}/${p.slug}`}>
+            {thumbImage(p) ? (
+              <img
+                class="bl-card__img"
+                src={thumbImage(p)}
+                alt={thumbAlt(p)}
+                loading="lazy"
+                decoding="async"
+                width="600"
+                height="338"
+              />
+            ) : (
+              /* Posts awaiting their thumbnail still have to sit evenly in the
+                 grid — an empty slot would collapse the card against its
+                 neighbours. */
+              <div class="bl-card__img bl-card__ph" aria-hidden="true">
+                <span>{categoryLabel(p.categories[0] ?? 'LabsCubed')}</span>
+              </div>
+            )}
+            <div class="bl-card__body">
+              <div class="bl-card__top">
+                <div class="bl-card__cats">
+                  {p.categories.map((c) => <span class="bl-card__cat">{categoryLabel(c)}</span>)}
+                </div>
+                <span class="bl-card__read">{readTime(p)} min read</span>
+              </div>
+              <h3 class="bl-card__title">{p.title}</h3>
+              {p.summary && <p class="bl-card__sum">{p.summary}</p>}
+              <span class="bl-card__go" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+              </span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
+</BlogPost>
