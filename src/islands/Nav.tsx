@@ -5,9 +5,17 @@ import React from 'react';
 import { useIsMobile, Button } from '../lib/ui';
 
 const HOME = 'https://www.labscubed.com/';
+// Root-relative paths are used for anything this Netlify build serves or
+// proxies, so the visitor stays on the host that has the page. www.labscubed.com
+// 301s to the apex, so an absolute www URL costs a redirect hop.
 const mainLinks: [string, string][] = [
   ['Rubber Testing', 'https://www.labscubed.com/rubber-testing'],
   ['Plastic Testing', 'https://www.labscubed.com/plastic-testing'],
+  ['Webinars', '/webinar/'],
+  ['Events', '/events/'],
+  // Promoted out of the Resources dropdown — it was the most useful thing in
+  // there and invisible behind a hover.
+  ['Blog', 'https://www.labscubed.com/blog'],
   ['About Us', 'https://www.labscubed.com/about-us'],
   ['Testimonials', 'https://www.labscubed.com/#testimonials'],
 ];
@@ -15,18 +23,26 @@ const resourceLinks: [string, string][] = [
   ['White Paper', 'https://www.labscubed.com/white-paper-automation-vs-manual-testing'],
   ['ASTM D638', 'https://www.labscubed.com/astm-d638-iso527-tensile-testing'],
   ['ASTM D412', 'https://www.labscubed.com/astm-d412-iso37-how-to-run-tensile-testing-for-rubber'],
-  ['Blog', 'https://www.labscubed.com/blog'],
 ];
-const QUOTE = 'https://www.labscubed.com/get-a-quote';
+const WHITEPAPER = '/white-paper-automation-vs-manual-testing';
 
-export default function Nav() {
+/* `showQuote` hides the header's primary button. The webinar funnel turns it off so
+   the page carries exactly one call to action — registering.
+
+   `inFlow` takes the bar out of overlay mode. By default it is absolutely
+   positioned so it floats transparently over the dark hero (the homepage).
+   Pages that stack it under something else — e.g. the webinar countdown bar —
+   pass inFlow so the two sit one above the other instead of on top of each
+   other. */
+export default function Nav({ inFlow = false, showQuote = true }: { inFlow?: boolean; showQuote?: boolean }) {
   const m = useIsMobile();
   const [open, setOpen] = React.useState(false);
   const [resOpen, setResOpen] = React.useState(false);
+  const position = inFlow ? ('relative' as const) : ('absolute' as const);
 
   if (m) {
     return (
-      <div style={{ position: "absolute", top: 0, left: 0, right: 0, zIndex: 20 }}>
+      <div style={{ position, top: 0, left: 0, right: 0, zIndex: 20 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 20px" }}>
           <a href={HOME}><img src="/assets/img/logo.webp" alt="LabsCubed" width={419} height={104} style={{ height: 28, width: "auto", display: "block" }} /></a>
           <button onClick={() => setOpen((o) => !o)} aria-label="Menu" style={{ all: "unset", cursor: "pointer", width: 42, height: 42, display: "inline-flex", alignItems: "center", justifyContent: "center", borderRadius: 10, background: "rgba(255,255,255,0.1)" }}>
@@ -46,17 +62,17 @@ export default function Nav() {
             {resourceLinks.map(([l, href]) => (
               <a key={l} href={href} style={{ color: "rgba(255,255,255,0.85)", fontSize: 15, textDecoration: "none", padding: "10px 0 10px 12px", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>{l}</a>
             ))}
-            <div style={{ marginTop: 16 }}><Button variant="primary" size="sm" href={QUOTE}>Get a Quote</Button></div>
+            {showQuote && <div style={{ marginTop: 16 }}><Button variant="primary" size="sm" href={WHITEPAPER}>Download our White-Paper</Button></div>}
           </div>
         )}
       </div>
     );
   }
   return (
-    <div style={{ position: "absolute", top: 0, left: 0, right: 0, zIndex: 10, display: "flex", justifyContent: "center" }}>
+    <div style={{ position, top: 0, left: 0, right: 0, zIndex: 10, display: "flex", justifyContent: "center" }}>
       <div style={{ width: "100%", maxWidth: 1392, padding: "18px 26px", boxSizing: "border-box", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <a href={HOME}><img src="/assets/img/logo.webp" alt="LabsCubed" width={419} height={104} style={{ height: 34, width: "auto", display: "block" }} /></a>
-        <nav style={{ display: "flex", gap: 26, alignItems: "center" }}>
+        <nav style={{ display: "flex", gap: 26, alignItems: "center", ...(showQuote ? {} : { flex: 1, justifyContent: "center" }) }}>
           {mainLinks.map(([l, href]) => (
             <a key={l} href={href} style={{ color: "rgba(255,255,255,0.85)", fontSize: 13, textDecoration: "none" }} className="lc-navlink">{l}</a>
           ))}
@@ -77,7 +93,9 @@ export default function Nav() {
             </div>
           </div>
         </nav>
-        <Button variant="primary" size="sm" href={QUOTE}>Get a Quote</Button>
+        {showQuote
+          ? <Button variant="primary" size="sm" href={WHITEPAPER}>Download our White-Paper</Button>
+          : <img src="/assets/img/logo.webp" alt="" aria-hidden="true" width={419} height={104} style={{ height: 34, width: "auto", display: "block", visibility: "hidden" }} />}
       </div>
     </div>
   );

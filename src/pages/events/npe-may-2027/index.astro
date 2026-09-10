@@ -1,0 +1,45 @@
+---
+import Base from '../../../layouts/Base.astro';
+import WebinarTopBar from '../../../components/WebinarTopBar.jsx';
+import RegistrationApp from '../../../components/RegistrationApp.jsx';
+import Footer from '../../../components/Footer.astro';
+import ScrollTopOnLoad from '../../../components/ScrollTopOnLoad.astro';
+---
+
+<Base title="See CubeOne at NPE2027: The Plastics Show — Orlando" description="LabsCubed is exhibiting at NPE2027 in Orlando, May 3–7 2027. Get hands-on with CubeOne automated tensile testing and book a demo built around your own lab.">
+  <ScrollTopOnLoad />
+  {/* No site header on this page on purpose: every link in it is a way to
+      leave, and the page has one job — registration. The countdown bar stays,
+      sticky on its own. The thank-you page keeps the header, since by then the
+      conversion has happened. */}
+  <div class="lc-sticky-top">
+    <WebinarTopBar slug="npe-may-2027" client:only="react" />
+  </div>
+  <main class="lc-page">
+    <RegistrationApp slug="npe-may-2027" client:only="react" />
+  </main>
+  <Footer showCta={false} />
+</Base>
+
+<style is:global>
+  .lc-sticky-top {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: #000;
+  }
+
+  /* Belt-and-braces for arrivals that skip the JS scroll helper — a
+     /events/npe-may-2027/#register link, or an in-page anchor. Keeps the top of
+     the registration section clear of the sticky countdown bar, measured at
+     57px now that the site header is gone from this page. */
+  #register {
+    scroll-margin-top: 70px;
+  }
+
+  @media (max-width: 760px) {
+    #register {
+      scroll-margin-top: 64px;
+    }
+  }
+</style>

@@ -1,0 +1,29 @@
+---
+import Base from '../../../layouts/Base.astro';
+import Nav from '../../../islands/Nav.tsx';
+import ThankYouApp from '../../../components/ThankYouApp.jsx';
+import Footer from '../../../components/Footer.astro';
+import ScrollTopOnLoad from '../../../components/ScrollTopOnLoad.astro';
+---
+
+<Base title="You're Registered — The Hidden Cost of Manual Plastics Testing" description="You are registered for the LabsCubed webinar on Tuesday October 20 2026 at 11:00 AM EST.">
+  <ScrollTopOnLoad />
+  {/* No countdown bar here — they have already registered. The header still
+      sticks, matching the registration page. */}
+  <div class="lc-sticky-top">
+    <Nav client:load inFlow showQuote={false} />
+  </div>
+  <main class="lc-page">
+    <ThankYouApp slug="spe-oct-2026" client:only="react" />
+  </main>
+  <Footer showCta={false} />
+</Base>
+
+<style is:global>
+  .lc-sticky-top {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: #000;
+  }
+</style>

@@ -1,0 +1,18 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//LabsCubed//Events//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:LabsCubed at NPE2027
+BEGIN:VEVENT
+UID:npe-may-2027@labscubed.com
+DTSTAMP:20260909T000000Z
+DTSTART;VALUE=DATE:20270503
+DTEND;VALUE=DATE:20270508
+SUMMARY:LabsCubed at NPE2027: The Plastics Show - Orlando
+DESCRIPTION:Get hands-on with CubeOne at NPE2027. Live automated tensile testing demonstrations built around your lab's workflow and materials.
+LOCATION:Orlando, Florida
+URL:https://labscubed.com/events/npe-may-2027/
+STATUS:CONFIRMED
+END:VEVENT
+END:VCALENDAR

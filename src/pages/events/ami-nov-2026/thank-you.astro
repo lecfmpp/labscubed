@@ -1,0 +1,29 @@
+---
+import Base from '../../../layouts/Base.astro';
+import Nav from '../../../islands/Nav.tsx';
+import ThankYouApp from '../../../components/ThankYouApp.jsx';
+import Footer from '../../../components/Footer.astro';
+import ScrollTopOnLoad from '../../../components/ScrollTopOnLoad.astro';
+---
+
+<Base title="Your CubeOne Demo Is Booked — Compounding World Expo 2026" description="Your CubeOne demonstration at the Compounding World Expo is booked. Huntington Convention Center, Cleveland, November 11–12 2026.">
+  <ScrollTopOnLoad />
+  {/* No countdown bar here — they have already registered. The header still
+      sticks, matching the registration page. */}
+  <div class="lc-sticky-top">
+    <Nav client:load inFlow showQuote={false} />
+  </div>
+  <main class="lc-page">
+    <ThankYouApp slug="ami-nov-2026" client:only="react" />
+  </main>
+  <Footer showCta={false} />
+</Base>
+
+<style is:global>
+  .lc-sticky-top {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: #000;
+  }
+</style>

@@ -1,0 +1,45 @@
+---
+import Base from '../../../layouts/Base.astro';
+import WebinarTopBar from '../../../components/WebinarTopBar.jsx';
+import RegistrationApp from '../../../components/RegistrationApp.jsx';
+import Footer from '../../../components/Footer.astro';
+import ScrollTopOnLoad from '../../../components/ScrollTopOnLoad.astro';
+---
+
+<Base title="Automation, AI and Industry 4.0 in the Testing Lab — LabsCubed Webinar" description="Free webinar, Wednesday November 18 2026 at 11:00 AM EST. What it takes to make a testing lab smart: automating the repetitive work, producing data clean enough to analyse, and connecting the two.">
+  <ScrollTopOnLoad />
+  {/* No site header on this page on purpose: every link in it is a way to
+      leave, and the page has one job — registration. The countdown bar stays,
+      sticky on its own. The thank-you page keeps the header, since by then the
+      conversion has happened. */}
+  <div class="lc-sticky-top">
+    <WebinarTopBar slug="automation-ai-nov-2026" client:only="react" />
+  </div>
+  <main class="lc-page">
+    <RegistrationApp slug="automation-ai-nov-2026" client:only="react" />
+  </main>
+  <Footer showCta={false} />
+</Base>
+
+<style is:global>
+  .lc-sticky-top {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: #000;
+  }
+
+  /* Belt-and-braces for arrivals that skip the JS scroll helper — a
+     /webinar/automation-ai-nov-2026/#register link, or an in-page anchor. Keeps the top of
+     the registration section clear of the sticky countdown bar, measured at
+     57px now that the site header is gone from this page. */
+  #register {
+    scroll-margin-top: 70px;
+  }
+
+  @media (max-width: 760px) {
+    #register {
+      scroll-margin-top: 64px;
+    }
+  }
+</style>
