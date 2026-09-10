@@ -21,7 +21,7 @@ const mainLinks: [string, string][] = [
 ];
 const resourceLinks: [string, string][] = [
   ['ASTM D638', '/resources/astm-d638-iso-527-2-plastic-tensile-testing'],
-  ['ASTM D412', 'https://www.labscubed.com/astm-d412-iso37-how-to-run-tensile-testing-for-rubber'],
+  ['ASTM D412', '/resources/astm-d412-iso-37-rubber-tensile-testing'],
 ];
 const WHITEPAPER = '/white-paper-automation-vs-manual-testing';
 

@@ -1,15 +1,18 @@
 ---
-// Brochure — gated CubeTen brochure form (name / work email / company).
-// Posts straight to the same `download-request` edge function the homepage
-// and white-paper page already use (asset: "cubeten-brochure"), so the
-// email-send, webform_leads log, and Resend segment tagging are unchanged.
+// Brochure — gated brochure form (name / work email / company). Posts
+// straight to the same `download-request` edge function the homepage and
+// white-paper page already use, so the email-send, webform_leads log, and
+// Resend segment tagging are unchanged. `asset` (e.g. "cubeten-brochure" /
+// "cubeone-brochure") selects both which PDF is sent and which Resend
+// segment the contact is tagged into; `formId` just needs to be unique
+// per-page if a page ever renders more than one Brochure block.
 import PageSection from './PageSection.astro';
 import Heading from './Heading.astro';
 import P from './P.astro';
 import Button from '../Button.astro';
 
-interface Props { heading: string; body: string; imgSrc: string; imgAlt: string }
-const { heading, body, imgSrc, imgAlt } = Astro.props;
+interface Props { heading: string; body: string; imgSrc: string; imgAlt: string; asset?: string; formId?: string }
+const { heading, body, imgSrc, imgAlt, asset = 'cubeten-brochure', formId = 'brochure-cubeten' } = Astro.props;
 ---
 <PageSection bg="subtle" pad={104}>
   <div class="rs-brochure">
@@ -17,7 +20,7 @@ const { heading, body, imgSrc, imgAlt } = Astro.props;
       <Heading>{heading}</Heading>
       <P>{body}</P>
       <div class="rs-brochure__success" hidden>Thank you! Your submission has been received!</div>
-      <form class="rs-brochure__form" data-lc-form="brochure-cubeten">
+      <form class="rs-brochure__form" data-lc-form={formId} data-lc-asset={asset}>
         <input name="name" required placeholder="Full name" class="rs-brochure__input" />
         <input name="email" type="email" required placeholder="Work email" class="rs-brochure__input" />
         <input name="company" required placeholder="Company" class="rs-brochure__input" />
@@ -45,11 +48,12 @@ const { heading, body, imgSrc, imgAlt } = Astro.props;
 </style>
 <script>
   const ENDPOINT = 'https://grozewxrymeiruhggcdy.supabase.co/functions/v1/download-request';
-  document.querySelectorAll<HTMLFormElement>('form[data-lc-form="brochure-cubeten"]').forEach((form) => {
+  document.querySelectorAll<HTMLFormElement>('form[data-lc-asset]').forEach((form) => {
     const wrap = form.closest('.rs-brochure__copy');
     const success = wrap?.querySelector<HTMLElement>('.rs-brochure__success');
     const errorEl = form.querySelector<HTMLElement>('.rs-brochure__error');
     const submit = form.querySelector<HTMLButtonElement>('.rs-brochure__submit');
+    const asset = form.dataset.lcAsset || 'cubeten-brochure';
     form.addEventListener('submit', (e) => {
       e.preventDefault();
       if (errorEl) { errorEl.hidden = true; errorEl.textContent = ''; }
@@ -61,7 +65,7 @@ const { heading, body, imgSrc, imgAlt } = Astro.props;
       fetch(ENDPOINT, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, name, company, asset: 'cubeten-brochure', source: location.pathname, landing_page: location.pathname, referrer: document.referrer || '' }),
+        body: JSON.stringify({ email, name, company, asset, source: location.pathname, landing_page: location.pathname, referrer: document.referrer || '' }),
       })
         .then((r) => r.json().catch(() => ({})).then((d) => ({ status: r.status, data: d })))
         .then(({ status, data: resp }) => {

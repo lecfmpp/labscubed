@@ -39,6 +39,7 @@
 # these pages are moving to a genuinely new path, so a redirect is required
 # (unlike /blog and /post/<slug>, which kept their exact Webflow URLs).
 /astm-d638-iso527-tensile-testing   /resources/astm-d638-iso-527-2-plastic-tensile-testing   301
+/astm-d412-iso37-how-to-run-tensile-testing-for-rubber   /resources/astm-d412-iso-37-rubber-tensile-testing   301
 
 # Every OTHER path is invisibly proxied (status 200 = rewrite, not redirect) to
 # the Webflow site published at site.labscubed.com, so all existing

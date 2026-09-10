@@ -1,22 +1,32 @@
 ---
 // Intro — single 820px prose column + key-takeaways box. Required-ish first
 // body section; imports blog-assets.css for the .lcb-takeaways kit (the
-// exact same box used in blog posts).
+// exact same box used in blog posts). `paragraphs` entries are plain P text,
+// or `{ checklist: string[] }` to drop a CheckList in at that point in the
+// flow (some pages have a checklist mid-intro, most don't).
 import '../../styles/blog-assets.css';
 import PageSection from './PageSection.astro';
 import Heading from './Heading.astro';
 import P from './P.astro';
+import CheckList from './CheckList.astro';
 
-interface Props { id: string; heading: string; paragraphs: string[]; standardLabel?: string; standardHref?: string; takeaways: string[] }
-const { id, heading, paragraphs, standardLabel, standardHref, takeaways } = Astro.props;
+type ParaItem = string | { checklist: string[] };
+interface Props {
+  id: string; heading: string; paragraphs: ParaItem[]; takeaways: string[];
+  standardHref?: string; standardBefore?: string; standardLinkLabel?: string; standardAfter?: string;
+}
+const {
+  id, heading, paragraphs, takeaways,
+  standardHref, standardBefore = 'Official Standard:', standardLinkLabel = 'Click here', standardAfter = '',
+} = Astro.props;
 ---
 <PageSection pad={96}>
   <div class="rs-intro">
     <Heading id={id}>{heading}</Heading>
-    {paragraphs.map((p) => <P>{p}</P>)}
+    {paragraphs.map((p) => (typeof p === 'string' ? <P>{p}</P> : <CheckList items={p.checklist} />))}
     {standardHref && (
       <div class="rs-intro__standard">
-        Official Standard: <a href={standardHref} target="_blank" rel="noopener">Click here</a>
+        {standardBefore} <a href={standardHref} target="_blank" rel="noopener">{standardLinkLabel}</a>{standardAfter}
       </div>
     )}
     <div class="lcb" style="margin:48px 0 0;">

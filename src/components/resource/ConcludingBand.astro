@@ -1,0 +1,23 @@
+---
+// ConcludingBand — black full-bleed closing section: an H2 above a 2-column
+// paragraph grid, no CTA/card. Distinct from FinalCTA (which has a button)
+// and from Brochure (which has a form) — this is just closing prose.
+import PageSection from './PageSection.astro';
+import Heading from './Heading.astro';
+
+interface Props { id?: string; heading: string; paragraphs: string[] }
+const { id, heading, paragraphs } = Astro.props;
+---
+<PageSection bg="dark" pad={104}>
+  <Heading id={id} light>{heading}</Heading>
+  <div class="rs-concluding__grid">
+    {paragraphs.map((p) => <p class="rs-concluding__p">{p}</p>)}
+  </div>
+</PageSection>
+<style>
+  .rs-concluding__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 36px; }
+  .rs-concluding__p { font-weight: 300; font-size: 17px; line-height: 1.65; color: rgba(255,255,255,0.75); margin: 0; }
+  @media (max-width: 860px) {
+    .rs-concluding__grid { grid-template-columns: 1fr; gap: 20px; }
+  }
+</style>

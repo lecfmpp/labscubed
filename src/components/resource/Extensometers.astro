@@ -5,9 +5,9 @@ import PageSection from './PageSection.astro';
 import Heading from './Heading.astro';
 import P from './P.astro';
 
-interface Item { type: string; desc: string; use: string; img: string }
-interface Props { id: string; heading: string; intro: string; items: Item[] }
-const { id, heading, intro, items } = Astro.props;
+interface Item { type: string; desc: string; use: string; img?: string; cubeOne?: boolean }
+interface Props { id: string; heading: string; intro: string; items: Item[]; useLabel?: string }
+const { id, heading, intro, items, useLabel = 'Use case' } = Astro.props;
 ---
 <PageSection bg="subtle" pad={104}>
   <Heading id={id}>{heading}</Heading>
@@ -15,12 +15,26 @@ const { id, heading, intro, items } = Astro.props;
   <div class="rs-ext">
     {items.map((e) => (
       <div class="rs-ext__card">
-        <div class="rs-ext__plate"><img src={e.img} alt={e.type} /></div>
+        {e.img && (
+          <div class="rs-ext__plate">
+            <img src={e.img} alt={e.type} />
+            {e.cubeOne !== undefined && (
+              <span class:list={['rs-ext__pill', { 'rs-ext__pill--off': !e.cubeOne }]}>
+                {e.cubeOne ? 'On CubeOne' : 'Not on CubeOne'}
+              </span>
+            )}
+          </div>
+        )}
         <div class="rs-ext__body">
+          {!e.img && e.cubeOne !== undefined && (
+            <span class:list={['rs-ext__pill', 'rs-ext__pill--inline', { 'rs-ext__pill--off': !e.cubeOne }]}>
+              {e.cubeOne ? 'On CubeOne' : 'Not on CubeOne'}
+            </span>
+          )}
           <div class="rs-ext__t">{e.type}</div>
           <p class="rs-ext__d">{e.desc}</p>
           <div class="rs-ext__use">
-            <div class="rs-ext__use-label">Use case</div>
+            <div class="rs-ext__use-label">{useLabel}</div>
             <p class="rs-ext__use-body">{e.use}</p>
           </div>
         </div>
@@ -31,8 +45,11 @@ const { id, heading, intro, items } = Astro.props;
 <style>
   .rs-ext { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 44px; }
   .rs-ext__card { display: flex; flex-direction: column; border-radius: var(--radius-card); background: var(--surface-card); box-shadow: var(--shadow-edge); overflow: hidden; }
-  .rs-ext__plate { padding: 24px; background: #fff; }
+  .rs-ext__plate { position: relative; padding: 24px; background: #fff; }
   .rs-ext__plate img { width: 100%; height: 143px; object-fit: contain; display: block; }
+  .rs-ext__pill { position: absolute; top: 16px; right: 16px; font-weight: 700; font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; padding: 6px 12px; border-radius: 999px; background: rgba(23,221,197,0.14); color: var(--lc-teal-deep); }
+  .rs-ext__pill--off { background: var(--lc-gray-100); color: var(--text-muted); }
+  .rs-ext__pill--inline { position: static; display: inline-flex; align-self: flex-start; }
   .rs-ext__body { display: flex; flex-direction: column; gap: 12px; padding: 32px; }
   .rs-ext__t { font-weight: 600; font-size: 20px; letter-spacing: -0.01em; line-height: 1.25; color: var(--lc-ink); }
   .rs-ext__d { font-weight: 300; font-size: 15.5px; line-height: 1.6; color: var(--text-muted); margin: 0; }

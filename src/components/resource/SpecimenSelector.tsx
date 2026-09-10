@@ -32,9 +32,10 @@ function SpecRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-export default function SpecimenSelector({ standard, useCases, defaultId }: { standard: string; useCases: Record<string, string>; defaultId: string }) {
+export default function SpecimenSelector({ standard, useCases, defaultId }: { standard: string | string[]; useCases: Record<string, string>; defaultId: string }) {
   const m = useM();
-  const list = React.useMemo(() => SAMPLES.filter((s: any) => s.standard === standard), [standard]);
+  const standards = Array.isArray(standard) ? standard : [standard];
+  const list = React.useMemo(() => SAMPLES.filter((s: any) => standards.includes(s.standard)), [standards.join('|')]);
   const [sel, setSel] = React.useState(defaultId);
   const s = list.find((x: any) => x.id === sel) || list[0];
   if (!s) return null;

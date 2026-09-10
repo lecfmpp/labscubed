@@ -7,8 +7,11 @@ import Heading from './Heading.astro';
 import P from './P.astro';
 import CheckList from './CheckList.astro';
 
-interface Props { id: string; heading: string; intro: string; items: string[]; panel: string[] }
-const { id, heading, intro, items, panel } = Astro.props;
+interface Props {
+  id: string; heading: string; intro: string; items: string[]; panel: string[];
+  panelImage?: { src: string; alt: string };
+}
+const { id, heading, intro, items, panel, panelImage } = Astro.props;
 ---
 <PageSection pad={104}>
   <div class="rs-2col">
@@ -21,13 +24,16 @@ const { id, heading, intro, items, panel } = Astro.props;
       {panel.map((para, i) => i === 0
         ? <P style="color:var(--lc-ink);font-weight:400;">{para}</P>
         : <P>{para}</P>)}
+      {panelImage && <img src={panelImage.src} alt={panelImage.alt} class="rs-2col__panel-img" />}
     </div>
   </div>
+  <slot />
 </PageSection>
 <style>
   .rs-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; }
   .rs-2col__list { display: flex; flex-direction: column; gap: 20px; }
   .rs-2col__panel { display: flex; flex-direction: column; gap: 20px; padding: 40px; border-radius: var(--radius-card); background: var(--lc-gray-100); }
+  .rs-2col__panel-img { width: 100%; display: block; border-radius: var(--radius-sm); margin-top: 4px; }
   @media (max-width: 860px) {
     .rs-2col { grid-template-columns: 1fr; gap: 32px; }
     .rs-2col__panel { padding: 28px; }

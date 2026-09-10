@@ -3,10 +3,10 @@ import PageSection from './PageSection.astro';
 import Heading from './Heading.astro';
 import FAQAccordion from './FAQAccordion.astro';
 
-interface Props { items: [string, string][] }
-const { items } = Astro.props;
+interface Props { items: [string, string][]; bg?: 'white' | 'subtle' | 'dark' }
+const { items, bg = 'white' } = Astro.props;
 ---
-<PageSection pad={104}>
+<PageSection bg={bg} pad={104}>
   <Heading id="faq">Frequently asked questions</Heading>
   <div style="margin-top:40px;max-width:900px;">
     <FAQAccordion items={items} />

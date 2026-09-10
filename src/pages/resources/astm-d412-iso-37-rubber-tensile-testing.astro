@@ -1,0 +1,376 @@
+---
+// Resource page — ASTM D412 / ISO 37. Second page built from the resource
+// page template (src/components/resource/); see astm-d638-... for the
+// original. This page's Specimens section filters by TWO standards (ASTM
+// D412 + ISO 37 together) and adds a CompareTable; the Data section is
+// composed inline (PageSection+Heading+P+DefRows+img) rather than through
+// DataReview.astro, whose black-band checklist shape doesn't fit this
+// section's simpler label/description-rows layout.
+import Base from '../../layouts/Base.astro';
+import Nav from '../../islands/Nav.tsx';
+import Footer from '../../components/Footer.astro';
+import TocBox from '../../components/resource/TocBox.astro';
+import ResourceHero from '../../components/resource/ResourceHero.astro';
+import Intro from '../../components/resource/Intro.astro';
+import Measures from '../../components/resource/Measures.astro';
+import TwoColCheck from '../../components/resource/TwoColCheck.astro';
+import Workflow from '../../components/resource/Workflow.astro';
+import Extensometers from '../../components/resource/Extensometers.astro';
+import Specimens from '../../components/resource/Specimens.astro';
+import Alignment from '../../components/resource/Alignment.astro';
+import CompareTable from '../../components/resource/CompareTable.astro';
+import DefRows from '../../components/resource/DefRows.astro';
+import ConcludingBand from '../../components/resource/ConcludingBand.astro';
+import Brochure from '../../components/resource/Brochure.astro';
+import FAQ from '../../components/resource/FAQ.astro';
+import Related from '../../components/resource/Related.astro';
+import Heading from '../../components/resource/Heading.astro';
+import P from '../../components/resource/P.astro';
+import PageSection from '../../components/resource/PageSection.astro';
+
+const CDN = 'https://cdn.prod.website-files.com/6602a0f7aad6cea8d7e38d91/';
+const IMG = {
+  cubeGo: CDN + '68d2ea7cc38f7bfbee6d5c04_cube-go-labscubed.webp',
+  tray5: CDN + '68d2ebe34f94a1b80cfda485_80acba2d069f9161232716441ecbc38a_tray_cube_go_5samples.webp',
+  specimenTypes: CDN + '68433cfb993ee7946008e90a_ASTM%20D412-Specimen-Types-Tensile-Testing.webp',
+  step1: CDN + '684af6b2e3d51de8e56e9c31_step1_cube_one_tray.webp',
+  step2: CDN + '680be6d961561aaf806718c8_4-start-tensile-testing-touch-cubeten-astmd638.webp',
+  step3: CDN + '684af84f01728e61a2daea31_testing_sample_cube_one_tensile.webp',
+  step4: CDN + '684afb454d9912601bf2ce0d_data_cube_one_astm_d412.webp',
+  portal: CDN + '684342c91bf8f8117d74023c_Data-Analysis-Tensile-Testing-ASTM%20D412-LabsCubed.webp',
+  brochure: CDN + '68434f4d0ec97148de907bbc_cube_one_download_brochure_labscubed.webp',
+};
+
+/* ---- 1 · PAGE CONFIG ---------------------------------------------------- */
+const RESOURCE = {
+  metaTitle: 'ASTM D412 Explained: A Complete Guide to Rubber Tensile Testing | LabsCubed',
+  metaDescription:
+    'ASTM D412 rubber tensile testing explained: what the standard measures, dogbone vs. ring specimens, equipment and extensometer requirements, and how CubeOne automates each step.',
+  canonical: 'https://labscubed.com/resources/astm-d412-iso-37-rubber-tensile-testing',
+  eyebrow: 'Resource · ASTM D412 / ISO 37',
+  headlineAccent: 'ASTM D412 Explained:',
+  headlineRest: ' A Complete Guide to Rubber Tensile Testing',
+  deck: "This guide walks through the ASTM D412 testing process, including specimen preparation, testing equipment, extensometer options, material compatibility, and expected data. Exploring practical examples using the CubeOne workflow, it becomes clear how automation helps streamline the testing process.",
+  published: '2025-06-06',
+  updated: '2026-09-10',
+  readingMinutes: 11,
+  author: 'LabsCubed',
+  breadcrumbs: [
+    { label: 'Home', href: 'https://labscubed.com/' },
+    { label: 'Resources', href: 'https://labscubed.com/resources' },
+    { label: 'ASTM D412 / ISO 37' },
+  ],
+  primaryCta: { label: 'Request a Quote or Demo', href: 'https://labscubed.com/get-a-quote' },
+  secondaryCta: { label: 'Official Standard', href: 'https://store.astm.org/d0412-16.html' },
+};
+
+const TOC = [
+  { id: 'intro', label: 'Overview' },
+  { id: 'measures', label: 'What it measures' },
+  { id: 'when', label: 'When to use it' },
+  { id: 'specimens', label: 'Specimen types' },
+  { id: 'equipment', label: 'Equipment' },
+  { id: 'extensometer', label: 'Extensometers' },
+  { id: 'workflow', label: 'Test workflow' },
+  { id: 'repeatability', label: 'Repeatability' },
+  { id: 'data', label: 'Data & reporting' },
+  { id: 'faq', label: 'FAQ' },
+];
+
+const canonicalUrl = new URL(RESOURCE.canonical.replace('https://labscubed.com', ''), 'https://labscubed.com').href;
+
+/* ---- JSON-LD: Article + BreadcrumbList + FAQPage ------------------------ */
+const FAQS: [string, string][] = [
+  ['What is the difference between ASTM D412 and ISO 37?', 'Both evaluate the stress-strain behavior of vulcanized rubber and thermoplastic elastomers. ASTM D412 is the primary method in North America; ISO 37 follows a similar approach and is more widely used in Europe and other regions. They use different test speeds and specimen dimensions, but serve the same purpose. Choosing between them depends on whether your project or customer follows North American or international quality standards.'],
+  ['What is the difference between Method A and Method B?', 'Method A uses dogbone-shaped samples (6 types) and Method B is intended for ring-shaped specimens (2 types). Method A is the more commonly used and is the method supported by CubeOne. Dogbones are gripped in flat jaws and concentrate stress in the gauge area; rings are gripped on rollers or mandrels and distribute stress uniformly, which suits O-rings and gaskets.'],
+  ['Which properties does ASTM D412 report?', 'Tensile strength, tensile stress at a given elongation (modulus), ultimate elongation, tensile set, and the full stress-strain curve. For highly elastic materials the test may not reach fracture, in which case the focus shifts to elongation and recovery characteristics.'],
+  ['Does CubeOne support all extensometer types?', 'CubeOne supports two of the three: video extensometer and crosshead displacement. An automated physical extensometer is not available on CubeOne.'],
+  ['What test conditions need to be controlled?', 'Temperature, humidity, and testing speed can all affect results and should be controlled. Specimen preparation matters too: dogbones are typically die-cut from molded sheets or plaques, and should be cut so their length runs parallel to the extrusion grain direction.'],
+];
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org', '@type': 'Article',
+    headline: RESOURCE.headlineAccent + RESOURCE.headlineRest,
+    description: RESOURCE.metaDescription,
+    datePublished: RESOURCE.published, dateModified: RESOURCE.updated,
+    author: { '@type': 'Organization', name: RESOURCE.author },
+    publisher: { '@type': 'Organization', name: 'LabsCubed', url: 'https://labscubed.com/' },
+    mainEntityOfPage: { '@type': 'WebPage', '@id': RESOURCE.canonical },
+  },
+  {
+    '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+    itemListElement: RESOURCE.breadcrumbs.map((b, i) => ({ '@type': 'ListItem', position: i + 1, name: b.label, item: b.href || RESOURCE.canonical })),
+  },
+  {
+    '@context': 'https://schema.org', '@type': 'FAQPage',
+    mainEntity: FAQS.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })),
+  },
+];
+
+/* ---- Section data -------------------------------------------------------- */
+const TAKEAWAYS = [
+  'ASTM D412 is the widely accepted standard method for determining the tensile properties of rubber and elastomers; ISO 37 is its international counterpart.',
+  'Method A uses dogbone-shaped samples (6 types) and Method B is intended for ring-shaped specimens (2 types). Method A is the more commonly used and is supported by the CubeOne system.',
+  'A compliant setup needs controlled test speeds, a load cell suited to low-force high-elongation elastomers, non-slip grips, a compliant strain measurement system, and precision thickness measurement.',
+  'Temperature, humidity, and testing speed can affect test results, so these factors should be controlled to ensure accurate results.',
+];
+
+const MEASURES = [
+  { title: 'Tensile Strength', body: 'The maximum tensile stress a material can withstand before breaking.' },
+  { title: 'Tensile Stress at a Given Elongation (Modulus)', body: 'The stress required to stretch the material to a specific strain level or elongation (e.g., 100%, 200%, or 300%). It quantifies the stiffness of the rubber at defined points along the strain curve and is useful for comparing material rigidity.' },
+  { title: 'Ultimate Elongation', body: 'The amount of elongation a material can withstand before failure (elongation at break).' },
+  { title: 'Tensile Set', body: 'The amount of permanent deformation remaining after a material is stretched and allowed to relax, indicating the material’s tendency to deform permanently under stress.' },
+  { title: 'Stress-Strain Behavior', body: 'The stress-strain curve visually depicts how rubber responds to tension, illustrating elasticity, yield points, and, when applicable, fracture behavior. For highly elastic materials, the test may not reach fracture, focusing instead on elongation and recovery characteristics.' },
+];
+
+const WHEN_ITEMS = [
+  'Testing thermoset rubber (e.g. natural rubber, neoprene, nitrile, EPDM)',
+  'Testing thermoplastic elastomers (TPEs, TPVs) used in molded parts or flexible components',
+  'Measuring material consistency during quality control or batch testing',
+  'Validating new rubber compounds in R&D and formulation work',
+  'Comparing mechanical performance across suppliers or materials',
+  'Ensuring products meet customer, industry, or regulatory requirements',
+];
+
+const IDEAL_FOR = [
+  'Labs needing to test up to 12 samples in a single run',
+  'Manufacturers looking to reduce operator time and human error',
+  'Teams focused on improving test repeatability and traceability',
+  'Any organization currently running ASTM D412 or ISO 37 manually and seeking automation',
+];
+
+const D412_USE: Record<string, string> = {
+  'astm-d412-c': 'The industry standard die in North America',
+  'astm-d412-d': 'Smaller die for limited material',
+  'iso-37-1': 'International dumbbell — larger geometry',
+  'iso-37-2': 'International dumbbell — standard geometry',
+  'iso-37-3': 'International dumbbell — reduced geometry',
+  'iso-37-4': 'International dumbbell — small geometry',
+};
+
+const EXT = [
+  { type: 'Automated Physical Extensometer', desc: 'Measures strain using physical gauge arms', use: 'Rigid elastomers where high repeatability and accuracy are needed.', cubeOne: false },
+  { type: 'Video Extensometer', desc: 'Non-contact optical tracking for strain measurement', use: 'Delicate samples or high-elongation rubbers.', cubeOne: true },
+  { type: 'Crosshead Displacement', desc: 'Uses built-in displacement tracking for basic strain measurements', use: 'General-purpose tests i.e., low/high-elongation rubbers or quick tests.', cubeOne: true },
+];
+
+const STEPS = [
+  { n: 'Step 1', title: 'Loading your samples', body: 'Simply load up to 12 rubber samples into the CubeOne tray, even if they come from different compounds or production batches.', img: IMG.step1, alt: 'Loading rubber samples into the CubeOne tray for automated tensile testing.' },
+  { n: 'Step 2', title: 'Start the Test', body: 'Launch the ASTM D412 or ISO 37 method from the touchscreen. CubeOne pulls the specimen while recording real-time load, displacement, and strain data.', img: IMG.step2, alt: 'Starting a tensile test from the LabsCubed touchscreen interface.' },
+  { n: 'Step 3', title: 'Measure, Test, Discard the Samples and Repeat.', body: 'Before testing begins, the system automatically measures thickness using calibrated sensors. The specimen is aligned and clamped using self-centering grips that apply consistent force. No manual adjustments or setup required.', img: IMG.step3, alt: 'CubeOne running tensile testing on rubber samples.' },
+  { n: 'Step 4', title: 'Capture and Export Results', body: 'As each test completes, CubeOne instantly delivers tensile strength, elongation, modulus, and full stress-strain curves. Results are immediately available for review on-screen, in the LabsCubed Portal, or exported to your LIMS, ERP, or QA platform.', img: IMG.step4, alt: 'CubeOne tensile test results for ASTM D412 shown in the LabsCubed data view.' },
+];
+
+const DATA_TYPES = [
+  { label: 'Interactive Stress-Strain Visualization (A)', body: 'Real-time overlay of multiple curves for side-by-side comparison, with cursor tracking to inspect individual data points, such as strain, stress, and modulus at key elongations.' },
+  { label: 'Batch Testing Reports and Statistical Summaries (B)', body: 'Automatically calculates mean, median, standard deviation, and coefficient of variation (CoV) for stress, strain, and modulus values across test sets.' },
+  { label: 'Specimen-Level Tracking (C)', body: 'Each test includes timestamped records, operator ID, test speed, and precise specimen dimensions (measured and auto-detected), providing full traceability.' },
+  { label: 'Flexible Data Filtering (D)', body: 'Users can exclude or include specific samples, view slot-level test details, and customize which results are shown in summary calculations.' },
+  { label: 'Export Options (E)', body: 'Results are instantly available for download in CSV or PDF format, or can be exported directly into LIMS, ERP, or QA systems through API integration.' },
+];
+
+const RELATED = [
+  { eyebrow: 'Standard guide', title: 'ASTM D638 / ISO 527-2 plastic tensile testing', desc: 'The plastics counterpart to D412 — specimen geometries, equipment, and how CubeTen automates them.', href: 'https://labscubed.com/resources/astm-d638-iso-527-2-plastic-tensile-testing', img: IMG.step2 },
+  { eyebrow: 'Product', title: 'CubeOne automated rubber tensile testing', desc: 'Up to 12 elastomer specimens loaded once, measured, gripped, and pulled unattended.', href: 'https://labscubed.com/rubber-testing', img: IMG.step1 },
+  { eyebrow: 'Data', title: 'The LabsCubed Portal', desc: 'Interactive stress-strain visualization, batch statistics, specimen-level traceability, CSV/PDF and API export.', href: 'https://labscubed.com/get-a-quote', img: IMG.portal },
+];
+---
+<Base
+  title={RESOURCE.metaTitle}
+  description={RESOURCE.metaDescription}
+  canonical={canonicalUrl}
+  ogType="article"
+  jsonLd={jsonLd}
+  preloadHero={false}
+>
+  <Nav client:load />
+  <main class="lc-page">
+    <ResourceHero
+      eyebrow={RESOURCE.eyebrow}
+      headlineAccent={RESOURCE.headlineAccent}
+      headlineRest={RESOURCE.headlineRest}
+      deck={RESOURCE.deck}
+      updated={RESOURCE.updated}
+      readingMinutes={RESOURCE.readingMinutes}
+      breadcrumbs={RESOURCE.breadcrumbs}
+      primaryCta={RESOURCE.primaryCta}
+      secondaryCta={RESOURCE.secondaryCta}
+    />
+    <TocBox toc={TOC} />
+
+    <Intro
+      id="intro"
+      heading="How to Follow ASTM D412 for Rubber Tensile Testing"
+      paragraphs={[
+        "ASTM D412 is the widely accepted standard method for determining the tensile properties of rubber and elastomers. Whether you're evaluating materials for product development, regulatory compliance, or quality assurance, understanding and correctly applying these steps ensures accurate, repeatable results.",
+        'This guide walks through the ASTM D412 testing process, including:',
+        { checklist: ['Specimen preparation', 'Testing equipment', 'Extensometer options', 'Material compatibility, and expected data'] },
+        'Exploring practical examples using the CubeOne workflow, it becomes clear how automation helps streamline the testing process.',
+      ]}
+      standardHref="https://store.astm.org/d0412-16.html"
+      standardBefore="The official ASTM D412 documentation can be found"
+      standardLinkLabel="here"
+      standardAfter="."
+      takeaways={TAKEAWAYS}
+    />
+
+    <Measures
+      id="measures"
+      heading="What Does ASTM D412 Measure?"
+      intro="ASTM D412 is a standardized test method used to measure the tensile properties of rubber and thermoplastic elastomers under controlled loading. It assesses the material's elasticity, measuring how much it stretches under tension and how much permanent deformation remains after the load is removed."
+      items={MEASURES}
+      outro="This data helps engineers, product designers, and quality control specialists assess material performance in applications where rubber undergoes stretching forces."
+      note="While ASTM D412 and ISO 37 use different test speeds and specimen dimensions, they both serve the same purpose: measuring the tensile behaviour of elastomeric materials under controlled conditions."
+      sideImage={{ src: IMG.cubeGo, alt: 'CubeGo automated tensile testing machine for R&D labs' }}
+    />
+
+    <TwoColCheck
+      id="when"
+      heading="When Should You Use ASTM D412 or ISO 37?"
+      intro="ASTM D412 applies to:"
+      items={WHEN_ITEMS}
+      panel={[
+        "ASTM D412 is commonly used in the automotive, aerospace, medical, and other industries to ensure rubber materials meet strength and elongation requirements. It's the primary tensile test method for quality control and product development involving rubbers, especially in North America.",
+        'The international counterpart, ISO 37, follows a similar approach and is more widely used in Europe and other regions. Both standards are used to evaluate the stress-strain behavior of vulcanized rubber and thermoplastic elastomers. Choosing between standards depends on whether your project or customer follows North American (ASTM) or international (ISO) quality standards.',
+      ]}
+    >
+      <div class="d412-ideal">
+        <Heading level={3}>CubeOne is designed for labs performing regular tensile testing on elastomers</Heading>
+        <P style="margin-top:22px;">Whether for production control, research, or certification, it's ideal for:</P>
+        <div class="d412-ideal__grid">
+          {IDEAL_FOR.map((x) => (
+            <div class="d412-ideal__card">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <circle cx="12" cy="12" r="11" stroke="var(--lc-line-strong)" stroke-width="1.4" />
+                <path d="M7.5 12.3l3 3 6-6.4" stroke="var(--lc-teal-deep)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              <span>{x}</span>
+            </div>
+          ))}
+        </div>
+        <P style="margin-top:8px;">These standards should be your go-to method any time the goal is to understand how rubber will stretch, perform, and ultimately fail under load — and CubeOne ensures you can do that with accuracy, speed, and minimal effort.</P>
+      </div>
+    </TwoColCheck>
+
+    <Specimens
+      id="specimens"
+      heading="ASTM D412 Specimen Types"
+      intro="ASTM D412 outlines two testing procedures based on the specimen shape, and it's important to note that the results from each method may differ. Method A uses dogbone-shaped samples (6 types), while Method B is intended for ring-shaped specimens (2 types). Method A is the more commonly used and is supported by the CubeOne system, as illustrated below. Sample thickness is typically 3 mm (0.12 inches). Note, the thicker the sample, the greater force required to stretch it."
+      overviewImage={{ src: IMG.specimenTypes, alt: 'ASTM D412 - Types A, B, C, D, E, F - Tensile Testing LabsCubed' }}
+      standard={['ASTM D412', 'ISO 37']}
+      useCases={D412_USE}
+      defaultId="astm-d412-c"
+    >
+      <div class="d412-compare">
+        <Heading level={3}>Dogbone vs. ring specimens</Heading>
+        <div style="margin-top:24px;">
+          <CompareTable
+            columns={['Dogbone Specimens', 'Ring Specimens']}
+            rows={[
+              ['Test Method', 'A', 'B'],
+              ['Shape', 'Narrowed middle (dogbone)', 'Continuous loop'],
+              ['Gripping method', 'Flat jaws', 'Rollers or mandrels'],
+              ['Most common use', 'General tensile testing', 'Testing of O-rings, gaskets'],
+              ['Industry standard', 'Yes (especially Type C in North America.)', 'Less common but useful for rings'],
+              ['Stress distribution', 'High in gauge area', 'Uniform across the ring'],
+              ['Notes', 'Requires die-cutting', 'Requires a ring mold or a cutting tool'],
+            ]}
+          />
+        </div>
+        <P style="margin-top:28px;">Dogbone samples are typically die-cut from molded sheets or plaques, and the grain direction from the extrusion process can influence results. To maintain consistency, specimens should be cut so that their length runs parallel to this grain.</P>
+      </div>
+    </Specimens>
+
+    <TwoColCheck
+      id="equipment"
+      heading="Equipment &amp; Testing Environment Requirements"
+      intro="A system configured for ASTM D412 or ISO 37 rubber dogbone tensile testing must include:"
+      items={['A tensile frame capable of controlled, standard-compliant test speeds', 'A calibrated load cell suited for low-force, high-elongation elastomer testing', 'Grips to securely hold rubber specimens without slippage or deformation', 'A compliant strain measurement system (physical or video extensometer)', 'Precision thickness measurement tools for consistent specimen validation']}
+      panel={[
+        'CubeOne is purpose-built to meet and exceed these requirements. Its automation eliminates manual setup and ensures repeatable, accurate results on every test. It’s the ideal solution for quality control and R&D labs working with rubber and elastomers.',
+        'For globally aligned applications, ISO 37 is a commonly used international equivalent to ASTM D412, with slight variations in specimen dimensions and test speeds. CubeOne supports both standards with seamless method selection.',
+      ]}
+      panelImage={{ src: IMG.tray5, alt: '5-sample tray for automated tensile testing in R&D labs' }}
+    />
+
+    <Extensometers
+      id="extensometer"
+      heading="Extensometer Options for ASTM D412"
+      intro="Accurate strain measurement is crucial for rubber tensile testing. CubeOne supports two of the three extensometer technologies, all optimized to meet the accuracy and compliance requirements of ASTM D412 and the equivalent international standard, ISO 37."
+      items={EXT}
+      useLabel="Best for"
+    />
+
+    <Workflow
+      id="workflow"
+      heading="How to Perform a Tensile Strength Test on Rubber (ASTM D412 or ISO 37)"
+      intro="CubeOne simplifies tensile test process:"
+      steps={STEPS}
+      cta={RESOURCE.primaryCta}
+      footer="This fully automated workflow eliminates operator-dependent variation, speeds up your testing process, and ensures every test is consistent and compliant with ASTM D412 and ISO 37 standards."
+      imgBase=""
+    />
+
+    <Alignment
+      id="repeatability"
+      heading="How CubeOne Delivers Repeatable Results"
+      whyTitle="Where manual setup introduces variability"
+      whyIntro="Traditional universal testing machines rely on manual setup, introducing variability through:"
+      risks={['Inconsistent specimen alignment', 'Uneven gauge length marking', 'Variable grip pressure or technique']}
+      whyOutro="These small differences can impact strain accuracy, cause slippage, or skew results, even with calibrated equipment."
+      howTitle="How CubeOne removes it"
+      howIntro="CubeOne automates alignment, gripping, and measurement in tensile testing, eliminating sources of human error and producing consistent results:"
+      howItems={[
+        'Automatic sample measurement: Calibrated sensors instantly capture width and thickness, no manual tools required.',
+        'Smart vision system: Detects specimen edges, even with varied colors or finishes.',
+        'Auto-alignment: Self-centering grips and alignment verification ensure precise positioning every time.',
+      ]}
+      contrastCards
+    />
+
+    <PageSection bg="subtle" pad={104}>
+      <Heading id="data">Data Integration and Reporting with CubeOne</Heading>
+      <P style="margin-top:18px;">All test results can be reviewed, compared, and exported via the LabsCubed Portal, which offers:</P>
+      <div style="margin-top:40px;">
+        <DefRows items={DATA_TYPES} />
+      </div>
+      <img src={IMG.portal} alt="LabsCubed Portal - Stress, Strain, Force - Tensile Testing Data" class="d412-data__img" />
+    </PageSection>
+
+    <ConcludingBand
+      heading="Concluding Remarks"
+      paragraphs={[
+        'ASTM D412 is an essential standard for evaluating the tensile behaviour of rubber and elastomers, offering detailed insights into material strength, stretchability, and durability. By following the method precisely (using the appropriate specimen type, equipment, and testing conditions), labs can collect reliable data that is critical for quality control, product development, and regulatory compliance.',
+        "Automated systems like CubeOne enhance this process by eliminating variability from manual steps, improving repeatability, and accelerating testing workflows. Whether you're testing a single material or running high-throughput batches, CubeOne streamlines ASTM D412 compliance while delivering accurate, actionable results at scale.",
+      ]}
+    />
+
+    <Brochure
+      heading="Looking to automate ASTM D412 tensile testing?"
+      body="Download the CubeOne brochure to discover how automation can help your lab save time on repetitive tasks, reduce data variations, and let your team focus on the work that really matters."
+      imgSrc={IMG.brochure}
+      imgAlt="CubeOne Brochure - Download to Learn about CubeOne Rubber Tensile Testing Equipment"
+      asset="cubeone-brochure"
+      formId="brochure-cubeone"
+    />
+
+    <FAQ items={FAQS} bg="subtle" />
+    <Related items={RELATED} />
+    <Footer />
+  </main>
+</Base>
+
+<style>
+  .d412-ideal { margin-top: 64px; display: flex; flex-direction: column; gap: 22px; }
+  .d412-ideal__grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; max-width: 1000px; }
+  .d412-ideal__card { display: flex; gap: 14px; align-items: flex-start; padding: 24px; border-radius: var(--radius-card); background: var(--surface-card); box-shadow: var(--shadow-edge); }
+  .d412-ideal__card svg { flex: none; margin-top: 3px; }
+  .d412-ideal__card span { font-weight: 400; font-size: 16.5px; line-height: 1.5; color: var(--lc-ink); }
+  .d412-compare { margin-top: 48px; }
+  .d412-data__img { width: 100%; display: block; border-radius: 20px; margin-top: 40px; box-shadow: var(--shadow-edge), var(--shadow-card); }
+  @media (max-width: 860px) {
+    .d412-ideal { margin-top: 40px; }
+    .d412-ideal__grid { grid-template-columns: 1fr; gap: 16px; }
+  }
+</style>

@@ -7,24 +7,30 @@ import P from './P.astro';
 import SpecimenSelector from './SpecimenSelector.tsx';
 
 interface Props {
-  id: string; heading: string; intro: string; standard: string;
+  id: string; heading: string; intro: string; standard: string | string[];
   useCases: Record<string, string>; defaultId: string;
-  outro: string; referenceLabel: string; referenceHref: string;
+  outro?: string; referenceLabel?: string; referenceHref?: string;
+  overviewImage?: { src: string; alt: string };
 }
-const { id, heading, intro, standard, useCases, defaultId, outro, referenceLabel, referenceHref } = Astro.props;
+const { id, heading, intro, standard, useCases, defaultId, outro, referenceLabel, referenceHref, overviewImage } = Astro.props;
 ---
 <PageSection pad={104}>
   <Heading id={id}>{heading}</Heading>
   <P style="margin-top:18px;">{intro}</P>
+  {overviewImage && <img src={overviewImage.src} alt={overviewImage.alt} class="rs-specimens__overview" />}
   <div style="margin-top:44px;">
     <SpecimenSelector client:load standard={standard} useCases={useCases} defaultId={defaultId} />
   </div>
-  <P style="margin-top:44px;">{outro}</P>
-  <div class="rs-specimens__ref">
-    Specimen Reference: <a href={referenceHref} target="_blank" rel="noopener">{referenceLabel}</a>
-  </div>
+  {outro && <P style="margin-top:44px;">{outro}</P>}
+  {referenceHref && (
+    <div class="rs-specimens__ref">
+      Specimen Reference: <a href={referenceHref} target="_blank" rel="noopener">{referenceLabel}</a>
+    </div>
+  )}
+  <slot />
 </PageSection>
 <style>
   .rs-specimens__ref { font-size: 16px; color: var(--lc-ink); margin-top: 14px; }
   .rs-specimens__ref a { font-weight: 500; }
+  .rs-specimens__overview { width: 100%; display: block; border-radius: var(--radius-card); margin-top: 36px; }
 </style>

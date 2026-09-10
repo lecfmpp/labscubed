@@ -1,0 +1,37 @@
+---
+// CompareTable — feature-row comparison table, one column per option (e.g.
+// "Dogbone vs. ring specimens"). First cell of each row is the feature
+// label; the rest are per-column values.
+interface Props { columns: string[]; rows: string[][] }
+const { columns, rows } = Astro.props;
+---
+<div class="rs-compare">
+  <table class="rs-compare__table">
+    <thead>
+      <tr>
+        <th></th>
+        {columns.map((c) => <th>{c}</th>)}
+      </tr>
+    </thead>
+    <tbody>
+      {rows.map((row) => (
+        <tr>
+          <th scope="row">{row[0]}</th>
+          {row.slice(1).map((cell) => <td>{cell}</td>)}
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+<style>
+  .rs-compare { border-radius: var(--radius-card); background: var(--surface-card); box-shadow: var(--shadow-edge); overflow-x: auto; }
+  .rs-compare__table { width: 100%; border-collapse: collapse; min-width: 480px; }
+  .rs-compare__table th, .rs-compare__table td { padding: 18px 24px; text-align: left; font-size: 15px; }
+  .rs-compare__table thead th { font-weight: 700; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--lc-teal-deep); border-bottom: 1px solid var(--lc-line); }
+  .rs-compare__table tbody th { font-weight: 500; color: var(--lc-ink); white-space: nowrap; }
+  .rs-compare__table tbody td { font-weight: 300; color: var(--text-muted); }
+  .rs-compare__table tbody tr + tr th, .rs-compare__table tbody tr + tr td { border-top: 1px solid var(--lc-line); }
+  @media (max-width: 560px) {
+    .rs-compare__table th, .rs-compare__table td { padding: 14px 18px; }
+  }
+</style>

@@ -1,0 +1,26 @@
+---
+// DefRows — label/description rows in a white card, used for short
+// glossary-style lists (e.g. the data-types a report captures).
+interface Row { label: string; body: string }
+interface Props { items: Row[] }
+const { items } = Astro.props;
+---
+<div class="rs-defrows">
+  {items.map((it) => (
+    <div class="rs-defrows__row">
+      <div class="rs-defrows__label">{it.label}</div>
+      <p class="rs-defrows__body">{it.body}</p>
+    </div>
+  ))}
+</div>
+<style>
+  .rs-defrows { border-radius: var(--radius-card); background: var(--surface-card); box-shadow: var(--shadow-edge); padding: 8px 40px; }
+  .rs-defrows__row { display: grid; grid-template-columns: 300px 1fr; gap: 24px; padding: 28px 0; }
+  .rs-defrows__row + .rs-defrows__row { border-top: 1px solid var(--lc-line); }
+  .rs-defrows__label { font-weight: 600; font-size: 17px; letter-spacing: -0.01em; color: var(--lc-ink); }
+  .rs-defrows__body { font-weight: 300; font-size: 15.5px; line-height: 1.6; color: var(--text-muted); margin: 0; }
+  @media (max-width: 860px) {
+    .rs-defrows { padding: 4px 24px; }
+    .rs-defrows__row { grid-template-columns: 1fr; gap: 8px; padding: 22px 0; }
+  }
+</style>
