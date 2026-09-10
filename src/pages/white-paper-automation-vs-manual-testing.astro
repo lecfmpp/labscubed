@@ -1,12 +1,19 @@
 ---
 // Standalone white-paper landing page — re-platformed off Webflow onto the
-// same Astro design system as the homepage. The hero IS the homepage's
-// CTABanner component, reused verbatim (not duplicated) so the email-capture
-// form, its Supabase `download-request` wiring, and its visual language stay
-// identical and drift-free between the two surfaces.
+// same Astro design system as the homepage.
+//
+// The hero reuses the homepage CTABanner's visual language (headline, copy,
+// mockup image) via WhitePaperHero, but swaps in the richer WhitePaperForm
+// (same two-step name/email/company -> details-modal pattern as the webinar
+// registration form) instead of CTABanner's single-email form — CTABanner
+// itself is untouched since the homepage still uses the simple version.
+//
+// The header's primary CTA button is hidden on this page (showQuote={false}):
+// it's a short, single-purpose page and the form is already front and center,
+// so a second "download the white paper" button in the header is redundant.
 import Base from '../layouts/Base.astro';
 import Nav from '../islands/Nav.tsx';
-import CTABanner from '../components/CTABanner.astro';
+import WhitePaperHero from '../components/WhitePaperHero.astro';
 import Trust from '../components/Trust.astro';
 import Section from '../components/Section.astro';
 import Footer from '../components/Footer.astro';
@@ -31,9 +38,9 @@ const points = [
 ];
 ---
 <Base title={title} description={description}>
-  <Nav client:load />
+  <Nav client:load showQuote={false} />
   <main class="lc-page">
-    <CTABanner />
+    <WhitePaperHero />
     <Section bg="#fff">
       <div class="wp-points">
         <h2 class="wp-points-h2">What's inside the white paper.</h2>

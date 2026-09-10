@@ -1,0 +1,41 @@
+---
+// White-paper page hero — same visual language as the homepage's CTABanner
+// (dark full-bleed section, same headline/copy, same mockup image), but with
+// the richer WhitePaperForm island in place of CTABanner's single-email form.
+// CTABanner itself stays untouched since the homepage still uses its simpler
+// form.
+import WhitePaperForm from './WhitePaperForm.jsx';
+---
+<section class="wph">
+  <img class="wph-img-desktop" src="/assets/img/media/white-paper-mockup.webp" alt="LabsCubed automation white paper" width="1500" height="1800" loading="eager" fetchpriority="high" />
+  <div class="wph-overlay"></div>
+  <div class="wph-inner">
+    <div class="wph-content">
+      <div class="wph-tag">White Paper</div>
+      <h1 class="wph-h1">Beyond the bottleneck: a data-backed case for testing automation.</h1>
+      <p class="wph-p">Download your business case for automation — the definitive data on cost reduction and eliminating human error.</p>
+      <WhitePaperForm client:load />
+      <img class="wph-img-mobile" src="/assets/img/media/white-paper-mockup.webp" alt="LabsCubed automation white paper" width="1500" height="1800" loading="lazy" />
+    </div>
+  </div>
+</section>
+
+<style>
+  .wph { background: #000; color: #fff; position: relative; overflow: hidden; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .wph-img-desktop { position: absolute; right: 4%; top: 50%; transform: translateY(-50%); width: 38%; height: auto; max-width: 500px; pointer-events: none; z-index: 0; }
+  .wph-overlay { position: absolute; inset: 0; background: linear-gradient(270deg, rgba(0,0,0,0) 55%, #000 100%); pointer-events: none; z-index: 1; }
+  .wph-inner { position: relative; z-index: 2; max-width: 1392px; margin: 0 auto; padding: 150px 64px 120px; box-sizing: border-box; }
+  .wph-content { max-width: 620px; }
+  .wph-tag { margin-bottom: 20px; display: inline-flex; align-items: center; padding: 4px 12px; border-radius: 4px; background: rgba(255,255,255,0.1); font-size: 11px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.85); }
+  .wph-h1 { font-weight: 500; font-size: 56px; letter-spacing: -0.03em; line-height: 1.15; margin: 0; color: #fff; }
+  .wph-p { margin-top: 22px; font-weight: 400; font-size: 20px; line-height: 1.4; color: rgba(255,255,255,0.5); max-width: 520px; }
+  .wph-img-mobile { display: none; }
+
+  @media (max-width: 760px) {
+    .wph-img-desktop, .wph-overlay { display: none; }
+    .wph-inner { padding: 110px 20px 60px; }
+    .wph-h1 { font-size: 32px; }
+    .wph-p { font-size: 16px; }
+    .wph-img-mobile { display: block; width: 100%; height: auto; max-width: 420px; margin-top: 32px; border-radius: 12px; }
+  }
+</style>
