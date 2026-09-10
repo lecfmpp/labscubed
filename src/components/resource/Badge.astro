@@ -1,0 +1,15 @@
+---
+// Badge — small uppercase pill. Ported from the design system's Badge.jsx
+// (Design System/Components/data-display/Badge.jsx in the handoff bundle).
+interface Props { variant?: 'neutral' | 'subtle' | 'teal'; style?: string }
+const { variant = 'neutral', style = '' } = Astro.props;
+const PALETTES: Record<string, { bg: string; color: string; tracking: string }> = {
+  neutral: { bg: 'var(--lc-gray-200)', color: 'var(--lc-ink)', tracking: '0.1em' },
+  subtle: { bg: 'var(--lc-gray-100)', color: 'var(--text-muted)', tracking: '0.2em' },
+  teal: { bg: 'rgba(23,221,197,0.16)', color: 'var(--lc-teal-deep)', tracking: '0.1em' },
+};
+const p = PALETTES[variant] ?? PALETTES.neutral;
+---
+<span style={`display:inline-flex;align-items:center;background:${p.bg};color:${p.color};border-radius:var(--radius-badge, 999px);padding:4px 12px;font-weight:700;font-size:11px;line-height:1;letter-spacing:${p.tracking};text-transform:uppercase;${style}`}>
+  <slot />
+</span>

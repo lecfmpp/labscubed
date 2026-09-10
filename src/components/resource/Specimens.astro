@@ -1,0 +1,30 @@
+---
+// Specimens — interactive specimen selector + spec table, wrapping the
+// SpecimenSelector island (which reuses the existing Sample/SAMPLES data).
+import PageSection from './PageSection.astro';
+import Heading from './Heading.astro';
+import P from './P.astro';
+import SpecimenSelector from './SpecimenSelector.tsx';
+
+interface Props {
+  id: string; heading: string; intro: string; standard: string;
+  useCases: Record<string, string>; defaultId: string;
+  outro: string; referenceLabel: string; referenceHref: string;
+}
+const { id, heading, intro, standard, useCases, defaultId, outro, referenceLabel, referenceHref } = Astro.props;
+---
+<PageSection pad={104}>
+  <Heading id={id}>{heading}</Heading>
+  <P style="margin-top:18px;">{intro}</P>
+  <div style="margin-top:44px;">
+    <SpecimenSelector client:load standard={standard} useCases={useCases} defaultId={defaultId} />
+  </div>
+  <P style="margin-top:44px;">{outro}</P>
+  <div class="rs-specimens__ref">
+    Specimen Reference: <a href={referenceHref} target="_blank" rel="noopener">{referenceLabel}</a>
+  </div>
+</PageSection>
+<style>
+  .rs-specimens__ref { font-size: 16px; color: var(--lc-ink); margin-top: 14px; }
+  .rs-specimens__ref a { font-weight: 500; }
+</style>

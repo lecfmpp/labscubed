@@ -1,0 +1,60 @@
+---
+// DataReview — white image/checklist split, then a black numbered-list band
+// contrasting manual variability sources against automated results.
+import PageSection from './PageSection.astro';
+import Heading from './Heading.astro';
+import P from './P.astro';
+import CheckList from './CheckList.astro';
+
+interface Props {
+  id: string; heading: string; intro: string; items: string[]; img: string; imgAlt: string;
+  bandLead: string; bandItems: string[]; bandLeft: string; bandRight: string;
+}
+const { id, heading, intro, items, img, imgAlt, bandLead, bandItems, bandLeft, bandRight } = Astro.props;
+---
+<PageSection pad={104}>
+  <div class="rs-dr">
+    <div class="rs-dr__copy">
+      <Heading id={id}>{heading}</Heading>
+      <P>{intro}</P>
+      <CheckList items={items} />
+    </div>
+    <img src={img} alt={imgAlt} class="rs-dr__img" />
+  </div>
+</PageSection>
+<section class="rs-dr__band">
+  <div class="rs-dr__band-inner">
+    <div class="rs-dr__band-top">
+      <P light style="font-size:22px;line-height:1.5;color:rgba(255,255,255,0.9);font-weight:400;max-width:none;">{bandLead}</P>
+      <ul class="rs-dr__band-list">
+        {bandItems.map((x, i) => (
+          <li><span class="rs-dr__band-n">{String(i + 1).padStart(2, '0')}</span><span class="rs-dr__band-item">{x}</span></li>
+        ))}
+      </ul>
+    </div>
+    <div class="rs-dr__band-bottom">
+      <p>{bandLeft}</p>
+      <p>{bandRight}</p>
+    </div>
+  </div>
+</section>
+<style>
+  .rs-dr { display: grid; grid-template-columns: 1fr 1.15fr; gap: 64px; align-items: center; }
+  .rs-dr__copy { display: flex; flex-direction: column; gap: 22px; }
+  .rs-dr__img { width: 100%; display: block; border-radius: 20px; box-shadow: var(--shadow-edge), var(--shadow-card); }
+  .rs-dr__band { background: #000; color: #fff; }
+  .rs-dr__band-inner { max-width: 1312px; margin: 0 auto; padding: 112px 64px; box-sizing: border-box; }
+  .rs-dr__band-top { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; }
+  .rs-dr__band-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 18px; }
+  .rs-dr__band-list li { display: flex; gap: 14px; align-items: flex-start; padding-bottom: 18px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+  .rs-dr__band-n { font-weight: 700; font-size: 12px; letter-spacing: 0.08em; color: var(--lc-teal); flex: none; margin-top: 5px; }
+  .rs-dr__band-item { font-weight: 300; font-size: 17px; line-height: 1.55; color: rgba(255,255,255,0.72); }
+  .rs-dr__band-bottom { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; margin-top: 64px; }
+  .rs-dr__band-bottom p { font-weight: 300; font-size: 17px; line-height: 1.65; color: rgba(255,255,255,0.62); margin: 0; }
+  @media (max-width: 860px) {
+    .rs-dr { grid-template-columns: 1fr; gap: 28px; }
+    .rs-dr__band-inner { padding: 64px 20px; }
+    .rs-dr__band-top { grid-template-columns: 1fr; gap: 32px; }
+    .rs-dr__band-bottom { grid-template-columns: 1fr; gap: 24px; margin-top: 40px; }
+  }
+</style>

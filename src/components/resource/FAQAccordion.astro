@@ -1,0 +1,30 @@
+---
+// FAQAccordion — native <details>/<summary>, zero JS. The +/- glyph rotates
+// via a CSS transform keyed off the [open] attribute. First item open by
+// default, matching the design (defaultOpen on item 0).
+interface Props { items: [string, string][] }
+const { items } = Astro.props;
+---
+<div class="rs-faq">
+  {items.map(([q, a], i) => (
+    <details class="rs-faq__item" open={i === 0}>
+      <summary class="rs-faq__q">
+        <span>{q}</span>
+        <span class="rs-faq__toggle" aria-hidden="true">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 7h12" stroke="var(--lc-ink)" stroke-width="1.6" stroke-linecap="round" /><path class="rs-faq__vbar" d="M7 1v12" stroke="var(--lc-ink)" stroke-width="1.6" stroke-linecap="round" /></svg>
+        </span>
+      </summary>
+      <p class="rs-faq__a">{a}</p>
+    </details>
+  ))}
+</div>
+<style>
+  .rs-faq__item { border-bottom: 1px solid var(--lc-line); padding-bottom: 0; }
+  .rs-faq__item[open] { padding-bottom: 24px; }
+  .rs-faq__q { list-style: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 24px; width: 100%; padding: 24px 0; font-weight: 500; font-size: 20px; letter-spacing: -0.01em; color: var(--lc-ink); }
+  .rs-faq__q::-webkit-details-marker { display: none; }
+  .rs-faq__toggle { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; flex: none; border-radius: 9999px; background: var(--lc-gray-100); }
+  .rs-faq__vbar { transition: opacity .2s ease, transform .2s ease; transform-origin: center; }
+  .rs-faq__item[open] .rs-faq__vbar { opacity: 0; transform: scaleY(0); }
+  .rs-faq__a { max-width: 840px; font-weight: 300; font-size: 16px; line-height: 1.6; color: var(--text-muted); margin: 0; }
+</style>

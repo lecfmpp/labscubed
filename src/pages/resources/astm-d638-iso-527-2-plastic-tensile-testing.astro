@@ -1,0 +1,280 @@
+---
+// Resource page — ASTM D638 / ISO 527-2. First page built from the resource
+// page template (src/components/resource/); see that folder's components for
+// the reusable section library. TO BUILD THE NEXT RESOURCE PAGE (e.g. ASTM
+// D412): copy this file, swap RESOURCE/TOC and each section's data below —
+// no component changes needed unless the new page needs a section type this
+// one doesn't use.
+import Base from '../../layouts/Base.astro';
+import Nav from '../../islands/Nav.tsx';
+import Footer from '../../components/Footer.astro';
+import StickyToc from '../../components/resource/StickyToc.tsx';
+import ResourceHero from '../../components/resource/ResourceHero.astro';
+import Intro from '../../components/resource/Intro.astro';
+import Measures from '../../components/resource/Measures.astro';
+import TwoColCheck from '../../components/resource/TwoColCheck.astro';
+import Workflow from '../../components/resource/Workflow.astro';
+import Extensometers from '../../components/resource/Extensometers.astro';
+import Specimens from '../../components/resource/Specimens.astro';
+import Alignment from '../../components/resource/Alignment.astro';
+import DataReview from '../../components/resource/DataReview.astro';
+import Brochure from '../../components/resource/Brochure.astro';
+import FAQ from '../../components/resource/FAQ.astro';
+import Related from '../../components/resource/Related.astro';
+import FinalCTA from '../../components/resource/FinalCTA.astro';
+
+const IMG = '/assets/img/resources/';
+
+/* ---- 1 · PAGE CONFIG ---------------------------------------------------- */
+const RESOURCE = {
+  metaTitle: 'ASTM D638 / ISO 527-2 Explained — Plastic Tensile Testing Guide | LabsCubed',
+  metaDescription:
+    'A complete guide to ASTM D638 and ISO 527-2 plastic tensile testing: what the standard measures, specimen types, equipment and extensometer requirements, and how CubeTen automates each step.',
+  canonical: 'https://labscubed.com/resources/astm-d638-iso-527-2-plastic-tensile-testing',
+  eyebrow: 'Resource · ASTM D638 / ISO 527-2',
+  headlineAccent: 'ASTM D638/ISO 527-2 Explained:',
+  headlineRest: ' Everything You Need to Know About Plastic Tensile Testing',
+  deck: "This comprehensive guide walks you through the full D638 testing process, including specimen setup, testing equipment, extensometer options, material compatibility, and the data you can expect to collect. It also includes integrated examples of how CubeTen automates and improves each step.",
+  published: '2025-06-12',
+  updated: '2026-09-10',
+  readingMinutes: 12,
+  author: 'LabsCubed',
+  breadcrumbs: [
+    { label: 'Home', href: 'https://labscubed.com/' },
+    { label: 'Resources', href: 'https://labscubed.com/resources' },
+    { label: 'ASTM D638 / ISO 527-2' },
+  ],
+  primaryCta: { label: 'Request a Quote or Demo', href: 'https://labscubed.com/get-a-quote' },
+  secondaryCta: { label: 'Official Standard', href: 'https://www.astm.org/d0638-14.html' },
+};
+
+const TOC = [
+  { id: 'intro', label: 'Overview' },
+  { id: 'measures', label: 'What it measures' },
+  { id: 'when', label: 'When to use it' },
+  { id: 'workflow', label: 'Test workflow' },
+  { id: 'equipment', label: 'Equipment' },
+  { id: 'extensometer', label: 'Extensometers' },
+  { id: 'specimens', label: 'Specimen types' },
+  { id: 'alignment', label: 'Measurement & alignment' },
+  { id: 'data', label: 'Data & integration' },
+  { id: 'faq', label: 'FAQ' },
+];
+
+const canonicalUrl = new URL(RESOURCE.canonical.replace('https://labscubed.com', ''), 'https://labscubed.com').href;
+
+/* ---- JSON-LD: Article + BreadcrumbList + FAQPage ------------------------ */
+const FAQS: [string, string][] = [
+  ['What is the difference between ASTM D638 and ISO 527-2?', 'Both determine the tensile properties of plastics using a dog-bone specimen pulled to fracture. ASTM D638 is the reference in North America; ISO 527-2 is the equivalent used in Europe and most other regions. Specimen geometries and reported values are closely aligned, so results are broadly comparable when the test speed and specimen type are matched.'],
+  ['Which ASTM D638 specimen type should I use?', 'Type I is the default for rigid plastics 7 mm thick or less. Type IV is used for thin plastics and films, and when comparing materials of different rigidity. Type II covers materials that will not break as a Type I, Type III covers thick sections up to 14 mm, and Type V is a micro-tensile geometry for limited material.'],
+  ['Do I need an extensometer for ASTM D638?', 'An extensometer is required whenever modulus or strain values are reported. Crosshead displacement is acceptable for basic elongation checks, but it includes machine compliance and will overstate strain. CubeTen supports crosshead displacement, an automated physical extensometer, and a video extensometer.'],
+  ['What test speed does ASTM D638 specify?', 'Speed is set by the specimen type and the material being tested, and the standard lists the permitted crosshead rates for each. The rate must be held constant through the test, which is why controlled crosshead speed is an equipment requirement rather than an option.'],
+  ['How does automation improve ASTM D638 repeatability?', 'Manual positioning, gauge marking, and clamping are the main sources of test-to-test variation. CubeTen measures width and thickness with calibrated sensors, auto-aligns each specimen in the grips, and applies a consistent gripping force, so the operator is removed from the result.'],
+];
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org', '@type': 'Article',
+    headline: RESOURCE.headlineAccent + RESOURCE.headlineRest,
+    description: RESOURCE.metaDescription,
+    datePublished: RESOURCE.published, dateModified: RESOURCE.updated,
+    author: { '@type': 'Organization', name: RESOURCE.author },
+    publisher: { '@type': 'Organization', name: 'LabsCubed', url: 'https://labscubed.com/' },
+    mainEntityOfPage: { '@type': 'WebPage', '@id': RESOURCE.canonical },
+  },
+  {
+    '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+    itemListElement: RESOURCE.breadcrumbs.map((b, i) => ({ '@type': 'ListItem', position: i + 1, name: b.label, item: b.href || RESOURCE.canonical })),
+  },
+  {
+    '@context': 'https://schema.org', '@type': 'FAQPage',
+    mainEntity: FAQS.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })),
+  },
+];
+
+/* ---- Section data -------------------------------------------------------- */
+const TAKEAWAYS = [
+  'ASTM D638 (and its international counterpart ISO 527-2) is the reference method for the tensile properties of rigid and semi-rigid plastics.',
+  'A compliant setup needs controlled crosshead speed, a calibrated load cell, non-slip grips, an extensometer, and accurate width and thickness measurement.',
+  'Type I and Type IV are the two geometries most labs run; CubeTen handles both with automated gripping, alignment, and extensometer placement.',
+  'Manual positioning, gauge marking, and clamping are the main sources of test-to-test variation — automating them removes the operator from the result.',
+];
+
+const MEASURES = [
+  { title: 'Tensile strength (at yield and break)', body: "Tensile strength is the maximum force a material can withstand while being stretched. At yield, it's the point where plastic deformation begins. At break, it's the point where the specimen physically fractures." },
+  { title: 'Strain and elongation at break', body: "Strain is the percentage change in length during testing. Elongation at break shows how much the material stretches before failure. It's a key indicator of ductility and flexibility." },
+  { title: "Modulus of elasticity (Young's modulus)", body: "This measures a material's stiffness — how much it resists deformation under load. It's calculated from the slope of the linear portion of the stress-strain curve. Higher modulus = stiffer material." },
+  { title: 'Yield strain', body: "Yield strain is the amount of strain a material experiences at the yield point. It marks the transition from elastic (reversible) to plastic (permanent) deformation. Beyond this, the material won't return to its original shape." },
+  { title: 'Stress-strain behavior', body: 'This curve shows how a material responds to tension from start to failure. It visually represents strength, elasticity, yield, and fracture behavior. It’s the most comprehensive snapshot of material performance under load.' },
+];
+
+const STEPS = [
+  { n: 'Step 1', title: 'Loading your samples', body: 'Simply load up to 15 tensile samples, with your choice of mixed compounds and different materials.', img: 'step-load-hand.webp', alt: "Technician's hand placing a tensile test specimen into the LabsCubed automated sample tray for precise material testing." },
+  { n: 'Step 2', title: 'Start the Test', body: 'Launch the ASTM D638 or ISO 527 method from the touchscreen. CubeTen pulls the specimen to fracture while recording real-time load, displacement, and strain data.', img: 'step-configure-ui.webp', alt: "User's hand interacting with the LabsCubed touchscreen interface, demonstrating intuitive control of automated tensile testing parameters." },
+  { n: 'Step 3', title: 'Measure and Grip Automatically', body: "CubeTen's vision system measures specimen width, and calibrated sensors capture thickness automatically for full dimensional compliance. The specimen is then secured with a consistent gripping force. No operator intervention needed.", img: 'step-mechanism.webp', alt: 'Close-up view of the intricate internal mechanism and wiring of a LabsCubed automated tensile testing machine, showing precision engineering.' },
+  { n: 'Step 4', title: 'Capture and Export Results', body: 'Stress-strain curves, tensile strength, modulus, and elongation are captured instantly. Data is available immediately for review in the LabsCubed Portal or export to your LIMS, ERP, or QA system.', img: 'step-results-dashboard.webp', alt: 'LabsCubed software dashboard displaying detailed tensile test results, stress-strain curves, and material properties for plastic compounds, including ASTM D638 data.' },
+];
+
+const EXT = [
+  { type: 'Crosshead Displacement', desc: 'Built-in, calibrated displacement system for basic strain measurements.', use: 'Low/High-elongation materials or quick tests.', img: IMG + 'feature-crosshead.webp' },
+  { type: 'Automated Physical Extensometer', desc: 'Tracks specimen elongation during testing using mechanical gauge arms.', use: 'Rigid plastics where high repeatability and accuracy are needed.', img: IMG + 'feature-thickness.webp' },
+  { type: 'Video Extensometer', desc: 'Non-contact, high-resolution strain tracking across the gauge length.', use: 'Delicate samples or high-elongation materials.', img: IMG + 'feature-video-extensometer.webp' },
+];
+
+const D638_USE: Record<string, string> = {
+  'astm-d638-i': 'Standard for rigid plastics',
+  'astm-d638-ii': "Materials that won't break as a Type I",
+  'astm-d638-iii': 'Thick sections up to 14 mm',
+  'astm-d638-iv': 'Thin plastics and films',
+  'astm-d638-v': 'Micro-tensile, limited material',
+};
+
+const RELATED = [
+  { eyebrow: 'Standard guide', title: 'ASTM D412 / ISO 37 rubber tensile testing', desc: 'The elastomer counterpart to D638 — dumbbell geometries, test speeds, and how CubeOne automates them.', href: 'https://labscubed.com/rubber-testing', img: IMG + 'feature-video-extensometer.webp' },
+  { eyebrow: 'Product', title: 'CubeTen automated plastic tensile testing', desc: 'Up to 15 specimens loaded once, gripped, measured, and pulled unattended.', href: 'https://labscubed.com/plastic-testing', img: IMG + 'cubeten-machine.webp' },
+  { eyebrow: 'White paper', title: 'Beyond the bottleneck: the data-backed case for automation', desc: 'Cost reduction and error elimination, quantified — the business case for switching to automated tensile testing.', href: '/white-paper-automation-vs-manual-testing', img: IMG + 'step-results-dashboard.webp' },
+];
+---
+<Base
+  title={RESOURCE.metaTitle}
+  description={RESOURCE.metaDescription}
+  canonical={canonicalUrl}
+  ogType="article"
+  jsonLd={jsonLd}
+  preloadHero={false}
+>
+  <Nav client:load />
+  <main class="lc-page">
+    <ResourceHero
+      eyebrow={RESOURCE.eyebrow}
+      headlineAccent={RESOURCE.headlineAccent}
+      headlineRest={RESOURCE.headlineRest}
+      deck={RESOURCE.deck}
+      updated={RESOURCE.updated}
+      readingMinutes={RESOURCE.readingMinutes}
+      breadcrumbs={RESOURCE.breadcrumbs}
+      primaryCta={RESOURCE.primaryCta}
+      secondaryCta={RESOURCE.secondaryCta}
+    />
+    <StickyToc client:load toc={TOC} url={RESOURCE.canonical} title={RESOURCE.metaTitle} />
+
+    <Intro
+      id="intro"
+      heading="How to follow ASTM D638 for plastics tensile testing step by step"
+      paragraphs={[
+        "ASTM D638 is the internationally recognized standard method for determining the tensile properties of plastics. Whether you're testing materials for product development, regulatory compliance, or quality control, understanding and correctly applying this method is essential for accurate, consistent results.",
+        "This comprehensive guide walks you through the full D638 testing process, including specimen setup, testing equipment, extensometer options, material compatibility, and the data you can expect to collect. It also includes integrated examples of how CubeTen automates and improves each step.",
+      ]}
+      standardLabel="Official Standard"
+      standardHref="https://www.astm.org/d0638-14.html"
+      takeaways={TAKEAWAYS}
+    />
+
+    <Measures
+      id="measures"
+      heading="What Does ASTM D638 Measure?"
+      intro="ASTM D638 is used to evaluate the tensile behavior of plastics under uniaxial stress. The method measures:"
+      items={MEASURES}
+      outro="This data helps engineers, product designers, and quality assurance teams ensure that materials meet performance expectations under load."
+    />
+
+    <TwoColCheck
+      id="when"
+      heading="When Should You Use ASTM D638 or ISO 527-2?"
+      intro="ASTM D638 is applicable when testing:"
+      items={['Rigid and semi-rigid thermoplastics', 'Thermosets', 'Reinforced plastics', 'Injection-moulded or machined plastic parts']}
+      panel={[
+        'It is the go-to tensile test method for most quality control and product development processes involving plastics, particularly in North America.',
+        'For international or globally aligned applications, ISO 527-2 is a closely related standard. It outlines a similar methodology for determining the tensile properties of plastics and is commonly referenced in Europe and other regions.',
+      ]}
+    />
+
+    <Workflow
+      id="workflow"
+      heading="How to efficiently Perform a Tensile Strength Test on Plastics (ASTM D638/ISO 527-2)"
+      intro="Performing a tensile strength test according to ASTM D638 (or ISO 527-2) involves a clear, repeatable sequence, especially when using an automated system like CubeTen. Below is the typical workflow:"
+      steps={STEPS}
+      cta={RESOURCE.primaryCta}
+      footer="This workflow removes operator variability and dramatically reduces time per test, while ensuring full compliance with ASTM and ISO testing standards."
+      imgBase={IMG}
+    />
+
+    <TwoColCheck
+      id="equipment"
+      heading="Equipment Requirements"
+      intro="A system configured for ASTM D638 must include:"
+      items={['A tensile frame with controlled crosshead speed', 'A calibrated load cell appropriate to expected failure loads', 'Proper grips to hold the specimen without slippage or damage', 'A strain measurement system (extensometer)', 'Accurate thickness and width measurement tools']}
+      panel={[
+        'It is the go-to tensile test method for most quality control and product development processes involving plastics, particularly in North America.',
+        'For international or globally aligned applications, ISO 527-2 is a closely related standard. It outlines a similar methodology for determining the tensile properties of plastics and is commonly referenced in Europe and other regions.',
+      ]}
+    />
+
+    <Extensometers
+      id="extensometer"
+      heading="Extensometer Options for ASTM D638"
+      intro="CubeTen supports three extensometer technologies — all optimized to meet the accuracy and compliance requirements of ASTM D638 and the equivalent international standard, ISO 527."
+      items={EXT}
+    />
+
+    <Specimens
+      id="specimens"
+      heading="ASTM D638 Specimen Types"
+      intro="ASTM D638 defines five specimen geometries, with Type I and Type IV being the most commonly used. Select one to see its true dimensions."
+      standard="ASTM D638"
+      useCases={D638_USE}
+      defaultId="astm-d638-i"
+      outro="CubeTen is optimized to handle both types through automated gripping, alignment, and extensometer placement."
+      referenceLabel="https://www.astm.org/d0638-14.html"
+      referenceHref="https://www.astm.org/d0638-14.html"
+    />
+
+    <Alignment
+      id="alignment"
+      heading="Specimen Measurement &amp; Alignment"
+      whyTitle="Why it's important"
+      whyIntro="For a tensile test to be accurate and repeatable, each specimen must be measured and aligned correctly. Even minor errors can lead to:"
+      risks={['Uneven load distribution', 'Premature specimen failure', 'Incorrect strain and modulus data']}
+      howTitle="How CubeTen ensures precision"
+      howItems={[
+        'CubeTen automatically measures the width and thickness of each sample using calibrated sensors. No manual tools needed.',
+        'Measurements happen instantly during the loading stage, saving time and improving consistency.',
+        'A built-in smart vision system detects the edges of each specimen, including those with different colours or surface finishes.',
+        'The system auto-aligns each sample in the grips with precision, using self-centering mechanisms and alignment verification.',
+      ]}
+    />
+
+    <DataReview
+      id="data"
+      heading="Data Review, Integration, and Consistency"
+      intro="All test results can be reviewed, compared, and exported via the LabsCubed Portal, which offers:"
+      items={['Interactive stress-strain visualization', 'Batch testing reports and comparisons', 'Integration with LIMS, ERP, or external systems via API', 'Direct data export (CSV, PDF)']}
+      img={IMG + 'step-results-dashboard.webp'}
+      imgAlt="LabsCubed software dashboard displaying detailed tensile test results, stress-strain curves, and material properties for plastic compounds, including ASTM D638 data."
+      bandLead="With CubeTen, results are consistent and repeatable, even across shifts or operators, a critical factor for high-throughput labs or multi-site operations. In traditional vertical testing machines, manual handling introduces variability at nearly every step:"
+      bandItems={[
+        'Slight differences in how operators position specimens in the grips can lead to misalignment',
+        'Inconsistent gauge length marking and measurement affect strain accuracy',
+        'Variations in grip pressure or clamping technique can cause premature slippage or breakage',
+      ]}
+      bandLeft="Each of these issues contributes to test-to-test variation, even with calibrated equipment. Beyond data variability, these repetitive setup steps consume valuable operator time, time that could be redirected toward analysis or higher-value tasks."
+      bandRight="CubeTen automates alignment, gripping, and measurement, eliminating these sources of human error and delivering precise, standardized inputs across every test. This not only boosts consistency but also maximizes lab efficiency through automation."
+    />
+
+    <Brochure
+      heading="Looking to automate ASTM D638 tensile testing?"
+      body="Download the CubeTen brochure to discover how automation can help your lab save time on repetitive tasks, reduce data variations, and let your team focus on the work that really matters."
+      imgSrc={IMG + 'cubeten-machine.webp'}
+      imgAlt="LabsCubed CubeTen automated plastic tensile testing machine shown alongside its key components, features, and supported tensile sample types (ASTM D638, ISO 527-2)."
+    />
+
+    <FAQ items={FAQS} />
+    <Related items={RELATED} />
+    <FinalCTA
+      heading="Tensile Testing Evolved"
+      body="Discover the innovative evolution of tensile testing, delivering streamlined processes and superior results to propel your research and quality control endeavors forward."
+      cta={{ label: 'Get a Quote', href: RESOURCE.primaryCta.href }}
+    />
+    <Footer />
+  </main>
+</Base>

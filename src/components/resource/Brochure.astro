@@ -1,0 +1,80 @@
+---
+// Brochure — gated CubeTen brochure form (name / work email / company).
+// Posts straight to the same `download-request` edge function the homepage
+// and white-paper page already use (asset: "cubeten-brochure"), so the
+// email-send, webform_leads log, and Resend segment tagging are unchanged.
+import Heading from './Heading.astro';
+import P from './P.astro';
+import Button from '../Button.astro';
+
+interface Props { heading: string; body: string; imgSrc: string; imgAlt: string }
+const { heading, body, imgSrc, imgAlt } = Astro.props;
+---
+<div class="rs-brochure">
+  <div class="rs-brochure__copy">
+    <Heading>{heading}</Heading>
+    <P>{body}</P>
+    <div class="rs-brochure__success" hidden>Thank you! Your submission has been received!</div>
+    <form class="rs-brochure__form" data-lc-form="brochure-cubeten">
+      <input name="name" required placeholder="Full name" class="rs-brochure__input" />
+      <input name="email" type="email" required placeholder="Work email" class="rs-brochure__input" />
+      <input name="company" required placeholder="Company" class="rs-brochure__input" />
+      <button type="submit" class="rs-brochure__submit">Download the brochure</button>
+      <div class="rs-brochure__error" hidden></div>
+    </form>
+  </div>
+  <img src={imgSrc} alt={imgAlt} class="rs-brochure__img" />
+</div>
+<style>
+  .rs-brochure { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; align-items: center; }
+  .rs-brochure__copy { display: flex; flex-direction: column; gap: 22px; }
+  .rs-brochure__form { display: flex; flex-direction: column; gap: 14px; max-width: 460px; }
+  .rs-brochure__form[hidden] { display: none; }
+  .rs-brochure__input { font-size: 15px; padding: 16px 20px; border-radius: var(--radius-sm); border: 1px solid var(--lc-line-strong); background: #fff; color: var(--lc-ink); outline: none; font-family: inherit; }
+  .rs-brochure__submit { align-self: flex-start; margin-top: 6px; display: inline-flex; align-items: center; border-radius: 999px; background: var(--lc-teal); color: #000; border: none; font-weight: 500; font-size: 14px; padding: 16px 30px; cursor: pointer; font-family: inherit; }
+  .rs-brochure__submit:disabled { opacity: 0.6; cursor: not-allowed; }
+  .rs-brochure__success { font-weight: 500; font-size: 17px; color: var(--lc-teal-deep); padding: 18px 24px; border-radius: var(--radius-sm); background: rgba(23,221,197,0.1); }
+  .rs-brochure__error { font-size: 14px; color: #c0362c; }
+  .rs-brochure__img { width: 100%; display: block; }
+  @media (max-width: 860px) {
+    .rs-brochure { grid-template-columns: 1fr; gap: 32px; }
+  }
+</style>
+<script>
+  const ENDPOINT = 'https://grozewxrymeiruhggcdy.supabase.co/functions/v1/download-request';
+  document.querySelectorAll<HTMLFormElement>('form[data-lc-form="brochure-cubeten"]').forEach((form) => {
+    const wrap = form.closest('.rs-brochure__copy');
+    const success = wrap?.querySelector<HTMLElement>('.rs-brochure__success');
+    const errorEl = form.querySelector<HTMLElement>('.rs-brochure__error');
+    const submit = form.querySelector<HTMLButtonElement>('.rs-brochure__submit');
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (errorEl) { errorEl.hidden = true; errorEl.textContent = ''; }
+      const data = new FormData(form);
+      const email = String(data.get('email') || '').trim();
+      const name = String(data.get('name') || '').trim();
+      const company = String(data.get('company') || '').trim();
+      if (submit) { submit.disabled = true; submit.textContent = 'Sending…'; }
+      fetch(ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, name, company, asset: 'cubeten-brochure', source: location.pathname, landing_page: location.pathname, referrer: document.referrer || '' }),
+      })
+        .then((r) => r.json().catch(() => ({})).then((d) => ({ status: r.status, data: d })))
+        .then(({ status, data: resp }) => {
+          if (status === 200 && resp && resp.success) {
+            form.hidden = true;
+            if (success) success.hidden = false;
+          } else if (errorEl) {
+            errorEl.hidden = false;
+            errorEl.textContent = status === 422 ? 'Please use your work email.' : 'Something went wrong. Please try again.';
+            if (submit) { submit.disabled = false; submit.textContent = 'Download the brochure'; }
+          }
+        })
+        .catch(() => {
+          if (errorEl) { errorEl.hidden = false; errorEl.textContent = 'Something went wrong. Please try again.'; }
+          if (submit) { submit.disabled = false; submit.textContent = 'Download the brochure'; }
+        });
+    });
+  });
+</script>

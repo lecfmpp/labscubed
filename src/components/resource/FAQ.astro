@@ -1,0 +1,14 @@
+---
+import PageSection from './PageSection.astro';
+import Heading from './Heading.astro';
+import FAQAccordion from './FAQAccordion.astro';
+
+interface Props { items: [string, string][] }
+const { items } = Astro.props;
+---
+<PageSection pad={104}>
+  <Heading id="faq">Frequently asked questions</Heading>
+  <div style="margin-top:40px;max-width:900px;">
+    <FAQAccordion items={items} />
+  </div>
+</PageSection>

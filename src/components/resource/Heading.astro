@@ -1,0 +1,26 @@
+---
+// H2/H3 for resource pages. H2 with an `id` renders a permalink `#` that
+// fades in on hover (see the .lc-anchor rule in resource.css) and carries
+// scroll-margin-top so the sticky TOC never covers it when jumped to.
+interface Props { level?: 2 | 3; light?: boolean; id?: string; style?: string }
+const { level = 2, light = false, id, style = '' } = Astro.props;
+const Tag = level === 3 ? 'h3' : 'h2';
+const color = light ? '#fff' : 'var(--lc-ink)';
+const base = level === 3
+  ? `font-weight:600;font-size:24px;letter-spacing:-0.02em;line-height:1.2;margin:0;color:${color};`
+  : `font-weight:700;font-size:48px;letter-spacing:-0.03em;line-height:1.1;margin:0;color:${color};position:relative;text-wrap:pretty;`;
+---
+<Tag id={id} class={level === 2 && id ? 'rs-h2' : undefined} style={`${base}${style}`}>
+  <slot />
+  {level === 2 && id && (
+    <a class="rs-anchor" href={`#${id}`} aria-label="Link to this section" style={`margin-left:12px;font-weight:400;text-decoration:none;color:${light ? 'var(--lc-teal)' : 'var(--lc-teal-deep)'};`}>#</a>
+  )}
+</Tag>
+<style>
+  .rs-h2 { scroll-margin-top: 96px; }
+  .rs-anchor { opacity: 0; transition: opacity .15s ease; }
+  .rs-h2:hover .rs-anchor { opacity: 1; }
+  @media (max-width: 860px) {
+    h2.rs-h2 { font-size: 30px !important; }
+  }
+</style>

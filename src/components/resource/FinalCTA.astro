@@ -1,0 +1,26 @@
+---
+// FinalCTA — black, centered headline + single CTA. Required on every page.
+import Button from '../Button.astro';
+
+interface Props { heading: string; body: string; cta: { label: string; href: string } }
+const { heading, body, cta } = Astro.props;
+---
+<section class="rs-final">
+  <div class="rs-final__inner">
+    <h2 class="rs-final__h2">{heading}</h2>
+    <p class="rs-final__p">{body}</p>
+    <div class="rs-final__cta"><Button variant="primary" href={cta.href}>{cta.label}</Button></div>
+  </div>
+</section>
+<style>
+  .rs-final { background: #000; color: #fff; }
+  .rs-final__inner { max-width: 1312px; margin: 0 auto; padding: 112px 64px; box-sizing: border-box; text-align: center; }
+  .rs-final__h2 { font-weight: 700; font-size: 56px; letter-spacing: -0.03em; line-height: 1.1; margin: 0; }
+  .rs-final__p { font-weight: 300; font-size: 19px; line-height: 1.6; color: rgba(255,255,255,0.6); margin: 22px auto 0; max-width: 640px; }
+  .rs-final__cta { display: flex; justify-content: center; margin-top: 36px; }
+  @media (max-width: 860px) {
+    .rs-final__inner { padding: 64px 20px; }
+    .rs-final__h2 { font-size: 34px; }
+    .rs-final__p { font-size: 17px; }
+  }
+</style>

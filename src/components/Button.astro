@@ -1,7 +1,7 @@
 ---
 // Static equivalent of ui-lib Button.
-interface Props { variant?: string; size?: string; arrow?: boolean; href?: string; style?: string; }
-const { variant = 'primary', size = 'md', arrow, href = '#', style = '' } = Astro.props;
+interface Props { variant?: string; size?: string; arrow?: boolean; href?: string; style?: string; target?: string; rel?: string; }
+const { variant = 'primary', size = 'md', arrow, href = '#', style = '', target, rel } = Astro.props;
 const showArrow = arrow ?? (variant === 'primary' || variant === 'dark');
 const P: Record<string, any> = {
   primary: { bg: 'var(--lc-teal)', color: '#000', circle: '#000', arrow: '#fff' },
@@ -18,6 +18,8 @@ const border = variant === 'ghost' ? '1px solid rgba(255,255,255,0.25)' : 'none'
 ---
 <a
   href={href}
+  target={target}
+  rel={rel}
   class="lc-btn"
   style={`display:inline-flex;align-items:center;gap:14px;border-radius:999px;background:${p.bg};color:${p.color};border:${border};font-weight:500;font-size:${size === 'sm' ? 13 : 14}px;line-height:1;padding:${pad};text-decoration:none;${style}`}
 >

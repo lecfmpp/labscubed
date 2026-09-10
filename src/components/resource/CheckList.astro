@@ -1,0 +1,19 @@
+---
+// CheckList — a list of teal-ticked items. `light` renders it for a dark
+// section (white-ish text, dim tick ring).
+interface Props { items: string[]; light?: boolean }
+const { items, light = false } = Astro.props;
+const textColor = light ? 'rgba(255,255,255,0.8)' : 'var(--lc-ink)';
+const ringColor = light ? 'rgba(255,255,255,0.25)' : 'var(--lc-line-strong)';
+---
+<ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:16px;">
+  {items.map((it) => (
+    <li style="display:flex;gap:14px;align-items:flex-start;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="flex:none;margin-top:3px;" aria-hidden="true">
+        <circle cx="12" cy="12" r="11" stroke={ringColor} stroke-width="1.4" />
+        <path d="M7.5 12.3l3 3 6-6.4" stroke="var(--lc-teal-deep)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+      <span style={`font-weight:400;font-size:17px;line-height:1.55;color:${textColor};`} set:html={it} />
+    </li>
+  ))}
+</ul>

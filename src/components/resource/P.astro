@@ -1,0 +1,9 @@
+---
+// P — resource-page body paragraph. `light` for text on a dark section.
+interface Props { light?: boolean; style?: string }
+const { light = false, style = '' } = Astro.props;
+const color = light ? 'rgba(255,255,255,0.62)' : 'var(--text-muted)';
+---
+<p style={`font-weight:300;font-size:17px;line-height:1.65;color:${color};margin:0;max-width:720px;text-wrap:pretty;${style}`}>
+  <slot />
+</p>

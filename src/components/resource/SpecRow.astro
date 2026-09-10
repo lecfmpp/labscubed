@@ -1,0 +1,11 @@
+---
+// SpecRow — label/value row with a connecting hairline, used in the
+// specimen spec sheet. Ported from the design system's SpecRow.jsx.
+interface Props { label: string; value: string }
+const { label, value } = Astro.props;
+---
+<div style="display:flex;align-items:baseline;gap:16px;padding:0 0 16px;border-bottom:1px solid var(--lc-line);">
+  <span style="font-weight:300;font-size:16px;color:var(--text-muted);white-space:nowrap;">{label}</span>
+  <span style="flex:1;"></span>
+  <span style="font-weight:500;font-size:16px;letter-spacing:0.03em;color:var(--lc-ink);white-space:nowrap;">{value}</span>
+</div>

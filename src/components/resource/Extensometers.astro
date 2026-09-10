@@ -1,0 +1,45 @@
+---
+// Extensometers — 3-up comparison cards: white image plate + a use-case
+// footer under a hairline.
+import PageSection from './PageSection.astro';
+import Heading from './Heading.astro';
+import P from './P.astro';
+
+interface Item { type: string; desc: string; use: string; img: string }
+interface Props { id: string; heading: string; intro: string; items: Item[] }
+const { id, heading, intro, items } = Astro.props;
+---
+<PageSection bg="subtle" pad={104}>
+  <Heading id={id}>{heading}</Heading>
+  <P style="margin-top:18px;">{intro}</P>
+  <div class="rs-ext">
+    {items.map((e) => (
+      <div class="rs-ext__card">
+        <div class="rs-ext__plate"><img src={e.img} alt={e.type} /></div>
+        <div class="rs-ext__body">
+          <div class="rs-ext__t">{e.type}</div>
+          <p class="rs-ext__d">{e.desc}</p>
+          <div class="rs-ext__use">
+            <div class="rs-ext__use-label">Use case</div>
+            <p class="rs-ext__use-body">{e.use}</p>
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+</PageSection>
+<style>
+  .rs-ext { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 44px; }
+  .rs-ext__card { display: flex; flex-direction: column; border-radius: var(--radius-card); background: var(--surface-card); box-shadow: var(--shadow-edge); overflow: hidden; }
+  .rs-ext__plate { padding: 24px; background: #fff; }
+  .rs-ext__plate img { width: 100%; height: 143px; object-fit: contain; display: block; }
+  .rs-ext__body { display: flex; flex-direction: column; gap: 12px; padding: 32px; }
+  .rs-ext__t { font-weight: 600; font-size: 20px; letter-spacing: -0.01em; line-height: 1.25; color: var(--lc-ink); }
+  .rs-ext__d { font-weight: 300; font-size: 15.5px; line-height: 1.6; color: var(--text-muted); margin: 0; }
+  .rs-ext__use { margin-top: 8px; padding-top: 16px; border-top: 1px solid var(--lc-line); }
+  .rs-ext__use-label { font-weight: 700; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--lc-teal-deep); }
+  .rs-ext__use-body { font-weight: 400; font-size: 15.5px; line-height: 1.55; color: var(--lc-ink); margin: 8px 0 0; }
+  @media (max-width: 860px) {
+    .rs-ext { grid-template-columns: 1fr; }
+  }
+</style>

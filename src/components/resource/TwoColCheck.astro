@@ -1,0 +1,35 @@
+---
+// TwoColCheck — 2-column section: a checklist on the left, a grey context
+// panel (1-2 paragraphs) on the right. Shared shape behind both "When to
+// use" and "Equipment" in the design (identical layout, different copy).
+import PageSection from './PageSection.astro';
+import Heading from './Heading.astro';
+import P from './P.astro';
+import CheckList from './CheckList.astro';
+
+interface Props { id: string; heading: string; intro: string; items: string[]; panel: string[] }
+const { id, heading, intro, items, panel } = Astro.props;
+---
+<PageSection pad={104}>
+  <div class="rs-2col">
+    <div class="rs-2col__list">
+      <Heading id={id}>{heading}</Heading>
+      <P>{intro}</P>
+      <CheckList items={items} />
+    </div>
+    <div class="rs-2col__panel">
+      {panel.map((para, i) => i === 0
+        ? <P style="color:var(--lc-ink);font-weight:400;">{para}</P>
+        : <P>{para}</P>)}
+    </div>
+  </div>
+</PageSection>
+<style>
+  .rs-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; }
+  .rs-2col__list { display: flex; flex-direction: column; gap: 20px; }
+  .rs-2col__panel { display: flex; flex-direction: column; gap: 20px; padding: 40px; border-radius: var(--radius-card); background: var(--lc-gray-100); }
+  @media (max-width: 860px) {
+    .rs-2col { grid-template-columns: 1fr; gap: 32px; }
+    .rs-2col__panel { padding: 28px; }
+  }
+</style>

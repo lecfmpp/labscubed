@@ -1,0 +1,27 @@
+---
+// PageSection — the layout rhythm every resource-page section shares: a
+// centered max-width container, 64px/20px gutters, and generous vertical
+// padding that scales down on mobile. Ported from the design system's
+// PageSection.jsx. `bg` picks the surface; `pad` is the desktop vertical
+// padding in px (mobile uses 60% of it, matching the source component).
+interface Props { bg?: 'white' | 'subtle' | 'dark'; pad?: number; width?: number; id?: string; class?: string }
+const { bg = 'white', pad = 120, width = 1312, id, class: cls = '' } = Astro.props;
+const SURFACES: Record<string, { background: string; color: string }> = {
+  white: { background: '#fff', color: 'var(--lc-ink)' },
+  subtle: { background: 'var(--lc-gray-100)', color: 'var(--lc-ink)' },
+  dark: { background: '#000', color: '#fff' },
+};
+const s = SURFACES[bg] ?? SURFACES.white;
+const padMobile = Math.round(pad * 0.6);
+---
+<section id={id} class={cls} style={`background:${s.background};color:${s.color};width:100%;display:flex;justify-content:center;`}>
+  <div class="rs-pagesection-inner" style={`--rs-pad-d:${pad}px;--rs-pad-m:${padMobile}px;width:100%;max-width:${width}px;box-sizing:border-box;`}>
+    <slot />
+  </div>
+</section>
+<style>
+  .rs-pagesection-inner { padding: var(--rs-pad-d) 64px; }
+  @media (max-width: 860px) {
+    .rs-pagesection-inner { padding: var(--rs-pad-m) 20px; }
+  }
+</style>

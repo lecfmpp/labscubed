@@ -1,0 +1,41 @@
+---
+// Alignment — two equal white cards on the subtle surface: "why it matters"
+// (bulleted risks) and "how we solve it" (checklist).
+import PageSection from './PageSection.astro';
+import Heading from './Heading.astro';
+import P from './P.astro';
+import CheckList from './CheckList.astro';
+
+interface Props { id: string; heading: string; whyTitle: string; whyIntro: string; risks: string[]; howTitle: string; howItems: string[] }
+const { id, heading, whyTitle, whyIntro, risks, howTitle, howItems } = Astro.props;
+---
+<PageSection bg="subtle" pad={104}>
+  <Heading id={id}>{heading}</Heading>
+  <div class="rs-align">
+    <div class="rs-align__card">
+      <h3 class="rs-align__h3">{whyTitle}</h3>
+      <P>{whyIntro}</P>
+      <ul class="rs-align__risks">
+        {risks.map((x) => (
+          <li><span class="rs-align__dot" aria-hidden="true"></span>{x}</li>
+        ))}
+      </ul>
+    </div>
+    <div class="rs-align__card">
+      <h3 class="rs-align__h3">{howTitle}</h3>
+      <CheckList items={howItems} />
+    </div>
+  </div>
+</PageSection>
+<style>
+  .rs-align__h3 { font-weight: 600; font-size: 24px; letter-spacing: -0.02em; line-height: 1.2; margin: 0; color: var(--lc-ink); }
+  .rs-align { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 44px; align-items: stretch; }
+  .rs-align__card { display: flex; flex-direction: column; gap: 20px; padding: 40px; border-radius: var(--radius-card); background: var(--surface-card); box-shadow: var(--shadow-edge); }
+  .rs-align__risks { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+  .rs-align__risks li { display: flex; gap: 12px; align-items: flex-start; font-weight: 400; font-size: 17px; line-height: 1.55; color: var(--lc-ink); }
+  .rs-align__dot { width: 6px; height: 6px; border-radius: 50%; background: var(--lc-ink); flex: none; margin-top: 10px; }
+  @media (max-width: 860px) {
+    .rs-align { grid-template-columns: 1fr; gap: 32px; }
+    .rs-align__card { padding: 28px; }
+  }
+</style>

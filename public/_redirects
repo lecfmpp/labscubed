@@ -34,6 +34,12 @@
 # registration POST is proxied to Webflow, which answers 405 Not Allowed.
 /api/webinar/register  /.netlify/functions/webinar-register  200
 
+# Resources pages migrated off Webflow keep their SEO equity via a 301 to the
+# new /resources/<slug> URL, rather than the same-URL swap used for the blog —
+# these pages are moving to a genuinely new path, so a redirect is required
+# (unlike /blog and /post/<slug>, which kept their exact Webflow URLs).
+/astm-d638-iso527-tensile-testing   /resources/astm-d638-iso-527-2-plastic-tensile-testing   301
+
 # Every OTHER path is invisibly proxied (status 200 = rewrite, not redirect) to
 # the Webflow site published at site.labscubed.com, so all existing
 # labscubed.com/... pages keep working at the exact same URLs.

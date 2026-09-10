@@ -1,0 +1,86 @@
+---
+// Workflow — black section with a numbered step-pill switcher. All panels
+// render upfront (crawlable, no client framework required); a small inline
+// script toggles visibility and re-triggers the fade-up animation. Matches
+// the design's Workflow.jsx behavior without a React dependency.
+import Heading from './Heading.astro';
+import P from './P.astro';
+import Button from '../Button.astro';
+
+interface Step { n: string; title: string; body: string; img: string; alt: string }
+interface Props {
+  id: string;
+  heading: string;
+  intro: string;
+  steps: Step[];
+  cta: { label: string; href: string };
+  footer?: string;
+  imgBase?: string;
+}
+const { id, heading, intro, steps, cta, footer, imgBase = '/assets/img/resources/' } = Astro.props;
+---
+<section class="rs-wf" style="background:#000;color:#fff;">
+  <div class="rs-wf__inner">
+    <Heading light id={id}>{heading}</Heading>
+    <P light style="margin-top:20px;">{intro}</P>
+    <div class="rs-wf__pills" role="tablist">
+      {steps.map((s, i) => (
+        <button type="button" class="rs-wf__pill" data-step={i} aria-selected={i === 0 ? 'true' : 'false'} role="tab">{s.n}</button>
+      ))}
+    </div>
+    {steps.map((s, i) => (
+      <div class="rs-wf__panel" data-panel={i} hidden={i !== 0}>
+        <img src={imgBase + s.img} alt={s.alt} class="rs-wf__img" />
+        <div class="rs-wf__text">
+          <span class="rs-wf__n">{s.n}</span>
+          <h3 class="rs-wf__title">{s.title}</h3>
+          <P light style="max-width:480px;">{s.body}</P>
+          <Button variant="primary" href={cta.href} style="margin-top:8px;">{cta.label}</Button>
+        </div>
+      </div>
+    ))}
+    {footer && <p class="rs-wf__footer">{footer}</p>}
+  </div>
+</section>
+<style>
+  .rs-wf__inner { max-width: 1312px; margin: 0 auto; padding: 112px 64px; box-sizing: border-box; }
+  .rs-wf__pills { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 44px; }
+  .rs-wf__pill { font-weight: 500; font-size: 14px; letter-spacing: 0.01em; padding: 12px 24px; border-radius: var(--radius-pill); cursor: pointer; transition: background .2s ease, color .2s ease, border-color .2s ease; border: 1px solid rgba(255,255,255,0.18); background: transparent; color: rgba(255,255,255,0.7); font-family: inherit; }
+  .rs-wf__pill[aria-selected="true"] { border-color: var(--lc-teal); background: var(--lc-teal); color: #000; }
+  .rs-wf__panel { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; margin-top: 40px; }
+  .rs-wf__panel[hidden] { display: none; }
+  .rs-wf__panel.rs-wf__panel--enter { animation: rsFadeUp .4s ease; }
+  .rs-wf__img { width: 100%; display: block; border-radius: 20px; border: 1px solid rgba(255,255,255,0.08); }
+  .rs-wf__text { display: flex; flex-direction: column; gap: 18px; align-items: flex-start; }
+  .rs-wf__n { font-weight: 700; font-size: 13px; letter-spacing: 0.12em; color: var(--lc-teal); text-transform: uppercase; }
+  .rs-wf__title { font-weight: 600; font-size: 24px; letter-spacing: -0.02em; line-height: 1.2; margin: 0; color: #fff; }
+  .rs-wf__footer { font-weight: 300; font-size: 17px; line-height: 1.65; color: rgba(255,255,255,0.62); margin: 56px 0 0; max-width: 820px; }
+  @keyframes rsFadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  @media (max-width: 860px) {
+    .rs-wf__inner { padding: 64px 20px; }
+    .rs-wf__panel { grid-template-columns: 1fr; gap: 28px; }
+  }
+</style>
+<script>
+  document.querySelectorAll<HTMLElement>('.rs-wf').forEach((section) => {
+    const pills = section.querySelectorAll<HTMLButtonElement>('.rs-wf__pill');
+    const panels = section.querySelectorAll<HTMLElement>('.rs-wf__panel');
+    pills.forEach((pill) => {
+      pill.addEventListener('click', () => {
+        const idx = pill.dataset.step;
+        pills.forEach((p) => p.setAttribute('aria-selected', p.dataset.step === idx ? 'true' : 'false'));
+        panels.forEach((panel) => {
+          if (panel.dataset.panel === idx) {
+            panel.hidden = false;
+            panel.classList.remove('rs-wf__panel--enter');
+            // Force reflow so the animation re-triggers on repeat clicks.
+            void panel.offsetWidth;
+            panel.classList.add('rs-wf__panel--enter');
+          } else {
+            panel.hidden = true;
+          }
+        });
+      });
+    });
+  });
+</script>
