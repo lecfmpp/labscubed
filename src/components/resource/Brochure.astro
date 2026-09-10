@@ -3,6 +3,7 @@
 // Posts straight to the same `download-request` edge function the homepage
 // and white-paper page already use (asset: "cubeten-brochure"), so the
 // email-send, webform_leads log, and Resend segment tagging are unchanged.
+import PageSection from './PageSection.astro';
 import Heading from './Heading.astro';
 import P from './P.astro';
 import Button from '../Button.astro';
@@ -10,21 +11,23 @@ import Button from '../Button.astro';
 interface Props { heading: string; body: string; imgSrc: string; imgAlt: string }
 const { heading, body, imgSrc, imgAlt } = Astro.props;
 ---
-<div class="rs-brochure">
-  <div class="rs-brochure__copy">
-    <Heading>{heading}</Heading>
-    <P>{body}</P>
-    <div class="rs-brochure__success" hidden>Thank you! Your submission has been received!</div>
-    <form class="rs-brochure__form" data-lc-form="brochure-cubeten">
-      <input name="name" required placeholder="Full name" class="rs-brochure__input" />
-      <input name="email" type="email" required placeholder="Work email" class="rs-brochure__input" />
-      <input name="company" required placeholder="Company" class="rs-brochure__input" />
-      <button type="submit" class="rs-brochure__submit">Download the brochure</button>
-      <div class="rs-brochure__error" hidden></div>
-    </form>
+<PageSection bg="subtle" pad={104}>
+  <div class="rs-brochure">
+    <div class="rs-brochure__copy">
+      <Heading>{heading}</Heading>
+      <P>{body}</P>
+      <div class="rs-brochure__success" hidden>Thank you! Your submission has been received!</div>
+      <form class="rs-brochure__form" data-lc-form="brochure-cubeten">
+        <input name="name" required placeholder="Full name" class="rs-brochure__input" />
+        <input name="email" type="email" required placeholder="Work email" class="rs-brochure__input" />
+        <input name="company" required placeholder="Company" class="rs-brochure__input" />
+        <button type="submit" class="rs-brochure__submit">Download the brochure</button>
+        <div class="rs-brochure__error" hidden></div>
+      </form>
+    </div>
+    <img src={imgSrc} alt={imgAlt} class="rs-brochure__img" />
   </div>
-  <img src={imgSrc} alt={imgAlt} class="rs-brochure__img" />
-</div>
+</PageSection>
 <style>
   .rs-brochure { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; align-items: center; }
   .rs-brochure__copy { display: flex; flex-direction: column; gap: 22px; }

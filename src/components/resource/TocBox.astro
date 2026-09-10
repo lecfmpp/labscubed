@@ -1,0 +1,35 @@
+---
+// TocBox — static "On this page" index, styled like the .lcb-takeaways card
+// (bordered box, teal accents) rather than a sticky scroll-spy bar. Plain
+// anchor links, no JS, no scroll-spy — replaces StickyToc.tsx, whose sticky
+// horizontally-scrolling pill bar didn't work well.
+import PageSection from './PageSection.astro';
+
+interface Props { toc: { id: string; label: string }[] }
+const { toc } = Astro.props;
+---
+<PageSection pad={64}>
+  <aside class="rs-toc">
+    <h2 class="rs-toc__title">On this page</h2>
+    <nav class="rs-toc__grid" aria-label="On this page">
+      {toc.map((t, i) => (
+        <a href={`#${t.id}`} class="rs-toc__link">
+          <span class="rs-toc__n">{String(i + 1).padStart(2, '0')}</span>
+          {t.label}
+        </a>
+      ))}
+    </nav>
+  </aside>
+</PageSection>
+<style>
+  .rs-toc { border: 1px solid var(--lc-line); border-radius: var(--radius-card); background: var(--surface-card); padding: 32px 36px; }
+  .rs-toc__title { margin: 0 0 18px; font-weight: 600; font-size: 20px; letter-spacing: -0.01em; color: var(--lc-ink); }
+  .rs-toc__grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 32px; }
+  .rs-toc__link { display: flex; align-items: baseline; gap: 10px; padding: 9px 0; font-size: 15px; font-weight: 500; color: var(--lc-ink); text-decoration: none; border-bottom: 1px solid var(--lc-line); }
+  .rs-toc__link:hover { color: var(--lc-teal-deep); }
+  .rs-toc__n { flex: none; font-weight: 700; font-size: 11px; letter-spacing: 0.06em; color: var(--lc-teal-deep); }
+  @media (max-width: 860px) {
+    .rs-toc { padding: 24px 20px; }
+    .rs-toc__grid { grid-template-columns: 1fr; }
+  }
+</style>

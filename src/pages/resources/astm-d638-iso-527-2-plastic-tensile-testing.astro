@@ -8,7 +8,7 @@
 import Base from '../../layouts/Base.astro';
 import Nav from '../../islands/Nav.tsx';
 import Footer from '../../components/Footer.astro';
-import StickyToc from '../../components/resource/StickyToc.tsx';
+import TocBox from '../../components/resource/TocBox.astro';
 import ResourceHero from '../../components/resource/ResourceHero.astro';
 import Intro from '../../components/resource/Intro.astro';
 import Measures from '../../components/resource/Measures.astro';
@@ -21,7 +21,6 @@ import DataReview from '../../components/resource/DataReview.astro';
 import Brochure from '../../components/resource/Brochure.astro';
 import FAQ from '../../components/resource/FAQ.astro';
 import Related from '../../components/resource/Related.astro';
-import FinalCTA from '../../components/resource/FinalCTA.astro';
 
 const IMG = '/assets/img/resources/';
 
@@ -156,7 +155,7 @@ const RELATED = [
       primaryCta={RESOURCE.primaryCta}
       secondaryCta={RESOURCE.secondaryCta}
     />
-    <StickyToc client:load toc={TOC} url={RESOURCE.canonical} title={RESOURCE.metaTitle} />
+    <TocBox toc={TOC} />
 
     <Intro
       id="intro"
@@ -270,11 +269,6 @@ const RELATED = [
 
     <FAQ items={FAQS} />
     <Related items={RELATED} />
-    <FinalCTA
-      heading="Tensile Testing Evolved"
-      body="Discover the innovative evolution of tensile testing, delivering streamlined processes and superior results to propel your research and quality control endeavors forward."
-      cta={{ label: 'Get a Quote', href: RESOURCE.primaryCta.href }}
-    />
     <Footer />
   </main>
 </Base>
