@@ -86,7 +86,7 @@ export default function DataAccess() {
           </div>
           <div style={{ marginTop: m ? 24 : 34, textAlign: "center" }}>
             <span style={{ fontWeight: 300, fontSize: m ? 14 : 16, color: "var(--text-muted)" }}>…and these are just a few. Don’t see your tool? </span>
-            <a href="https://www.labscubed.com/get-a-quote" className="lc-inline-link" style={{ fontWeight: 500, fontSize: m ? 14 : 16, color: "var(--lc-ink)", textDecoration: "none", borderBottom: "1px solid var(--lc-teal)", paddingBottom: 1 }}>We’ll build the integration you need →</a>
+            <a href="/get-a-quote" className="lc-inline-link" style={{ fontWeight: 500, fontSize: m ? 14 : 16, color: "var(--lc-ink)", textDecoration: "none", borderBottom: "1px solid var(--lc-teal)", paddingBottom: 1 }}>We’ll build the integration you need →</a>
           </div>
         </div>
       </div>

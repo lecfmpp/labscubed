@@ -1,0 +1,101 @@
+---
+// Get a Quote — replaces the native Webflow "Get a Quote" form at the same
+// URL (no redirect needed, this is a same-URL swap like the blog cutover,
+// not a resource-page URL change). Hero + QuoteWizard island + value row.
+import Base from '../layouts/Base.astro';
+import Nav from '../islands/Nav.tsx';
+import Footer from '../components/Footer.astro';
+import QuoteWizard from '../islands/QuoteWizard.tsx';
+
+const canonical = 'https://labscubed.com/get-a-quote';
+const title = 'Get a Quote — LabsCubed';
+const description = 'Configure your lab in five short steps — the specimens you run, your daily volume and your details — and get matched to CubeTen, CubeOne or CubeGo with a quote from a specialist within one business day.';
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org', '@type': 'WebPage',
+    name: title, description, url: canonical,
+    isPartOf: { '@type': 'WebSite', name: 'LabsCubed', url: 'https://labscubed.com/' },
+  },
+];
+---
+<Base title={title} description={description} canonical={canonical} ogType="website" jsonLd={jsonLd} preloadHero={false}>
+  <Nav client:load />
+  <main class="lc-page">
+    <section class="gq-hero">
+      <span class="gq-hero__glow" aria-hidden="true"></span>
+      <div class="gq-hero__inner">
+        <div class="gq-hero__eyebrow">Get a quote</div>
+        <h1 class="gq-hero__h1">Configure your lab.<br />Get your quote.</h1>
+        <p class="gq-hero__lead">Five short steps — the specimens you run, your daily volume and your details. Your recommended machine updates as you go; nothing is submitted until you send it.</p>
+      </div>
+    </section>
+    <section class="gq-body">
+      <div class="gq-body__inner">
+        <QuoteWizard client:load />
+        <div class="gq-values">
+          <div>
+            <div class="gq-values__h">One business day</div>
+            <div class="gq-values__b">A specialist — not a call centre — answers with pricing and lead time.</div>
+          </div>
+          <div>
+            <div class="gq-values__h">ROI before purchase</div>
+            <div class="gq-values__b">Your throughput becomes a payback estimate, typically 18–24 months.</div>
+          </div>
+          <div>
+            <div class="gq-values__h">White-glove install</div>
+            <div class="gq-values__b">On-site installation, ASTM calibration and team training included.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <Footer />
+  </main>
+</Base>
+<style>
+  .gq-hero { position: relative; background: #000; color: #fff; overflow: hidden; }
+  .gq-hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(120% 90% at 50% -10%, #1a1a1a 0%, #000 62%); }
+  .gq-hero__glow { position: absolute; left: 50%; top: 120px; width: 420px; height: 70px; border-radius: 999px; background: #17DDC5; opacity: 0.28; filter: blur(70px); transform: translateX(-50%); }
+  .gq-hero__inner { position: relative; max-width: 1312px; margin: 0 auto; padding: 164px 64px 120px; box-sizing: border-box; text-align: center; }
+  .gq-hero__eyebrow { font-weight: 700; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.5); }
+  .gq-hero__h1 { font-weight: 600; font-size: 76px; letter-spacing: -0.03em; line-height: 1.06; margin: 22px auto 0; max-width: 900px; }
+  .gq-hero__lead { margin: 22px auto 0; max-width: 640px; font-weight: 300; font-size: 19px; line-height: 1.6; color: rgba(255,255,255,0.6); }
+  .gq-body { background: var(--lc-gray-100); }
+  .gq-body__inner { max-width: 1312px; margin: 0 auto; padding: 96px 64px 140px; box-sizing: border-box; }
+  .gq-values { margin-top: 88px; padding-top: 56px; border-top: 1px solid rgba(0,0,0,0.1); display: grid; grid-template-columns: repeat(3, 1fr); gap: 48px; }
+  .gq-values__h { font-weight: 500; font-size: 18px; color: var(--lc-ink); }
+  .gq-values__b { margin-top: 8px; font-weight: 300; font-size: 15px; line-height: 1.55; color: var(--text-muted); }
+  @media (max-width: 1040px) {
+    .gq-hero__inner { padding: 104px 20px 72px; }
+    .gq-hero__h1 { font-size: 36px; }
+    .gq-hero__lead { font-size: 16px; }
+    .gq-body__inner { padding: 44px 16px 72px; }
+    .gq-values { margin-top: 56px; padding-top: 40px; grid-template-columns: 1fr; gap: 32px; }
+  }
+</style>
+<style is:global>
+  .qw-panel { animation: qwIn .3s cubic-bezier(.2,.7,.3,1) both; }
+  @keyframes qwIn { from { opacity: 0; transform: translateX(var(--qw-dx, 30px)); } to { opacity: 1; transform: none; } }
+  .qw-chip:hover { background: var(--lc-gray-200); }
+  .qw-chipstep:hover { background: var(--lc-gray-200) !important; }
+  .qw-chipcur:hover { filter: brightness(1.45); }
+  .qw-input:focus { border-bottom-color: #17DDC5 !important; }
+  .qw-edit { text-decoration: underline; text-decoration-color: rgba(128,128,128,.5); text-underline-offset: 3px; }
+  .qw-edit:hover { text-decoration-color: currentColor; }
+  .qw-link:hover { color: #17DDC5 !important; }
+  .qw-back:hover { color: var(--lc-ink) !important; }
+  .qw-scard:hover { box-shadow: var(--shadow-edge), 0 8px 20px rgba(0,0,0,0.07) !important; }
+  .qw-vchip:hover { background: var(--lc-gray-200) !important; }
+  .qw-row:hover span:last-child { color: var(--lc-teal-deep) !important; }
+  .qw-ta:focus { box-shadow: inset 0 0 0 1.5px var(--lc-teal) !important; }
+  .qw-ghead:hover { background: var(--lc-gray-100); }
+  .qw-copt:hover { background: var(--lc-gray-100) !important; }
+  .qw-csel:hover { border-bottom-color: rgba(0,0,0,0.4) !important; }
+  .qw-phone:disabled { cursor: not-allowed; }
+  .qw-phone::placeholder { color: rgba(0,0,0,0.3); }
+  .qw-rail::-webkit-scrollbar { display: none; }
+  .qw-rail { scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+  @media (max-width: 560px) {
+    .gq-body input, .gq-body textarea, .gq-body select { font-size: 16px !important; }
+  }
+</style>

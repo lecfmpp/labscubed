@@ -15,6 +15,7 @@ interface Props { heading: string; body: string; imgSrc: string; imgAlt: string;
 const { heading, body, imgSrc, imgAlt, asset = 'cubeten-brochure', formId = 'brochure-cubeten' } = Astro.props;
 ---
 <PageSection bg="subtle" pad={104}>
+  <div id="brochure" class="rs-brochure__anchor"></div>
   <div class="rs-brochure">
     <div class="rs-brochure__copy">
       <Heading>{heading}</Heading>
@@ -32,6 +33,7 @@ const { heading, body, imgSrc, imgAlt, asset = 'cubeten-brochure', formId = 'bro
   </div>
 </PageSection>
 <style>
+  .rs-brochure__anchor { scroll-margin-top: 96px; }
   .rs-brochure { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; align-items: center; }
   .rs-brochure__copy { display: flex; flex-direction: column; gap: 22px; }
   .rs-brochure__form { display: flex; flex-direction: column; gap: 14px; max-width: 460px; }

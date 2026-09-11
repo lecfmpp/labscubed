@@ -28,6 +28,8 @@
 /events/        /events/index.html          200
 /webinar        /webinar/index.html         200
 /webinar/       /webinar/index.html         200
+/get-a-quote    /get-a-quote/index.html     200
+/get-a-quote/   /get-a-quote/index.html     200
 
 # /api/* is served by this site's own Netlify Functions. It MUST stay above the
 # catch-all below: the first matching rule wins, and without this the webinar

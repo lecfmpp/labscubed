@@ -5,6 +5,7 @@
 import React from 'react';
 import { SAMPLES, getSample, Sample } from '../lib/samples';
 import { useIsMobile, Section, Badge, Button } from '../lib/ui';
+import { DAILY_OPTIONS, recommendMachine as recommendMachineShared } from '../lib/recommend';
 
 const gradText: any = {
   background: "linear-gradient(90deg, #000000 0%, #666666 56.25%, #000000 100%)",
@@ -69,25 +70,19 @@ function SampleSelectCard({ s, active, onClick }: any) {
 }
 
 /* ---- Configurator question model ---- */
-const DAILY_OPTIONS = [
-  { value: 0, label: "Under 20", sub: "Entry volume" },
-  { value: 1, label: "20–50", sub: "Mid volume" },
-  { value: 2, label: "50–100", sub: "High volume" },
-  { value: 3, label: "100+", sub: "Max throughput" }];
 const MACHINE_HREF: any = { CubeTen: "https://www.labscubed.com/plastic-testing", CubeOne: "https://www.labscubed.com/rubber-testing", CubeGo: "https://www.labscubed.com/cubego" };
 function machineBase(name: string) {
   if (name === "CubeOne") return MODELS["Rubber|Tensile"];
   if (name === "CubeGo") return CUSTOM_MODEL;
   return MODELS["Plastic|Tensile"];
 }
+/* Thin wrapper over the shared recommend.ts logic (also used by the Get a
+   Quote wizard) — reshapes its flat result into the {name, dailyLabel, model}
+   shape this file's Configurator/CubeTenShowcase/SpecsBand already expect. */
 function recommendMachine(selected: string[], dailyIdx: number) {
-  const daily = DAILY_OPTIONS[dailyIdx] || DAILY_OPTIONS[1];
-  const sel = (selected || []).map((id) => (typeof getSample === "function" ? getSample(id) : null)).filter(Boolean);
-  const isRubber = sel.some((s: any) => s.material === "rubber") && !sel.some((s: any) => s.material === "plastic");
-  const name = dailyIdx === 0 ? "CubeGo" : isRubber ? "CubeOne" : "CubeTen";
-  const primary = sel[0] || null;
-  const standard = primary ? primary.standard : "ASTM D638 / ISO 527";
-  return { name, dailyLabel: daily.label, model: { ...machineBase(name), name, standard, sample: primary } };
+  const rec = recommendMachineShared(selected, dailyIdx);
+  const name = rec.name || "CubeTen";
+  return { name, dailyLabel: rec.dailyLabel, model: { ...machineBase(name), name, standard: rec.standard, sample: rec.samples[0] || null } };
 }
 
 function QAccordion({ n, title, desc, summary, open, onToggle, children }: any) {
