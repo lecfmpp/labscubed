@@ -457,8 +457,18 @@ function QDone({ data, rec, reset }: any) {
       </span>
       <h2 style={{ fontWeight: 600, fontSize: m ? 30 : 44, letterSpacing: '-0.03em', lineHeight: 1.1, margin: '26px 0 0', color: 'var(--lc-ink)' }}>Request received, {data.first || 'there'}.</h2>
       <p style={{ margin: '16px auto 0', maxWidth: 540, fontWeight: 300, fontSize: 17, lineHeight: 1.6, color: 'var(--text-muted)' }}>
-        Your {rec.name || 'system'} quote is being prepared for {data.company || 'your lab'}. A specialist replies to {data.email || 'your inbox'} within one business day.
+        Your {rec.name || 'system'} quote is being prepared for {data.company || 'your lab'}. A specialist replies to {data.email || 'your inbox'} within one business day. In the meantime, watch the video below to see just how simple the steps to automate your tensile testing really are.
       </p>
+      <div style={{ position: 'relative', width: '100%', maxWidth: 640, margin: '32px auto 0', aspectRatio: '16 / 9', borderRadius: 16, overflow: 'hidden', boxShadow: 'var(--shadow-edge), 0 20px 50px rgba(0,0,0,0.07)' }}>
+        <iframe
+          src="https://www.youtube.com/embed/EA0jUa83Qjs?rel=0&modestbranding=1"
+          title="How CubeTen automates tensile testing — simple steps walkthrough"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowFullScreen
+          loading="lazy"
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 'none', display: 'block' }}
+        />
+      </div>
       <div style={{ marginTop: 30, display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap' }}>
         {brochureHref
           ? <Button variant="dark" size="sm" href={brochureHref}>Request a Brochure</Button>

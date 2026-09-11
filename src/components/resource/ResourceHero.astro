@@ -1,21 +1,21 @@
 ---
-// ResourceHero — black full-bleed hero: breadcrumbs, eyebrow badge, H1 (with
-// a teal-accented lead-in), deck, meta strip (reading time + updated date),
-// and two CTAs. Required on every resource page.
+// ResourceHero — black full-bleed hero: breadcrumbs, optional eyebrow badge,
+// H1 (with a teal-accented lead-in), deck, meta strip (reading time + updated
+// date), and up to two CTAs. Required on every resource page.
 import Badge from './Badge.astro';
 import Button from '../Button.astro';
 
 interface Crumb { label: string; href?: string }
 interface Cta { label: string; href: string }
 interface Props {
-  eyebrow: string;
+  eyebrow?: string;
   headlineAccent: string;
   headlineRest: string;
   deck: string;
   updated: string;
   readingMinutes: number;
   breadcrumbs: Crumb[];
-  primaryCta: Cta;
+  primaryCta?: Cta;
   secondaryCta?: Cta;
 }
 const { eyebrow, headlineAccent, headlineRest, deck, updated, readingMinutes, breadcrumbs, primaryCta, secondaryCta } = Astro.props;
@@ -33,7 +33,7 @@ const updatedLabel = new Date(updated + 'T00:00:00').toLocaleDateString('en-US',
         ))}
       </ol>
     </nav>
-    <Badge variant="subtle">{eyebrow}</Badge>
+    {eyebrow && <Badge variant="subtle">{eyebrow}</Badge>}
     <h1 class="rs-hero__h1"><span class="rs-hero__accent">{headlineAccent}</span>{headlineRest}</h1>
     <p class="rs-hero__deck">{deck}</p>
     <div class="rs-hero__meta">
@@ -41,10 +41,12 @@ const updatedLabel = new Date(updated + 'T00:00:00').toLocaleDateString('en-US',
       <span class="rs-hero__dot" aria-hidden="true"></span>
       <span>Updated <time datetime={updated}>{updatedLabel}</time></span>
     </div>
-    <div class="rs-hero__ctas">
-      <Button variant="primary" href={primaryCta.href}>{primaryCta.label}</Button>
-      {secondaryCta && <Button variant="ghost" arrow={false} href={secondaryCta.href} target="_blank" rel="noopener">{secondaryCta.label}</Button>}
-    </div>
+    {(primaryCta || secondaryCta) && (
+      <div class="rs-hero__ctas">
+        {primaryCta && <Button variant="primary" href={primaryCta.href}>{primaryCta.label}</Button>}
+        {secondaryCta && <Button variant="ghost" arrow={false} href={secondaryCta.href} target="_blank" rel="noopener">{secondaryCta.label}</Button>}
+      </div>
+    )}
   </div>
 </section>
 <style>
