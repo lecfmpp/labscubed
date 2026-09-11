@@ -25,8 +25,12 @@ const REQUIRED = ['name', 'email', 'company', 'website', 'role', 'industry', 'vo
 //
 // An unknown slug is rejected rather than defaulted, so a typo cannot quietly
 // file registrants under the wrong webinar.
+//
+// `welcomeEvent` (optional) is a Resend event sent after the contact is filed.
+// It starts the Resend automation that emails the registration confirmation;
+// the name must match that automation's trigger step.
 const WEBINARS = {
-  'spe-oct-2026': { segmentId: 'd7b053f5-67b3-4747-807e-1e8db27c45a1' },
+  'spe-oct-2026': { segmentId: 'd7b053f5-67b3-4747-807e-1e8db27c45a1', welcomeEvent: 'spe2026_registered' },
   'automation-ai-nov-2026': { segmentId: 'ca2a167f-e3c6-483b-90f0-8590d69ad2a1' },
   // Tradeshow demo bookings, not a webinar — same funnel, its own list.
   'gps-sep-2026': { segmentId: '316f18d8-86ba-459f-817a-67cd921e4e2d', kind: 'tradeshow' },
@@ -81,6 +85,12 @@ export default async (request) => {
     try {
       await addToResend(data, resendKey, webinar.segmentId);
       resendSynced = true;
+      // After the contact exists, so the automation can resolve it by email.
+      // A failure here lands in sync_error with resend_synced still true, which
+      // is how a missing confirmation shows up in the row.
+      if (webinar.welcomeEvent) {
+        await sendResendEvent(data.email, webinar.welcomeEvent, resendKey);
+      }
     } catch (error) {
       syncError = String(error);
       console.error('Resend sync failed:', syncError);
@@ -155,6 +165,21 @@ async function addToResend(data, apiKey, segmentId) {
   }
 
   return contact.json();
+}
+
+async function sendResendEvent(email, event, apiKey) {
+  const response = await fetch('https://api.resend.com/events/send', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ event, email }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Resend event ${event} ${response.status}: ${await response.text()}`);
+  }
 }
 
 async function recordInSupabase(data, slug, kind, resendSynced, syncError) {
