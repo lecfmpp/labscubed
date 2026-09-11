@@ -25,11 +25,6 @@ const STEPS = [
   { id: 'review', label: 'Review' },
 ];
 
-const RESOURCE_HREF: Record<string, string> = {
-  CubeTen: '/resources/astm-d638-iso-527-2-plastic-tensile-testing#brochure',
-  CubeOne: '/resources/astm-d412-iso-37-rubber-tensile-testing#brochure',
-};
-
 type Data = {
   selected: string[]; otherSample: string; dailyIdx: number | null;
   first: string; last: string; email: string; country: string; phone: string;
@@ -449,7 +444,6 @@ function QPanel({ step, data, set, toggleSample, go, rec, m }: any) {
 
 function QDone({ data, rec, reset }: any) {
   const m = useBP(1040);
-  const brochureHref = rec.name ? RESOURCE_HREF[rec.name] : undefined;
   return (
     <div style={{ padding: m ? '56px 24px 64px' : '88px 44px 96px', textAlign: 'center' }}>
       <span style={{ width: 56, height: 56, borderRadius: '50%', background: '#17DDC5', color: '#000', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -470,9 +464,6 @@ function QDone({ data, rec, reset }: any) {
         />
       </div>
       <div style={{ marginTop: 30, display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap' }}>
-        {brochureHref
-          ? <Button variant="dark" size="sm" href={brochureHref}>Request a Brochure</Button>
-          : <Button variant="dark" size="sm" href="https://www.labscubed.com/cubego">Request a Brochure</Button>}
         <button onClick={reset} className="qw-edit" style={{ all: 'unset', cursor: 'pointer', fontSize: 14, fontWeight: 500, color: 'var(--text-muted)', padding: '11px 4px' }}>Start another request</button>
       </div>
     </div>
