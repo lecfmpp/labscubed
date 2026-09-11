@@ -8,7 +8,9 @@
 import Base from '../../layouts/Base.astro';
 import Nav from '../../islands/Nav.tsx';
 import Footer from '../../components/Footer.astro';
-import { WEBINARS, youTubeId } from '../../components/webinarConfig.js';
+import { WEBINARS } from '../../components/webinarConfig.js';
+import { replayState } from '../../components/evergreen.js';
+import ReplayModal from '../../components/ReplayModal.jsx';
 
 // Webinars only. The registry also holds tradeshows, which belong on /events/ —
 // without this filter they leak onto this page.
@@ -17,8 +19,11 @@ const all = Object.values(WEBINARS)
   .sort((a, b) => new Date(a.startUTC) - new Date(b.startUTC));
 const now = Date.now();
 const upcoming = all.filter((w) => new Date(w.startUTC).getTime() > now);
-// The library lists EVERY session, not only past ones, so the section is never
-// empty: an upcoming webinar appears with "not recorded yet" until it airs.
+// The library lists EVERY webinar, not only past ones, so the section is never
+// empty. Each card is in one replay state (see evergreen.js): live-only until
+// it airs, then recording-soon, then evergreen once replays are switched on.
+// The recording itself is never embedded here — it only plays on a booked
+// session page, which is what makes the booking form a real gate.
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 const library = [...all].reverse().map((w) => {
   const d = new Date(w.startUTC);
@@ -28,13 +33,13 @@ const library = [...all].reverse().map((w) => {
     ...w,
     period,
     periodLabel: `${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}`,
-    status: w.recordingUrl ? 'recorded' : aired ? 'pending' : 'upcoming',
+    state: replayState(w, now),
     // Everything the keyword box searches.
     haystack: [w.title, w.heroCopy, w.dateLabel, w.speakerName].join(' ').toLowerCase(),
   };
 });
 const periods = [...new Map(library.map((w) => [w.period, w.periodLabel])).entries()];
-const STATUS_LABEL = { recorded: 'Recording available', pending: 'Recording coming soon', upcoming: 'Not recorded yet' };
+const STATE_LABEL = { 'live-only': 'Live session only', 'recording-soon': 'Recording coming soon', evergreen: 'Watch a session' };
 ---
 
 <Base
@@ -88,11 +93,11 @@ const STATUS_LABEL = { recorded: 'Recording available', pending: 'Recording comi
       </div>
     </section>
 
-    <section class="wh-sec wh-sec-alt">
+    <section class="wh-sec wh-sec-alt" id="recordings">
       <div class="wh-inner">
         <h2 class="wh-h2">Recordings</h2>
         <p class="wh-sub">
-          Every session we run. Recordings appear here once a webinar has aired.
+          Every webinar we run. Once a webinar has aired, it comes back as scheduled sessions you can book.
         </p>
 
         <div class="wh-filters">
@@ -118,42 +123,29 @@ const STATUS_LABEL = { recorded: 'Recording available', pending: 'Recording comi
         <p class="wh-count" id="wh-count" aria-live="polite"></p>
 
         <div class="wh-grid" id="wh-grid">
-          {library.map((w) => {
-            const id = youTubeId(w.recordingUrl);
-            return (
-              <article
-                class="wh-rec"
-                data-period={w.period}
-                data-haystack={w.haystack}
-              >
-                <div class="wh-rec-media">
-                  {id ? (
-                    <iframe
-                      src={`https://www.youtube.com/embed/${id}`}
-                      title={w.title}
-                      loading="lazy"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                      referrerpolicy="strict-origin-when-cross-origin"
-                      allowfullscreen
-                    ></iframe>
-                  ) : (
-                    <div class="wh-rec-soon">
-                      <span class="wh-rec-soon-dot"></span>
-                      {STATUS_LABEL[w.status]}
-                    </div>
-                  )}
+          {library.map((w) => (
+            <article
+              class="wh-rec"
+              data-period={w.period}
+              data-haystack={w.haystack}
+              data-end={w.endUTC}
+              data-replay={w.replay?.enabled ? '1' : '0'}
+            >
+              <div class="wh-rec-media">
+                <div class="wh-rec-soon">
+                  <span class="wh-rec-soon-dot"></span>
+                  <span data-state-label>{STATE_LABEL[w.state]}</span>
                 </div>
-                <div class="wh-rec-body">
-                  <span class="wh-rec-date">{w.dateLabel}</span>
-                  <h3 class="wh-rec-title">{w.title}</h3>
-                  <p class="wh-rec-desc">{w.heroCopy}</p>
-                  {w.status === 'upcoming' && (
-                    <a class="wh-rec-link" href={w.registrationUrl}>Register for this session →</a>
-                  )}
-                </div>
-              </article>
-            );
-          })}
+              </div>
+              <div class="wh-rec-body">
+                <span class="wh-rec-date">{w.dateLabel}</span>
+                <h3 class="wh-rec-title">{w.title}</h3>
+                <p class="wh-rec-desc">{w.heroCopy}</p>
+                <a class="wh-rec-link" data-cta="live-only" href={w.registrationUrl} hidden={w.state !== 'live-only'}>Register for the live session →</a>
+                <button type="button" class="wh-rec-btn" data-cta="evergreen" data-open-replay={w.slug} hidden={w.state !== 'evergreen'}>Choose a session →</button>
+              </div>
+            </article>
+          ))}
         </div>
 
         <p class="wh-empty" id="wh-noresults" hidden>
@@ -164,10 +156,25 @@ const STATUS_LABEL = { recorded: 'Recording available', pending: 'Recording comi
 
   </main>
 
+  <ReplayModal client:only="react" />
   <Footer />
 </Base>
 
 <script is:inline>
+  /* Replay state per card. It is decided at build time, but a webinar can air
+     between deploys — re-derive it here so a card never keeps offering the live
+     session after it has happened. Mirrors replayState() in evergreen.js. */
+  (function () {
+    var LABEL = { 'live-only': 'Live session only', 'recording-soon': 'Recording coming soon', evergreen: 'Watch a session' };
+    document.querySelectorAll('.wh-rec[data-end]').forEach(function (card) {
+      var aired = new Date(card.dataset.end).getTime() <= Date.now();
+      var state = !aired ? 'live-only' : card.dataset.replay === '1' ? 'evergreen' : 'recording-soon';
+      var label = card.querySelector('[data-state-label]');
+      if (label) label.textContent = LABEL[state];
+      card.querySelectorAll('[data-cta]').forEach(function (cta) { cta.hidden = cta.dataset.cta !== state; });
+    });
+  })();
+
   /* Keyword + date filtering over the recordings grid. Plain DOM work on
      server-rendered cards, so the list is still in the HTML for search engines
      and still works if this script never runs. */
@@ -264,6 +271,11 @@ const STATUS_LABEL = { recorded: 'Recording available', pending: 'Recording comi
   .wh-rec[hidden] { display: none; }
   .wh-rec-link { display: inline-block; margin-top: 14px; font-size: 13.5px; font-weight: 600; color: var(--lc-teal-deep); text-decoration: none; }
   .wh-rec-link:hover { text-decoration: underline; }
+  .wh-rec-btn { margin-top: 14px; font: inherit; font-size: 13.5px; font-weight: 600; color: #000; background: var(--lc-teal, #17ddc5); border: 0; border-radius: 999px; padding: 10px 18px; cursor: pointer; }
+  .wh-rec-btn:hover { filter: brightness(0.95); }
+  .wh-rec-btn:focus-visible { outline: 2px solid var(--lc-teal-deep); outline-offset: 3px; }
+  /* Both CTAs set their own display, which would override the hidden attribute. */
+  [data-cta][hidden] { display: none !important; }
   .wh-rec { background: #fff; border: 1px solid var(--lc-line); border-radius: 20px; overflow: hidden; box-shadow: 0 1px 0 rgba(0,0,0,0.04); }
   .wh-rec-media { position: relative; width: 100%; aspect-ratio: 16 / 9; background: #000; }
   .wh-rec-media iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }

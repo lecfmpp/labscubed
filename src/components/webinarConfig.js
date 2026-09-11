@@ -114,9 +114,22 @@ export const WEBINARS = {
     // null, so a webinar with a single video needs only the one field.
     thankYouVideoUrl: "https://youtu.be/agUsIcHPaoU",
     onDemandVideoUrl: "https://www.youtube.com/embed/EA0jUa83Qjs",
-    // Set once the session has aired and the recording is up; until then the
-    // hub shows "recording coming soon" for a past webinar.
-    recordingUrl: null,
+    // Evergreen replays. Dormant until the live session has aired AND
+    // `enabled` is true. The recording's YouTube id is NOT kept here — it
+    // lives server-side in netlify/lib/replay-videos.mjs so it never ships in
+    // the public bundle.
+    replay: {
+      enabled: false,
+      durationMinutes: 50,
+      // Weekly session times, US Eastern (weekday: 0 = Sunday). The booking
+      // modal offers the next four.
+      slots: [
+        { weekday: 2, time: "11:00" },
+        { weekday: 3, time: "14:00" },
+        { weekday: 4, time: "11:00" },
+        { weekday: 5, time: "14:00" },
+      ],
+    },
     // Cross-promoted on the registration page and the thank-you page.
     nextWebinarSlug: "automation-ai-nov-2026",
   }),
@@ -168,7 +181,22 @@ export const WEBINARS = {
     heroVideoUrl: null,
     thankYouVideoUrl: null,
     onDemandVideoUrl: "https://www.youtube.com/embed/EA0jUa83Qjs",
-    recordingUrl: null,
+    // Evergreen replays. Dormant until the live session has aired AND
+    // `enabled` is true. The recording's YouTube id is NOT kept here — it
+    // lives server-side in netlify/lib/replay-videos.mjs so it never ships in
+    // the public bundle.
+    replay: {
+      enabled: false,
+      durationMinutes: 50,
+      // Weekly session times, US Eastern (weekday: 0 = Sunday). The booking
+      // modal offers the next four.
+      slots: [
+        { weekday: 2, time: "11:00" },
+        { weekday: 3, time: "14:00" },
+        { weekday: 4, time: "11:00" },
+        { weekday: 5, time: "14:00" },
+      ],
+    },
     nextWebinarSlug: null,
   }),
 

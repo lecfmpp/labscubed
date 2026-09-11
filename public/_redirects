@@ -35,6 +35,9 @@
 # catch-all below: the first matching rule wins, and without this the webinar
 # registration POST is proxied to Webflow, which answers 405 Not Allowed.
 /api/webinar/register  /.netlify/functions/webinar-register  200
+/api/webinar/replay-register  /.netlify/functions/webinar-replay-register  200
+/api/webinar/replay-session   /.netlify/functions/webinar-replay-session   200
+/api/webinar/question         /.netlify/functions/webinar-question         200
 
 # Resources pages migrated off Webflow keep their SEO equity via a 301 to the
 # new /resources/<slug> URL, rather than the same-URL swap used for the blog —
