@@ -26,6 +26,7 @@ import { PLASTIC_FAQ_DATA } from '../lib/faq';
 import SpecimenLibrary from '../islands/SpecimenLibrary.tsx';
 import TestimonialSlider from '../islands/TestimonialSlider.tsx';
 import ProductSlider from '../islands/ProductSlider.tsx';
+import LiveTestDemo from '../islands/LiveTestDemo.tsx';
 import { SITE_URL } from '../site.mjs';
 
 const canonical = `${SITE_URL}/plastic-testing`;
@@ -178,6 +179,20 @@ const jsonLd = [
     <ProductSection bg="#fff">
       <ProductHeading heading="Trusted by quality teams worldwide." sub="Real words from polymer and elastomer labs running LabsCubed automation every day." />
       <TestimonialSlider client:idle items={testimonials} />
+    </ProductSection>
+
+    <!-- 04b — A real test, synced: live speed readout + test video + results table -->
+    <ProductSection bg="var(--lc-gray-100)" id="real-test">
+      <ProductHeading
+        eyebrow="Real test · Polypropylene"
+        heading="Watch a real CubeTen test, synced to its data."
+        sub="Specimen 01 of a 10-specimen polypropylene run. The CubeTen pulls slowly at 1 mm/min to capture modulus, then switches to 50 mm/min until break — follow the speed as the point climbs the curve."
+      />
+      <LiveTestDemo
+        client:visible
+        video={{ src: IMG + 'pp-live-test.mp4', poster: IMG + 'pp-live-test-poster.webp', width: 1920, height: 570 }}
+        overlay={{ src: IMG + 'pp-stress-strain-overlay.webp', width: 1800, height: 481 }}
+      />
     </ProductSection>
 
     <!-- 05 — How it works -->
