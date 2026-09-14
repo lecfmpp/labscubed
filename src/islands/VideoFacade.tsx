@@ -8,11 +8,14 @@
    The thumbnail comes from /assets/img/yt/<id>.webp, baked at build time by
    scripts/fetch-yt-thumbs.mjs (both About ids are already in its list), with
    the same img.youtube.com fallback VideoCarousel uses for the case where the
-   prebuild fetch was skipped. Styling lives in styles.css, not here: Astro's
-   scoped styles never reach island-rendered DOM. */
+   prebuild fetch was skipped. `priority` marks the one facade that is the LCP
+   candidate (the hero) so its thumbnail is fetched eagerly rather than lazily.
+
+   Styling lives in styles.css, not here: Astro's scoped styles never reach
+   island-rendered DOM. */
 import React from 'react';
 
-export default function VideoFacade({ id, title }: { id: string; title: string }) {
+export default function VideoFacade({ id, title, priority = false }: { id: string; title: string; priority?: boolean }) {
   const [on, setOn] = React.useState(false);
   return (
     <div className="lc-vf">
@@ -29,7 +32,8 @@ export default function VideoFacade({ id, title }: { id: string; title: string }
           <img
             src={`/assets/img/yt/${id}.webp`}
             alt=""
-            loading="lazy"
+            loading={priority ? 'eager' : 'lazy'}
+            {...(priority ? { fetchpriority: 'high' } : {})}
             className="lc-vf-thumb"
             onError={(e) => {
               const img = e.currentTarget as HTMLImageElement;
