@@ -26,7 +26,6 @@ import Measurement from '../components/Measurement.astro';
 import FAQ from '../components/FAQ.astro';
 import SpecimenLibrary from '../islands/SpecimenLibrary.tsx';
 import TestimonialSlider from '../islands/TestimonialSlider.tsx';
-import ProductSlider from '../islands/ProductSlider.tsx';
 import LiveTestDemo from '../islands/LiveTestDemo.tsx';
 import { NEO_LIVE_TEST } from '../data/neoLiveTest';
 import { CUBEONE_TESTIMONIALS } from '../data/testimonials';
@@ -60,10 +59,12 @@ const testimonials = CUBEONE_TESTIMONIALS.map((t) =>
     : t,
 );
 
+// Same looping clips as the /plastic-testing step section (the user asked for
+// both product pages to share them); the step copy stays CubeOne-specific.
 const steps = [
-  { img: IMG + 'step-load-tray.webp', alt: 'Dumbbell specimens dropping into the CubeOne sample tray', w: 870, h: 492, title: 'Load your samples', body: 'Load up to 12 tensile or tear specimens at once — mix compounds and materials on the same tray.' },
-  { img: IMG + 'step-start-test-1100.webp', alt: 'Technician starting a test on the CubeOne touchscreen', w: 1100, h: 622, title: 'Start the test', body: 'Enter compound names on the touchscreen and start the run with a single touch.' },
-  { img: IMG + 'step-review-data.webp', alt: 'Stress–strain results on the CubeOne touchscreen', w: 870, h: 492, title: 'Review your data', body: 'When the run finishes, review results on the machine touchscreen, in your own system, or in the LabsCubed cloud.' },
+  { vid: MEDIA + 'step1-load-samples.mp4', poster: MEDIA + 'step1-load-samples-poster.webp', w: 312, h: 176, title: 'Load your samples', body: 'Load up to 12 tensile or tear specimens at once — mix compounds and materials on the same tray.' },
+  { vid: MEDIA + 'step2-setup-tray-screen.mp4', poster: MEDIA + 'step2-setup-tray-screen-poster.webp', w: 314, h: 176, title: 'Start the test', body: 'Enter compound names on the touchscreen and start the run with a single touch.' },
+  { vid: MEDIA + 'short-easy-steps.mp4', poster: MEDIA + 'short-easy-steps-poster.webp', w: 276, h: 156, title: 'Review your data', body: 'When the run finishes, review results on the machine touchscreen, in your own system, or in the LabsCubed cloud.' },
 ];
 
 const specs: [string, string][] = [
@@ -77,12 +78,6 @@ const specs: [string, string][] = [
   ['Strain measurement', 'Crosshead · video extensometer'],
   ['Weight', '150 lbs (75 kg)'],
   ['Power supply', 'Standard 110 V outlet'],
-];
-
-const slides = [
-  { src: IMG + 'portal-d412-1400.webp', srcSet: `${IMG}portal-d412-760.webp 760w, ${IMG}portal-d412-1400.webp 1400w`, width: 1400, height: 702, alt: 'LabsCubed portal reviewing an ASTM D412 rubber tensile run — stress-strain curve, statistics and per-specimen results', caption: 'Stress-strain curves, statistics and every specimen of an ASTM D412 run in one view.' },
-  { src: IMG + 'auto-thickness-760.webp', width: 760, height: 760, alt: 'Inside the CubeOne: automated thickness measurement station', caption: 'A look inside — thickness is measured automatically before every pull.' },
-  { src: IMG + 'cubeone-dimensions-1400.webp', width: 1400, height: 946, alt: 'CubeOne dimensions: 1.268 m long, 0.52 m deep, 0.42 m tall', caption: 'Bench-top footprint: 1.27 m × 0.52 m × 0.42 m, plugged into a standard outlet.' },
 ];
 
 const jsonLd = [
@@ -218,12 +213,6 @@ const jsonLd = [
       heading="How the CubeOne measures strain accurately"
       sub="Every CubeOne pairs a built-in encoder with a non-contact video extensometer, so each elastomer is measured by the right method — even at very high elongations."
     />
-
-    <!-- 07 — Data slider -->
-    <ProductSection bg="var(--lc-gray-100)">
-      <ProductHeading center heading="Your data, the moment it happens." sub="Every test delivers the full stress-strain curve, modulus at each elongation and the raw data behind it — on the touchscreen, in the cloud, or piped straight into the systems your lab already runs." />
-      <ProductSlider client:idle slides={slides} />
-    </ProductSection>
 
     <!-- 07b — FAQ (homepage accordion, rubber-only questions) -->
     <FAQ items={RUBBER_FAQ_DATA} />

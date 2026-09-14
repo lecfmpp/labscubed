@@ -25,7 +25,6 @@ import FAQ from '../components/FAQ.astro';
 import { PLASTIC_FAQ_DATA } from '../lib/faq';
 import SpecimenLibrary from '../islands/SpecimenLibrary.tsx';
 import TestimonialSlider from '../islands/TestimonialSlider.tsx';
-import ProductSlider from '../islands/ProductSlider.tsx';
 import LiveTestDemo from '../islands/LiveTestDemo.tsx';
 import { PP_LIVE_TEST } from '../data/ppLiveTest';
 import { CUBEONE_TESTIMONIALS } from '../data/testimonials';
@@ -69,11 +68,6 @@ const specs: [string, string][] = [
   ['Thickness & width', 'Measured automatically'],
   ['Strain measurement', 'Crosshead · physical or video extensometer'],
   ['Weight', '250 lbs (115 kg)'],
-];
-
-const slides = [
-  { src: IMG + 'integrating-data-1400.webp', srcSet: `${IMG}integrating-data-760.webp 760w, ${IMG}integrating-data-1400.webp 1400w`, width: 1400, height: 730, alt: 'LabsCubed portal reviewing an ASTM D638 plastic tensile run — stress-strain curves, modulus and yield per specimen', caption: 'Stress-strain curves, modulus and yield for every specimen in the run.' },
-  { src: IMG + 'auto-thickness-760.webp', width: 760, height: 760, alt: 'Inside the CubeTen: automated thickness and width measurement station', caption: 'A look inside — thickness and width are measured automatically before every pull.' },
 ];
 
 const jsonLd = [
@@ -209,12 +203,6 @@ const jsonLd = [
       heading="How the CubeTen measures strain accurately"
       sub="Every CubeTen pairs a built-in encoder with calibrated contact and non-contact extensometers, so each plastic is measured by the right method for the material."
     />
-
-    <!-- 07 — Data slider -->
-    <ProductSection bg="var(--lc-gray-100)">
-      <ProductHeading center heading="Your data, the moment it happens." sub="Every test delivers stress-strain curves, shear and peel data and the raw data behind them — on the touchscreen, in the cloud, or piped straight into the systems your lab already runs." />
-      <ProductSlider client:idle slides={slides} />
-    </ProductSection>
 
     <!-- 07b — FAQ (homepage accordion, plastics-only questions) -->
     <FAQ items={PLASTIC_FAQ_DATA} />

@@ -145,25 +145,6 @@ a:hover { color: inherit; }
   .lc-ts-photo { order: 0; min-height: 240px; }
 }
 
-/* ProductSlider */
-.lc-ps { margin-top: 48px; }
-.lc-ps-frame { position: relative; overflow: hidden; border-radius: 16px; background: #fff; box-shadow: var(--shadow-edge), var(--shadow-card); }
-.lc-ps-track { display: flex; transition: transform .6s cubic-bezier(.4,0,.2,1); }
-.lc-ps-slide { flex: 0 0 100%; aspect-ratio: 1976 / 1030; }
-.lc-ps-slide img { width: 100%; height: 100%; display: block; }
-.lc-ps-arrow { all: unset; cursor: pointer; position: absolute; top: 50%; transform: translateY(-50%); width: 48px; height: 48px; border-radius: 50%; background: rgba(0,0,0,0.55); backdrop-filter: blur(6px); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.2); display: inline-flex; align-items: center; justify-content: center; z-index: 3; }
-.lc-ps-arrow:focus-visible { outline: 2px solid var(--lc-teal); outline-offset: 2px; }
-.lc-ps-arrow--l { left: 18px; }
-.lc-ps-arrow--r { right: 18px; }
-.lc-ps-caption { margin: 20px 0 0; text-align: center; font-size: 15px; font-weight: 400; color: var(--text-muted); }
-.lc-ps-dots { display: flex; justify-content: center; gap: 10px; margin-top: 14px; }
-@media (max-width: 760px) {
-  .lc-ps { margin-top: 32px; }
-  .lc-ps-arrow { width: 38px; height: 38px; }
-  .lc-ps-arrow--l { left: 10px; }
-  .lc-ps-arrow--r { right: 10px; }
-}
-
 /* LiveTestDemo — "watch a real test" section (/plastic-testing). */
 .lc-lt { margin-top: 48px; display: flex; flex-direction: column; gap: 24px; }
 .lc-lt-card { background: #fff; border-radius: 24px; box-shadow: var(--shadow-edge), var(--shadow-card); overflow: hidden; }
