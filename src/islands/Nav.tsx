@@ -17,7 +17,6 @@ const mainLinks: [string, string][] = [
   // there and invisible behind a hover.
   ['Blog', '/blog'],
   ['About Us', '/about-us'],
-  ['Testimonials', 'https://www.labscubed.com/#testimonials'],
 ];
 const resourceLinks: [string, string][] = [
   ['ASTM D638', '/resources/astm-d638-iso-527-2-plastic-tensile-testing'],

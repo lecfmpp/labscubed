@@ -216,11 +216,41 @@ function fillImageSlots(
 }
 
 /** Full body pipeline: drop the inline CSS copy, then unwrap. */
+/* A table already sitting in a scroll box. Three generations of the generator
+   named that box three different things, and the Webflow posts brought a
+   fourth. */
+const SCROLLBOX_OPEN =
+  /<div[^>]*class="[^"]*(?:lcb-table-wrap|lcb-scroll|fs-table2_instance)[^"]*"[^>]*>\s*$/;
+
+/**
+ * Give every table a scroll box.
+ *
+ * Article tables arrive in five shapes — `.lcb-compare` inside `.lcb`,
+ * `.lcb-table` inside `.lcb-table-wrap`, `.lcb-data` inside `.lcb-scroll`,
+ * inline-styled tables with no class at all, and the Webflow leftovers
+ * (`.table-bordered`, `.fs-table2_table`). The stylesheet only ever knew two of
+ * them, which is how a three-column table shipped looking like indented text.
+ *
+ * Normalising here rather than in CSS means the stylesheet has ONE structure to
+ * style, and a sixth shape invented by a future generator run is still wrapped,
+ * still scrollable on a phone, and still picks up the baseline table styles.
+ * The stored content is never modified — this runs on the way to the page.
+ */
+function wrapTables(html: string): string {
+  return html.replace(/<table\b[\s\S]*?<\/table>/gi, (table, offset: number) =>
+    SCROLLBOX_OPEN.test(html.slice(Math.max(0, offset - 300), offset))
+      ? table
+      : `<div class="lcb-table-wrap">${table}</div>`,
+  );
+}
+
 function prepareBody(
   html: string,
   images: Record<string, { url?: string; alt?: string }> = {},
 ): string {
-  return fillImageSlots(unwrapArticle(stripBoilerplateStyle(html)), images).trim();
+  return wrapTables(
+    fillImageSlots(unwrapArticle(stripBoilerplateStyle(html)), images),
+  ).trim();
 }
 
 /**

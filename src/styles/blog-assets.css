@@ -14,6 +14,33 @@
    your page. Tokens mirror the LabsCubed design system.
    ============================================================ */
 
+/* The tokens below are declared on `.lcb` because this file was written to be
+   pasted into Webflow, where every kit element is wrapped in <div class="lcb">.
+   In the Astro build that assumption quietly broke things: article tables sit
+   in `.lcb-scroll` or `.lcb-table-wrap`, which are siblings of `.lcb`, not
+   children — so every `var(--lcb-*)` inside them resolved to nothing and the
+   declaration was dropped. A `border-bottom: 1px solid var(--lcb-line-soft)`
+   became no border at all, which is why some tables had padding but no rules
+   between their rows, and why the wrapper drew no card around them.
+
+   Declaring the same tokens on the article root fixes every such element at
+   once, and leaves `.lcb` self-sufficient for the standalone/Webflow use the
+   header describes. Values must stay in sync with the block below. */
+.lcb-article {
+  --lcb-teal: #17ddc5;
+  --lcb-teal-deep: #0d9488;
+  --lcb-ink: #1d1d1f;
+  --lcb-muted: #86868b;
+  --lcb-card: #ffffff;
+  --lcb-surface: #f5f5f7;
+  --lcb-line: rgba(0, 0, 0, 0.08);
+  --lcb-line-soft: rgba(0, 0, 0, 0.05);
+  --lcb-shadow: 0 18px 48px rgba(0, 0, 0, 0.08);
+  --lcb-radius: 16px;
+  --lcb-radius-sm: 10px;
+  --lcb-pill: 999px;
+}
+
 .lcb {
   /* palette */
   --lcb-teal: #17ddc5;
@@ -103,6 +130,100 @@
   width: 14px;
   height: 14px;
   stroke: var(--lcb-teal);
+}
+
+/* ============================================================
+   0 · TABLE BASELINE  — every table in an article
+   ============================================================
+   The generator has emitted article tables under five different class names
+   (.lcb-compare, .lcb-table, .lcb-data, no class at all, plus the Webflow
+   leftovers), and only two of them were ever styled. The other three rendered
+   as bare HTML: no borders, no cell padding, columns shrink-wrapped to their
+   text — indistinguishable from badly indented prose.
+
+   So the baseline is keyed on the ELEMENT, not on a class. Whatever a future
+   run decides to call its table, it lands here looking deliberate, and the
+   named kits below are refinements on top rather than the only thing standing
+   between a reader and unreadable markup.
+
+   Four shapes are excluded, for two different reasons. .lcb-table and
+   .lcb-compare are the kits below and already have a considered design — the
+   baseline must not outrank them (it would: :not() carries the specificity of
+   its argument, so an unqualified baseline beat both). The two Webflow shapes
+   ship their own <style> block in the body, including a card layout at phone
+   widths, which this baseline is specific enough to trample. */
+.lcb-article table:not(.lcb-table):not(.lcb-compare):not(.table-bordered):not(.fs-table2_table) {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 16px;
+  line-height: 1.55;
+  text-align: left;
+  color: var(--lcb-ink);
+}
+.lcb-article table:not(.lcb-table):not(.lcb-compare):not(.table-bordered):not(.fs-table2_table) th,
+.lcb-article table:not(.lcb-table):not(.lcb-compare):not(.table-bordered):not(.fs-table2_table) td {
+  padding: 16px 22px;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--lcb-line-soft);
+}
+.lcb-article table:not(.lcb-table):not(.lcb-compare):not(.table-bordered):not(.fs-table2_table) thead th {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--lcb-muted);
+  border-bottom: 1px solid var(--lcb-line);
+  white-space: nowrap;
+}
+.lcb-article table:not(.lcb-table):not(.lcb-compare):not(.table-bordered):not(.fs-table2_table) tbody th {
+  font-weight: 600;
+  color: var(--lcb-ink);
+}
+.lcb-article table:not(.lcb-table):not(.lcb-compare):not(.table-bordered):not(.fs-table2_table) tbody td {
+  color: var(--lcb-muted);
+}
+.lcb-article table:not(.lcb-table):not(.lcb-compare):not(.table-bordered):not(.fs-table2_table) tbody tr:last-child th,
+.lcb-article table:not(.lcb-table):not(.lcb-compare):not(.table-bordered):not(.fs-table2_table) tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* The scroll box every table is wrapped in (see wrapTables in lib/blog.ts).
+   .lcb-scroll is the same box under the name an earlier generator used. */
+.lcb-article .lcb-table-wrap,
+.lcb-article .lcb-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: var(--lcb-radius);
+  border: 1px solid var(--lcb-line);
+  background: var(--lcb-card);
+  margin: 0 0 1.75rem;
+}
+/* The Webflow tables draw their own borders, so the wrapper drops its card
+   chrome around them and acts as a plain overflow box. */
+.lcb-article .lcb-table-wrap:has(> table.table-bordered),
+.lcb-article .lcb-table-wrap:has(> table.fs-table2_table) {
+  border: none;
+  background: none;
+}
+
+/* A wrapper the generator nested inside another one would otherwise draw a
+   second border and a second scrollbar around the same table. */
+.lcb-article .lcb-table-wrap .lcb-table-wrap,
+.lcb-article .lcb-scroll .lcb-table-wrap {
+  border: none;
+  border-radius: 0;
+  margin: 0;
+}
+
+@media (max-width: 600px) {
+  .lcb-article table:not(.lcb-table):not(.lcb-compare):not(.table-bordered):not(.fs-table2_table) {
+    font-size: 15px;
+  }
+  .lcb-article table:not(.lcb-table):not(.lcb-compare):not(.table-bordered):not(.fs-table2_table) th,
+  .lcb-article table:not(.lcb-table):not(.lcb-compare):not(.table-bordered):not(.fs-table2_table) td {
+    padding: 13px 16px;
+  }
 }
 
 /* ============================================================

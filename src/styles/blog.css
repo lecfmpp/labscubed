@@ -121,10 +121,13 @@ html {
   font-style: italic;
 }
 
-/* Any wide block scrolls inside itself rather than widening the page. */
+/* Tables used to carry `display: block` here so a wide one could scroll. That
+   turned every table into a block box whose rows then shrink-wrapped into an
+   anonymous table inside it, so `width: 100%` stopped reaching the cells and
+   the columns collapsed onto their text. Overflow is the wrapper's job now
+   (wrapTables in lib/blog.ts puts every table in one); the table itself stays
+   a table. */
 .lcb-article table {
-  display: block;
-  overflow-x: auto;
   max-width: 100%;
 }
 
