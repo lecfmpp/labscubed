@@ -74,6 +74,11 @@ export const categoryLabel = (slug: string) =>
 let cache: BlogPost[] | null = null;
 
 /** All renderable posts, newest first. Cached for the lifetime of the build. */
+/** Slugs this build renders, and every slug the CMS knows. Both are filled by
+ *  getPosts(), which getStaticPaths always calls before a page body renders. */
+let builtSlugs = new Set<string>();
+let knownSlugs = new Set<string>();
+
 export async function getPosts(): Promise<BlogPost[]> {
   if (cache) return cache;
 
@@ -120,7 +125,29 @@ export async function getPosts(): Promise<BlogPost[]> {
   // produced 227-character placeholder bodies before. Anything that short is a
   // data fault, not a short post, so drop it rather than publish a blank page.
   cache = rows.filter((p) => (p.content ?? '').length > 1000);
+
+  /* Slug bookkeeping for the cross-link guard below. `built` is what this
+     build ships; `known` is every slug the CMS has in ANY status, which a
+     production build cannot infer from `rows` because it only ever fetched
+     the published ones. */
+  builtSlugs = new Set(cache.map((p) => p.slug));
+  knownSlugs = await fetchKnownSlugs();
   return cache;
+}
+
+/** Every slug in blog_posts, whatever its status. One cheap request. */
+async function fetchKnownSlugs(): Promise<Set<string>> {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/blog_posts?select=slug`, {
+      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
+    });
+    if (!res.ok) return new Set();
+    return new Set(((await res.json()) as { slug: string }[]).map((r) => r.slug));
+  } catch {
+    // The guard is a safety net, not a load-bearing step: if this request
+    // fails the build still ships, it just cannot unlink anything.
+    return new Set();
+  }
 }
 
 export async function getPost(slug: string): Promise<BlogPost | undefined> {
@@ -244,12 +271,50 @@ function wrapTables(html: string): string {
   );
 }
 
+/* A cross-link to another post, absolute or relative. */
+const POST_LINK =
+  /<a\b[^>]*?href="(?:https?:\/\/(?:www\.)?labscubed\.com)?\/post\/([^"/?#]+)[^"]*"[^>]*>([\s\S]*?)<\/a>/gi;
+
+/**
+ * Unlink cross-links to posts this build is not shipping.
+ *
+ * Posts link to each other freely and the generator writes those links while
+ * the target is still a draft. In production the target is not built, the path
+ * falls through the catch-all in public/_redirects to Webflow, and Webflow
+ * answers 404 — a dead link on a live page. Eleven of them were live before
+ * this guard existed, most of them from `automated-tensile-testing`.
+ *
+ * The anchor is unwrapped to its own text, so the sentence still reads, and
+ * the link comes back on its own the moment the target is published. Nothing
+ * is written back to Supabase; this is a render-time repair.
+ *
+ * Only slugs the CMS KNOWS are touched. A /post/ slug absent from blog_posts
+ * is a pre-migration Webflow article that the proxy still serves, and
+ * unlinking it would break a link that works.
+ */
+function unlinkUnbuiltPosts(html: string): string {
+  return html.replace(POST_LINK, (anchor, slug: string, text: string) => {
+    if (!knownSlugs.has(slug) || builtSlugs.has(slug)) return anchor;
+    unlinked.add(slug);
+    return text;
+  });
+}
+const unlinked = new Set<string>();
+
+/** Report what the guard had to repair, so a dead link is visible in the build
+ *  log rather than only in the HTML. */
+export function reportUnlinked(): string[] {
+  return [...unlinked].sort();
+}
+
 function prepareBody(
   html: string,
   images: Record<string, { url?: string; alt?: string }> = {},
 ): string {
   return wrapTables(
-    fillImageSlots(unwrapArticle(stripBoilerplateStyle(html)), images),
+    unlinkUnbuiltPosts(
+      fillImageSlots(unwrapArticle(stripBoilerplateStyle(html)), images),
+    ),
   ).trim();
 }
 
