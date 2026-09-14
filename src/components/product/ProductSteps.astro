@@ -1,0 +1,72 @@
+---
+// ProductSteps — framework section 05: alternating looping clip + copy rows.
+// Clips are MP4 (not GIF) and only get their src once the row nears the
+// viewport; the poster paints immediately. Same approach as Setup.astro.
+import ProductSection from './ProductSection.astro';
+import ProductHeading from './ProductHeading.astro';
+
+interface Props {
+  heading: string;
+  sub?: string;
+  steps: { vid: string; poster: string; w: number; h: number; title: string; body: string }[];
+}
+const { heading, sub, steps } = Astro.props;
+---
+<ProductSection bg="#fff">
+  <ProductHeading heading={heading} sub={sub} />
+  <div class="pp-steps">
+    {steps.map((s, i) => (
+      <div class:list={['pp-step', { 'pp-step--flip': i % 2 === 1 }]}>
+        <div class="pp-step__media">
+          <video data-src={s.vid} poster={s.poster} width={s.w} height={s.h} loop muted playsinline preload="none" aria-label={s.title}></video>
+        </div>
+        <div>
+          <div class="pp-step__n">{String(i + 1).padStart(2, '0')}</div>
+          <h3 class="pp-step__h3">{s.title}</h3>
+          <p class="pp-step__body">{s.body}</p>
+        </div>
+      </div>
+    ))}
+  </div>
+</ProductSection>
+
+<script>
+  const videos = document.querySelectorAll<HTMLVideoElement>('.pp-step__media video[data-src]');
+  const start = (video: HTMLVideoElement) => {
+    const src = video.dataset.src;
+    if (!src) return;
+    video.src = src;
+    delete video.dataset.src;
+    video.play().catch(() => {});
+  };
+  if (!('IntersectionObserver' in window)) {
+    videos.forEach(start);
+  } else {
+    const io = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        start(entry.target as HTMLVideoElement);
+        io.unobserve(entry.target);
+      }
+    }, { rootMargin: '100% 0px' });
+    videos.forEach((v) => io.observe(v));
+  }
+</script>
+
+<style>
+  .pp-steps { margin-top: 64px; display: flex; flex-direction: column; gap: 64px; }
+  .pp-step { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; align-items: center; }
+  .pp-step--flip .pp-step__media { order: 1; }
+  .pp-step__media { border-radius: 16px; overflow: hidden; background: var(--lc-gray-100); box-shadow: var(--shadow-edge); }
+  .pp-step__media video { width: 100%; height: auto; display: block; }
+  .pp-step__n { font-size: 14px; font-weight: 700; color: var(--lc-teal-deep); letter-spacing: 0.1em; }
+  .pp-step__h3 { font-weight: 700; font-size: 37px; letter-spacing: -0.01em; margin: 10px 0 0; color: var(--lc-ink); }
+  .pp-step__body { margin: 14px 0 0; font-size: 18px; line-height: 1.55; font-weight: 300; color: var(--text-muted); max-width: 420px; }
+  @media (max-width: 760px) {
+    .pp-steps { margin-top: 40px; gap: 44px; }
+    .pp-step { grid-template-columns: 1fr; gap: 20px; }
+    .pp-step--flip .pp-step__media { order: 0; }
+    .pp-step__h3 { font-size: 26px; }
+    .pp-step__body { font-size: 16px; }
+  }
+</style>

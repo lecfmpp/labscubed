@@ -1,0 +1,22 @@
+---
+// ProductSection — the product-page section shell: 1312px container, 64px /
+// 20px gutters, and the framework's alternating backgrounds (#000, white,
+// --lc-gray-100). Vertical rhythm is set here once so every section matches.
+interface Props { bg?: string; id?: string; class?: string; tight?: boolean; }
+const { bg = '#fff', id, class: cls = '', tight = false } = Astro.props;
+const dark = bg === '#000';
+---
+<section id={id} class:list={['pp-sec', cls, { 'pp-sec--dark': dark, 'pp-sec--tight': tight }]} style={`background:${bg};`}>
+  <div class="pp-sec__in"><slot /></div>
+</section>
+
+<style>
+  .pp-sec { width: 100%; color: var(--lc-ink); scroll-margin-top: 80px; }
+  .pp-sec--dark { color: #fff; }
+  .pp-sec__in { max-width: 1312px; margin: 0 auto; padding: 120px 64px; box-sizing: border-box; }
+  .pp-sec--tight .pp-sec__in { padding-top: 0; }
+  @media (max-width: 760px) {
+    .pp-sec__in { padding: 72px 20px; }
+    .pp-sec--tight .pp-sec__in { padding-top: 0; }
+  }
+</style>

@@ -110,3 +110,51 @@ a:hover { color: inherit; }
   .lc-vf-disc { width: 64px; height: 64px; }
   .lc-vf-disc svg { width: 20px; height: 23px; }
 }
+
+/* ============================================================
+   Product pages (/plastic-testing, /rubber-testing) — island CSS.
+   Global because Astro's scoped styles never reach island DOM.
+   ============================================================ */
+.lc-dot { all: unset; cursor: pointer; width: 9px; height: 9px; border-radius: 999px; background: rgba(0,0,0,0.18); transition: width .3s ease, background .3s ease; }
+.lc-dot.is-on { width: 26px; background: var(--lc-teal); }
+.lc-dot:focus-visible { outline: 2px solid var(--lc-teal-deep); outline-offset: 3px; }
+
+/* TestimonialSlider */
+.lc-ts { margin-top: 48px; display: grid; grid-template-columns: 1.1fr 0.9fr; border-radius: 32px; overflow: hidden; background: #fff; box-shadow: var(--shadow-edge), var(--shadow-card); min-height: 520px; }
+.lc-ts-copy { padding: 56px; display: flex; flex-direction: column; justify-content: space-between; gap: 32px; }
+.lc-ts-quote-wrap { animation: lcFadeUp .5s ease; }
+.lc-ts-stars { display: flex; gap: 4px; }
+.lc-ts-quote { font-weight: 300; font-size: 22px; line-height: 1.5; letter-spacing: -0.01em; color: var(--lc-ink); margin: 24px 0 0; }
+.lc-ts-who { display: flex; align-items: center; gap: 14px; }
+.lc-ts-avatar { width: 52px; height: 52px; border-radius: 50%; background: var(--lc-gray-150, #ececee); display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; color: var(--lc-ink); flex: none; }
+.lc-ts-name { font-weight: 600; font-size: 16px; color: var(--lc-ink); }
+.lc-ts-role { font-size: 13px; font-weight: 300; color: var(--text-muted); }
+.lc-ts-company { display: block; margin-top: 18px; font-weight: 800; font-style: italic; font-size: 18px; letter-spacing: 0.02em; color: var(--lc-ink); }
+.lc-ts-dots { display: flex; gap: 10px; margin-top: 28px; }
+.lc-ts-photo { position: relative; min-height: 520px; background: #111; }
+.lc-ts-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; filter: brightness(0.8); }
+@media (max-width: 760px) {
+  .lc-ts { grid-template-columns: 1fr; margin-top: 32px; border-radius: 24px; min-height: 0; }
+  .lc-ts-copy { order: 1; padding: 28px; }
+  .lc-ts-quote { font-size: 18px; }
+  .lc-ts-photo { order: 0; min-height: 240px; }
+}
+
+/* ProductSlider */
+.lc-ps { margin-top: 48px; }
+.lc-ps-frame { position: relative; overflow: hidden; border-radius: 16px; background: #fff; box-shadow: var(--shadow-edge), var(--shadow-card); }
+.lc-ps-track { display: flex; transition: transform .6s cubic-bezier(.4,0,.2,1); }
+.lc-ps-slide { flex: 0 0 100%; aspect-ratio: 1976 / 1030; }
+.lc-ps-slide img { width: 100%; height: 100%; display: block; }
+.lc-ps-arrow { all: unset; cursor: pointer; position: absolute; top: 50%; transform: translateY(-50%); width: 48px; height: 48px; border-radius: 50%; background: rgba(0,0,0,0.55); backdrop-filter: blur(6px); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.2); display: inline-flex; align-items: center; justify-content: center; z-index: 3; }
+.lc-ps-arrow:focus-visible { outline: 2px solid var(--lc-teal); outline-offset: 2px; }
+.lc-ps-arrow--l { left: 18px; }
+.lc-ps-arrow--r { right: 18px; }
+.lc-ps-caption { margin: 20px 0 0; text-align: center; font-size: 15px; font-weight: 400; color: var(--text-muted); }
+.lc-ps-dots { display: flex; justify-content: center; gap: 10px; margin-top: 14px; }
+@media (max-width: 760px) {
+  .lc-ps { margin-top: 32px; }
+  .lc-ps-arrow { width: 38px; height: 38px; }
+  .lc-ps-arrow--l { left: 10px; }
+  .lc-ps-arrow--r { right: 10px; }
+}

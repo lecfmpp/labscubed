@@ -1,0 +1,27 @@
+---
+// ProductHeading — section H2 + optional standfirst, used by every product
+// page section so the type scale lives in one place.
+interface Props { heading: string; sub?: string; center?: boolean; light?: boolean; eyebrow?: string; }
+const { heading, sub, center = false, light = false, eyebrow } = Astro.props;
+---
+<div class:list={['pp-head', { 'pp-head--center': center, 'pp-head--light': light }]}>
+  {eyebrow && <div class="pp-head__eyebrow">{eyebrow}</div>}
+  <h2 class="pp-head__h2">{heading}</h2>
+  {sub && <p class="pp-head__sub">{sub}</p>}
+</div>
+
+<style>
+  .pp-head { max-width: 760px; }
+  .pp-head--center { margin: 0 auto; text-align: center; }
+  .pp-head__eyebrow { font-weight: 700; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 16px; }
+  .pp-head__h2 { font-weight: 700; font-size: 56px; letter-spacing: -0.03em; line-height: 1.1; margin: 0; color: var(--lc-ink); text-wrap: balance; }
+  .pp-head__sub { margin: 18px 0 0; font-size: 18px; line-height: 1.55; font-weight: 300; color: var(--text-muted); max-width: 620px; }
+  .pp-head--center .pp-head__sub { margin-left: auto; margin-right: auto; }
+  .pp-head--light .pp-head__eyebrow { color: rgba(255,255,255,0.5); }
+  .pp-head--light .pp-head__h2 { color: #fff; }
+  .pp-head--light .pp-head__sub { color: rgba(255,255,255,0.55); }
+  @media (max-width: 760px) {
+    .pp-head__h2 { font-size: 32px; }
+    .pp-head__sub { font-size: 16px; }
+  }
+</style>

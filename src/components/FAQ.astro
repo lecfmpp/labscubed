@@ -4,6 +4,11 @@
 // JSON-LD in the layout. First item open by default. Custom +/- icon.
 import Section from './Section.astro';
 import { FAQ_DATA } from '../lib/faq';
+
+// `items` lets a product page swap in its own questions (e.g. PLASTIC_FAQ_DATA
+// on /plastic-testing); the homepage passes nothing and keeps FAQ_DATA.
+interface Props { items?: [string, string][]; }
+const { items = FAQ_DATA } = Astro.props;
 ---
 <Section bg="#fff">
   <div class="faq-inner">
@@ -12,7 +17,7 @@ import { FAQ_DATA } from '../lib/faq';
       <h2 class="faq-title lc-gradtext">Frequently asked questions</h2>
     </div>
     <div class="faq-list">
-      {FAQ_DATA.map(([q, a], i) => (
+      {items.map(([q, a], i) => (
         <details class="faq-item" name="faq" open={i === 0}>
           <summary class="faq-summary">
             <span class="faq-q">{q}</span>

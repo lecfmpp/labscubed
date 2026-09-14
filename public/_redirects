@@ -34,6 +34,8 @@
 /about-us/      /about-us/index.html        200
 /privacy-policy   /privacy-policy/index.html   200
 /privacy-policy/  /privacy-policy/index.html   200
+/plastic-testing   /plastic-testing/index.html   200
+/plastic-testing/  /plastic-testing/index.html   200
 
 # /api/* is served by this site's own Netlify Functions. It MUST stay above the
 # catch-all below: the first matching rule wins, and without this the webinar

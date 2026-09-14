@@ -27,7 +27,7 @@ export interface MachineInfo {
 export const MACHINES: Record<string, MachineInfo> = {
   CubeTen: {
     name: 'CubeTen',
-    href: 'https://www.labscubed.com/plastic-testing',
+    href: '/plastic-testing/',
     img: '/assets/img/media/cubeten-01.webp',
     blurb: 'Automated plastic tensile and flexure testing — up to 10kN on a 20-specimen carousel.',
     specs: [['Force (Omega Load Cell)', 'Up to 10kN'], ['Elongation', 'Up to 1000%'], ['Footprint', '0.8 × 1.2m']],

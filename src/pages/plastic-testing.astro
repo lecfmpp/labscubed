@@ -1,0 +1,223 @@
+---
+/* Plastic Testing (CubeTen) — replaces the Webflow /plastic-testing page at
+   the same URL. Built on the product-page framework (product_framework
+   handoff): the same section skeleton will carry /rubber-testing (CubeOne).
+
+   The entry in public/_redirects stops the catch-all proxy answering this
+   path from Webflow; the netlify.toml header stops an already-cached Webflow
+   answer outliving this page at the edge.
+
+   Copy is drawn from the live Webflow page (value props, sample coverage,
+   the three steps, specs) and rewritten into the framework's structure. */
+import Base from '../layouts/Base.astro';
+import Nav from '../islands/Nav.tsx';
+import Footer from '../components/Footer.astro';
+import SpecimenRail from '../components/SpecimenRail.astro';
+import ProductHero from '../components/product/ProductHero.astro';
+import ProductSection from '../components/product/ProductSection.astro';
+import ProductHeading from '../components/product/ProductHeading.astro';
+import ProductFeatures from '../components/product/ProductFeatures.astro';
+import ProductSteps from '../components/product/ProductSteps.astro';
+import ProductSpecs from '../components/product/ProductSpecs.astro';
+import ProductCTA from '../components/product/ProductCTA.astro';
+import Measurement from '../components/Measurement.astro';
+import FAQ from '../components/FAQ.astro';
+import { PLASTIC_FAQ_DATA } from '../lib/faq';
+import SpecimenLibrary from '../islands/SpecimenLibrary.tsx';
+import TestimonialSlider from '../islands/TestimonialSlider.tsx';
+import ProductSlider from '../islands/ProductSlider.tsx';
+import { SITE_URL } from '../site.mjs';
+
+const canonical = `${SITE_URL}/plastic-testing`;
+const title = 'Plastic Tensile Testing Machines | LabsCubed CubeTen';
+const description =
+  'Streamline plastic material testing with the LabsCubed CubeTen automated tensile testing machine — up to 15 specimens tested unattended to ASTM D638 and ISO 527, plus single lap shear and T-peel adhesive tests.';
+
+const IMG = '/assets/img/plastic-testing/';
+const MEDIA = '/assets/img/media/';
+
+// CubeTen = plastics only. ASTM D790 / ISO 178 flexure bars belong to CubeFlex
+// and every rubber die to CubeOne, so neither appears on this page.
+const RAIL_IDS = ['astm-d638-i', 'astm-d638-ii', 'astm-d638-iv', 'iso-527-1a', 'iso-527-1b'];
+const LIBRARY_IDS = ['astm-d638-i', 'astm-d638-ii', 'astm-d638-iii', 'astm-d638-iv', 'astm-d638-v', 'iso-527-1a', 'iso-527-1b'];
+
+const features = [
+  { icon: IMG + 'save-time.svg', title: 'Recover lab time', body: "Load the tray and walk away — the CubeTen saves up to 95% of your team's testing time for higher-value work." },
+  { icon: IMG + 'save-money.svg', title: 'Optimize your lab', body: 'Maximize ROI while accelerating lab results and making better use of every technician hour.' },
+  { icon: IMG + 'data-consistency.svg', title: 'Ensure data consistency', body: 'Automated testing delivers up to 40% more consistent results, proven by extensive studies.' },
+];
+
+// NOTE: these four quotes are CubeOne (rubber) customers, carried over from
+// the framework handoff. Swap in CubeTen customers as soon as quotes exist.
+const testimonials = [
+  { quote: "We've added the CubeOne to our quality department. This allowed for better repeatability of the measurements and gave the technician time to perform other tasks during each test sequence. The LabsCubed team was very responsive in adapting the interface with our other systems.", name: 'Jean-Damien', role: 'R&D Laboratory Chemist', company: 'Soucy Techno', loc: 'Quebec, Canada' },
+  { quote: "The CubeOne has been a great addition to ACE's laboratory from both a productivity and repeatability standpoint. Anyone can load it, walk away to perform other tasks, and let the Cube do its job — without the variation we'd typically see from stop-go interruptions and personnel changes.", name: 'Doug Foster', role: 'Director of Operations', company: 'ACE Laboratories', loc: 'Ohio, USA' },
+  { quote: 'The CubeOne tensometer is an excellent fit with our strategy to create A Quality Difference by implementing state-of-the-art testing processes in all our test laboratories that provide more reliable, predictive results for our customers.', name: 'Tom Roberts', role: 'Director of Quality', company: 'HEXPOL Compounding Americas', loc: '' },
+  { quote: "We are really happy with the performance of the CubeOne and with your responsiveness. It has absolutely streamlined our testing and data retrieval process to the point where it's actually enjoyable to do.", name: 'Raymond Franklin', role: 'Rheology Laboratory', company: 'Momentive', loc: 'North Carolina, USA' },
+];
+
+const steps = [
+  { vid: MEDIA + 'step1-load-samples.mp4', poster: MEDIA + 'step1-load-samples-poster.webp', w: 312, h: 176, title: 'Load your samples', body: 'Load up to 15 tensile specimens at once — mix compounds and materials on the same tray.' },
+  { vid: MEDIA + 'step2-setup-tray-screen.mp4', poster: MEDIA + 'step2-setup-tray-screen-poster.webp', w: 314, h: 176, title: 'Start the test', body: 'Enter compound names on the touchscreen and start the run with a single touch.' },
+  { vid: MEDIA + 'short-easy-steps.mp4', poster: MEDIA + 'short-easy-steps-poster.webp', w: 276, h: 156, title: 'Review your data', body: 'When the run finishes, review results on the machine touchscreen, in your own system, or in the LabsCubed cloud.' },
+];
+
+const specs: [string, string][] = [
+  ['Tensile standards', 'ASTM D638 · ISO 527 · DIN · JIS'],
+  ['Adhesive tests', 'Single lap shear · T-peel'],
+  ['Force (Omega Load Cell)', 'Up to 10 kN'],
+  ['Elongation', 'Up to 1000%'],
+  ['Sample capacity', 'Up to 15 specimens per run'],
+  ['Thickness & width', 'Measured automatically'],
+  ['Strain measurement', 'Crosshead · physical or video extensometer'],
+  ['Weight', '250 lbs (115 kg)'],
+];
+
+const slides = [
+  { src: IMG + 'integrating-data-1400.webp', srcSet: `${IMG}integrating-data-760.webp 760w, ${IMG}integrating-data-1400.webp 1400w`, width: 1400, height: 730, alt: 'LabsCubed portal reviewing an ASTM D638 plastic tensile run — stress-strain curves, modulus and yield per specimen', caption: 'Stress-strain curves, modulus and yield for every specimen in the run.' },
+  { src: IMG + 'auto-thickness-760.webp', width: 760, height: 760, alt: 'Inside the CubeTen: automated thickness and width measurement station', caption: 'A look inside — thickness and width are measured automatically before every pull.' },
+];
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: title,
+    description,
+    url: canonical,
+    isPartOf: { '@type': 'WebSite', name: 'LabsCubed', url: `${SITE_URL}/` },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: 'CubeTen',
+    brand: { '@type': 'Brand', name: 'LabsCubed' },
+    image: `${SITE_URL}/assets/img/media/cubeten-01.webp`,
+    url: canonical,
+    description: 'Automated tensile testing machine for plastics and adhesives — robotic loading, automatic thickness and width measurement, and testing to ASTM D638 / ISO 527, up to 10 kN.',
+    category: 'Automated Material Testing System',
+    additionalProperty: [
+      { '@type': 'PropertyValue', name: 'Standards', value: 'ASTM D638, ISO 527, DIN, JIS' },
+      { '@type': 'PropertyValue', name: 'Force', value: 'Up to 10 kN' },
+      { '@type': 'PropertyValue', name: 'Elongation', value: 'Up to 1000%' },
+      { '@type': 'PropertyValue', name: 'Sample capacity', value: 'Up to 15 specimens' },
+    ],
+  },
+  {
+    // Same data as the visible accordion, so the two never drift.
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: PLASTIC_FAQ_DATA.map(([q, a]) => ({
+      '@type': 'Question',
+      name: q,
+      acceptedAnswer: { '@type': 'Answer', text: a },
+    })),
+  },
+];
+---
+<Base
+  title={title}
+  description={description}
+  canonical={canonical}
+  ogType="website"
+  ogImage={`${SITE_URL}/assets/img/media/cubeten-01.webp`}
+  jsonLd={jsonLd}
+  preloadHero={false}
+>
+  <Nav client:load />
+  <main class="lc-page">
+    <!-- 01 — Hero + product video -->
+    <ProductHero
+      eyebrow="CubeTen · Plastic testing"
+      heading="Tensile testing, revolutionized for plastics."
+      sub="The CubeTen loads, measures, grips and pulls up to 15 plastic specimens unattended — ASTM D638 and ISO 527 results your whole lab can trust."
+      videoId="dQooWFtCbBs"
+      videoTitle="Revolutionize Plastics Tensile Testing in Your Lab with The CubeTen"
+      primary={{ label: 'Get a Quote', href: '/get-a-quote/' }}
+      secondary={{ label: 'See what it tests', href: '#specimen-library' }}
+    />
+
+    <!-- 01b — Specimen rail (same hover block as the homepage, CubeTen specimens only) -->
+    <section class="pt-rail" aria-label="Specimens the CubeTen tests">
+      <div class="pt-rail__label">Specimens the CubeTen tests</div>
+      <SpecimenRail ids={RAIL_IDS} />
+    </section>
+
+    <!-- 02 — Features -->
+    <ProductFeatures
+      heading="Built to remove every variable."
+      sub="The CubeTen is a user-friendly automated testing machine designed specifically for plastics and adhesives."
+      items={features}
+    />
+
+    <!-- 03 — Samples it can test -->
+    <ProductSection bg="var(--lc-gray-100)">
+      <SpecimenLibrary
+        client:idle
+        ids={LIBRARY_IDS}
+        defaultId="astm-d638-i"
+        eyebrow="Specimen library"
+        heading="Every plastic specimen the CubeTen tests."
+        sub="ASTM D638 and ISO 527-2 geometries — select one to see its dimensions. The same machine also runs DIN and JIS tensile methods, plus single lap shear and T-peel adhesive tests, with no modifications."
+      />
+    </ProductSection>
+
+    <!-- 04 — Testimonials -->
+    <ProductSection bg="#fff">
+      <ProductHeading heading="Trusted by quality teams worldwide." sub="Real words from polymer and elastomer labs running LabsCubed automation every day." />
+      <TestimonialSlider client:idle items={testimonials} img={IMG + 'stats-bg.webp'} imgAlt="Technician loading specimens onto a LabsCubed tray" />
+    </ProductSection>
+
+    <!-- 05 — How it works -->
+    <ProductSteps
+      heading="Load, configure, press start. Done."
+      sub="Three steps from specimen to results — each one a short loop of the real machine."
+      steps={steps}
+    />
+
+    <!-- 06 — Value metrics + specification -->
+    <ProductSpecs
+      heading="The numbers that matter."
+      sub="Lead with the outcomes, then check them against the full specification."
+      metrics={[
+        { value: '95%', label: 'of technician testing time recovered for higher-value work.' },
+        { value: '40%', label: 'more consistent results, proven by extensive studies.' },
+        { value: '15', label: 'tensile specimens loaded and tested in a single run.' },
+      ]}
+      specHeading="CubeTen specification"
+      specSub="Key features and performance criteria of the CubeTen."
+      img={{ src: MEDIA + 'machine-cubeten.webp', alt: 'CubeTen automated plastic tensile testing machine', width: 1653, height: 900 }}
+      specs={specs}
+    />
+
+    <!-- 06b — Strain measurement options (shared with the homepage) -->
+    <Measurement
+      padTop
+      heading="How the CubeTen measures strain accurately"
+      sub="Every CubeTen pairs a built-in encoder with calibrated contact and non-contact extensometers, so each plastic is measured by the right method for the material."
+    />
+
+    <!-- 07 — Data slider -->
+    <ProductSection bg="var(--lc-gray-100)">
+      <ProductHeading center heading="Your data, the moment it happens." sub="Every test delivers stress-strain curves, shear and peel data and the raw data behind them — on the touchscreen, in the cloud, or piped straight into the systems your lab already runs." />
+      <ProductSlider client:idle slides={slides} />
+    </ProductSection>
+
+    <!-- 07b — FAQ (homepage accordion, plastics-only questions) -->
+    <FAQ items={PLASTIC_FAQ_DATA} />
+
+    <!-- 08 — Closing CTA -->
+    <ProductCTA heading="Ready to automate your plastics lab?" sub="Get a tailored CubeTen quote for your testing standards and daily volume." />
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .pt-rail { background: #000; color: #fff; }
+  .pt-rail__label { max-width: 1312px; margin: 0 auto; padding: 24px 64px 20px; box-sizing: border-box; font-weight: 700; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.5); }
+  .pt-rail :global(.hero-rail-outer) { padding-bottom: 110px; }
+  @media (max-width: 760px) {
+    .pt-rail__label { padding: 16px 20px 16px; }
+    .pt-rail :global(.hero-rail-outer) { padding-bottom: 64px; }
+  }
+</style>

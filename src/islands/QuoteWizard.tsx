@@ -479,6 +479,14 @@ export default function QuoteWizard() {
   const [sent, setSent] = React.useState(false);
   const [sending, setSending] = React.useState(false);
   const [sendError, setSendError] = React.useState('');
+  // A product page's closing CTA hands its email over in sessionStorage (never
+  // the URL). Read once after mount so the server HTML and hydration agree.
+  React.useEffect(() => {
+    try {
+      const email = sessionStorage.getItem('lc_quote_email');
+      if (email) { sessionStorage.removeItem('lc_quote_email'); setData((d) => (d.email ? d : { ...d, email })); }
+    } catch { /* storage blocked */ }
+  }, []);
   const [nudge, setNudge] = React.useState(false);
   const first = React.useRef(true);
 

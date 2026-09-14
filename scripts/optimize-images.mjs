@@ -87,6 +87,13 @@ const JOBS = [
   { from: 'about/2020-expansion-and-advancement.webp', to: 'about/2020-expansion-and-advancement-1280.webp', width: 1280, mode: 'photo' },
   { from: 'about/2021-milestone-achievement.webp', to: 'about/2021-milestone-achievement-1280.webp', width: 1280, mode: 'photo' },
   { from: 'about/2022-2023-momentum-builds.webp', to: 'about/2022-2023-momentum-builds-1280.webp', width: 1280, mode: 'photo' },
+
+  // --- /plastic-testing. Testimonial photo is drawn ~560px wide (half card);
+  // the CubeTen dashboard slide spans the shell like the homepage slider.
+  { from: 'plastic-testing/stats-bg.png', to: 'plastic-testing/stats-bg.webp', width: 1200, mode: 'photo' },
+  { from: 'plastic-testing/integrating-data.webp', to: 'plastic-testing/integrating-data-760.webp', width: 760, mode: 'photo', quality: 84 },
+  { from: 'plastic-testing/integrating-data.webp', to: 'plastic-testing/integrating-data-1400.webp', width: 1400, mode: 'photo', quality: 84 },
+  { from: 'plastic-testing/auto-thickness.webp', to: 'plastic-testing/auto-thickness-760.webp', width: 760, mode: 'photo' },
 ];
 
 const encoderFor = (job) =>

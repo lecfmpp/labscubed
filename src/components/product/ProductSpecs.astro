@@ -1,0 +1,66 @@
+---
+// ProductSpecs — framework section 06: three value metrics, then the machine
+// render and its key/value specification list.
+import ProductSection from './ProductSection.astro';
+import ProductHeading from './ProductHeading.astro';
+
+interface Props {
+  heading: string;
+  sub?: string;
+  metrics: { value: string; label: string }[];
+  specHeading: string;
+  specSub?: string;
+  img: { src: string; alt: string; width: number; height: number };
+  specs: [string, string][];
+}
+const { heading, sub, metrics, specHeading, specSub, img, specs } = Astro.props;
+---
+<ProductSection bg="var(--lc-gray-100)" id="specifications">
+  <ProductHeading heading={heading} sub={sub} />
+  <div class="pp-metrics">
+    {metrics.map((m) => (
+      <div class="pp-metric">
+        <div class="pp-metric__v">{m.value}</div>
+        <p class="pp-metric__l">{m.label}</p>
+      </div>
+    ))}
+  </div>
+
+  <div class="pp-spec">
+    <h3 class="pp-spec__h3">{specHeading}</h3>
+    {specSub && <p class="pp-spec__sub">{specSub}</p>}
+    <img class="pp-spec__img" src={img.src} alt={img.alt} width={img.width} height={img.height} loading="lazy" />
+    <dl class="pp-spec__list">
+      {specs.map(([k, v]) => (
+        <div class="pp-spec__row"><dt>{k}</dt><dd>{v}</dd></div>
+      ))}
+    </dl>
+  </div>
+</ProductSection>
+
+<style>
+  .pp-metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 44px; }
+  .pp-metric { padding: 36px; border-radius: 24px; background: #fff; box-shadow: var(--shadow-edge); }
+  .pp-metric__v { font-weight: 700; font-size: 80px; letter-spacing: -0.04em; line-height: 1; color: var(--lc-ink); }
+  .pp-metric__l { margin: 16px 0 0; font-size: 16px; line-height: 1.5; color: var(--text-muted); max-width: 260px; }
+
+  .pp-spec { margin-top: 96px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+  .pp-spec__h3 { font-weight: 700; font-size: 44px; letter-spacing: -0.03em; line-height: 1.07; margin: 0; color: var(--lc-ink); }
+  .pp-spec__sub { margin: 16px 0 0; font-weight: 300; font-size: 18px; line-height: 1.55; color: var(--text-muted); max-width: 560px; }
+  .pp-spec__img { width: min(760px, 82%); height: auto; margin: 44px auto 12px; display: block; }
+  .pp-spec__list { width: 100%; max-width: 769px; margin: 24px 0 0; display: flex; flex-direction: column; gap: 23px; }
+  .pp-spec__row { display: flex; justify-content: space-between; align-items: baseline; gap: 24px; padding-bottom: 16px; border-bottom: 1px solid rgba(0,0,0,0.07); text-align: left; }
+  .pp-spec__row dt { font-weight: 300; font-size: 16px; color: var(--text-muted); }
+  .pp-spec__row dd { margin: 0; font-weight: 500; font-size: 16px; letter-spacing: 0.02em; color: var(--lc-ink); text-align: right; }
+
+  @media (max-width: 760px) {
+    .pp-metrics { grid-template-columns: 1fr; gap: 16px; margin-top: 32px; }
+    .pp-metric { padding: 28px; }
+    .pp-metric__v { font-size: 56px; }
+    .pp-spec { margin-top: 64px; }
+    .pp-spec__h3 { font-size: 30px; }
+    .pp-spec__sub { font-size: 16px; }
+    .pp-spec__img { width: 100%; margin-top: 28px; }
+    .pp-spec__row dt, .pp-spec__row dd { font-size: 14px; }
+  }
+</style>

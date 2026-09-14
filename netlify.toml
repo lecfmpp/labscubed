@@ -78,3 +78,14 @@
   for = "/privacy-policy/*"
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
+
+# /plastic-testing (CubeTen) was proxied to Webflow until this page shipped.
+[[headers]]
+  for = "/plastic-testing"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/plastic-testing/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"

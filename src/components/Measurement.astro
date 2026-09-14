@@ -1,6 +1,15 @@
 ---
 // Measurement — Badge + heading + 3 method cards.
+// Shared by the homepage and the product pages; the props let a product page
+// name its own machine and add the top padding its section rhythm needs.
 import Section from './Section.astro';
+
+interface Props { heading?: string; sub?: string; padTop?: boolean; }
+const {
+  heading = 'How CubeTen and CubeOne measure strain accurately',
+  sub = 'Our machines pair a built-in encoder with calibrated contact and non-contact extensometers, so every test is measured by the right method for the material.',
+  padTop = false,
+} = Astro.props;
 
 const cards = [
   { tag: 'Built-in · No setup', title: 'Crosshead Displacement', img: '/assets/img/media/crosshead.webp', w: 500, h: 260, body: "Strain is derived from crosshead travel, read by the servo motor's high-resolution encoder. Always on, with nothing to attach or calibrate per sample.", use: 'High-throughput runs, elastomers and large elongations that exceed an extensometer’s travel.' },
@@ -9,10 +18,10 @@ const cards = [
 ];
 ---
 <Section bg="#fff">
-  <div class="meas-inner">
+  <div class:list={['meas-inner', { 'meas-inner--pad': padTop }]}>
     <div class="meas-badge-wrap"><span class="lc-badge-subtle">Measurement</span></div>
-    <h2 class="meas-h2">How CubeTen and CubeOne measure strain accurately</h2>
-    <p class="meas-sub">Our machines pair a built-in encoder with calibrated contact and non-contact extensometers, so every test is measured by the right method for the material.</p>
+    <h2 class="meas-h2">{heading}</h2>
+    <p class="meas-sub">{sub}</p>
     <div class="meas-grid">
       {cards.map((c) => (
         <div class="lc-icard meas-card">
@@ -34,6 +43,7 @@ const cards = [
 
 <style>
   .meas-inner { padding: 0 0 130px; text-align: center; }
+  .meas-inner--pad { padding-top: 120px; }
   .meas-badge-wrap { display: flex; justify-content: center; margin-bottom: 16px; }
   .lc-badge-subtle { display: inline-flex; background: var(--lc-gray-100); color: var(--text-muted); border-radius: 4px; padding: 5px 12px; font-weight: 700; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; line-height: 1; }
   .meas-h2 { font-weight: 700; font-size: 56px; letter-spacing: -0.03em; line-height: 1.2; margin: 0 auto; color: var(--lc-ink); max-width: 644px; }
@@ -52,6 +62,7 @@ const cards = [
 
   @media (max-width: 760px) {
     .meas-inner { padding: 0 0 40px; }
+    .meas-inner--pad { padding: 72px 0; }
     .meas-h2 { font-size: 30px; }
     .meas-sub { font-size: 16px; }
     .meas-grid { grid-template-columns: 1fr; }

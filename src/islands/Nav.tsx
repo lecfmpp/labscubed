@@ -10,7 +10,7 @@ const HOME = 'https://www.labscubed.com/';
 // 301s to the apex, so an absolute www URL costs a redirect hop.
 const mainLinks: [string, string][] = [
   ['Rubber Testing', 'https://www.labscubed.com/rubber-testing'],
-  ['Plastic Testing', 'https://www.labscubed.com/plastic-testing'],
+  ['Plastic Testing', '/plastic-testing/'],
   ['Webinars', '/webinar/'],
   ['Events', '/events/'],
   // Promoted out of the Resources dropdown — it was the most useful thing in

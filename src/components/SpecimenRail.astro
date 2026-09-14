@@ -1,0 +1,120 @@
+---
+// SpecimenRail — the black specimen strip with the hover lift + teal glow.
+// Lifted out of Hero.astro so product pages can carry the same block with
+// their own specimen subset. The hover (white outline → teal fill) is pure
+// CSS: two stacked <Sample> SVGs toggled by opacity. Desktop rail vs mobile
+// scroll rail switch at 760px.
+import { getSample, Sample } from '../lib/samples';
+
+interface Props {
+  /** Sample ids from src/lib/samples.tsx, in display order. */
+  ids: string[];
+  /** Where the last cell / mobile footer link points. */
+  href?: string;
+  linkLabel?: string;
+  mobileLinkLabel?: string;
+}
+const {
+  ids,
+  href = '#specimen-library',
+  linkLabel = 'Explore the full specimen library',
+  mobileLinkLabel = 'See all samples',
+} = Astro.props;
+
+const cells = ids.map((id) => {
+  const s = getSample(id);
+  const matLabel = s.material === 'rubber' ? 'Rubber' : 'Plastic';
+  const isIso = s.standard.indexOf('ISO') === 0;
+  const stdLogo = isIso ? '/assets/img/standards/iso-logo.webp' : '/assets/img/standards/astm-logo.webp';
+  const lw = isIso ? 120 : 105;
+  const lh = 84;
+  return { s, matLabel, stdLogo, lw, lh, blurb: `Automated ${matLabel} ${s.testType} Testing` };
+});
+const glow = '0 30px 80px rgba(23,221,197,0.16), 0 14px 44px rgba(23,221,197,0.12), 0 4px 18px rgba(23,221,197,0.08)';
+---
+<div class="hero-rail-outer">
+  <!-- Desktop rail -->
+  <div class="hero-rail hero-rail-desktop">
+    {cells.map((c, i) => (
+      <>
+        {i > 0 && <div class="hero-divider"></div>}
+        <div class="hero-cell" style={`--glow:${glow}`}>
+          <div class="hero-cell-logo"><img src={c.stdLogo} alt={c.s.standard} width={c.lw} height={c.lh} /></div>
+          <div class="hero-cell-spec">
+            <span class="spec spec-default"><Sample spec={c.s} variant="outline" tone="dark" outlineScale={3.9} style={{ width: '100%', maxHeight: 34 }} /></span>
+            <span class="spec spec-hover"><Sample spec={c.s} variant="fill" tone="dark" color="teal" outlineScale={3.9} style={{ width: '100%', maxHeight: 34 }} /></span>
+          </div>
+          <div class="hero-cell-name"><span class="nm">{c.s.name}</span><span class="std">{c.s.standard}</span></div>
+          <div class="hero-cell-blurb">{c.blurb}</div>
+        </div>
+      </>
+    ))}
+    <div class="hero-divider"></div>
+    <div class="hero-cell-last">
+      <a href={href} class="hero-explore">{linkLabel}</a>
+    </div>
+  </div>
+
+  <!-- Mobile rail -->
+  <div class="hero-rail-mobile">
+    <div class="lc-hero-scroll hero-scroll">
+      {cells.map((c) => (
+        <div class="hero-mcell-wrap">
+          <div class="hero-cell hero-mcell" style={`--glow:${glow}`}>
+            <div class="hero-cell-logo"><img src={c.stdLogo} alt={c.s.standard} width={c.lw} height={c.lh} /></div>
+            <div class="hero-cell-spec">
+              <span class="spec spec-default"><Sample spec={c.s} variant="outline" tone="dark" outlineScale={3.9} style={{ width: '100%', maxHeight: 27 }} /></span>
+              <span class="spec spec-hover"><Sample spec={c.s} variant="fill" tone="dark" color="teal" outlineScale={3.9} style={{ width: '100%', maxHeight: 27 }} /></span>
+            </div>
+            <div class="hero-cell-name"><span class="nm">{c.s.name}</span><span class="std">{c.s.standard}</span></div>
+            <div class="hero-cell-blurb">{c.blurb}</div>
+          </div>
+        </div>
+      ))}
+    </div>
+    <a href={href} class="hero-seeall">{mobileLinkLabel}
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M7 17 17 7M17 7H9M17 7v8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+    </a>
+  </div>
+</div>
+
+<style>
+  .hero-rail-outer { position: relative; z-index: 2; max-width: 1312px; margin: 0 auto; padding: 0 64px 64px; box-sizing: border-box; }
+
+  .hero-rail-desktop { display: flex; border-radius: 4px; background: #000; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.18); overflow: visible; }
+  .hero-divider { width: 1px; background: rgba(255,255,255,0.14); flex: none; }
+  .hero-cell { flex: 1; padding: 20px 22px; display: flex; flex-direction: column; gap: 12px; position: relative; z-index: 1; background: transparent; transition: transform .26s cubic-bezier(.2,.7,.2,1), box-shadow .26s ease, background .2s ease; }
+  .hero-cell:hover { z-index: 2; background: rgba(23,221,197,0.08); box-shadow: var(--glow); transform: translateY(-8px); }
+  .hero-cell-logo { display: flex; align-items: center; height: 30px; }
+  .hero-cell-logo img { height: 26px; width: auto; opacity: 0.6; transition: opacity .2s ease; }
+  .hero-cell:hover .hero-cell-logo img { opacity: 0.95; }
+  .hero-cell-spec { height: 34px; display: flex; align-items: center; position: relative; }
+  .hero-cell-spec .spec { position: absolute; inset: 0; display: flex; align-items: center; transition: opacity .2s ease; }
+  .hero-cell-spec .spec-hover { opacity: 0; }
+  .hero-cell:hover .spec-default { opacity: 0; }
+  .hero-cell:hover .spec-hover { opacity: 1; }
+  .hero-cell-name { display: flex; align-items: baseline; gap: 8px; }
+  .hero-cell-name .nm { font-weight: 700; font-size: 13px; letter-spacing: 0.04em; color: #fff; }
+  .hero-cell-name .std { font-size: 11px; color: rgba(255,255,255,0.5); }
+  .hero-cell-blurb { font-size: 12px; font-weight: 300; color: rgba(255,255,255,0.5); line-height: 1.4; }
+  .hero-cell-last { flex: 1; padding: 22px 24px; display: flex; flex-direction: column; justify-content: center; gap: 10px; }
+  .hero-explore { font-size: 13px; color: #fff; text-decoration: underline; }
+
+  .hero-rail-mobile { display: none; }
+
+  @media (max-width: 760px) {
+    .hero-rail-outer { padding: 0 20px 40px; }
+    .hero-rail-desktop { display: none; }
+    .hero-rail-mobile { display: block; border-radius: 4px; background: #000; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.18); overflow: hidden; }
+    .hero-scroll { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 6%, #000 74%, transparent 100%); mask-image: linear-gradient(90deg, transparent 0, #000 6%, #000 74%, transparent 100%); }
+    .hero-mcell-wrap { flex: 0 0 50.4%; max-width: 192px; display: flex; scroll-snap-align: start; border-right: 1px solid rgba(255,255,255,0.14); }
+    .hero-mcell { padding: 16px 17.6px; gap: 9.6px; }
+    .hero-mcell .hero-cell-logo { height: 24px; }
+    .hero-mcell .hero-cell-logo img { height: 20.8px; }
+    .hero-mcell .hero-cell-spec { height: 27.2px; }
+    .hero-mcell .hero-cell-name .nm { font-size: 10.4px; }
+    .hero-mcell .hero-cell-name .std { font-size: 8.8px; }
+    .hero-mcell .hero-cell-blurb { font-size: 9.6px; }
+    .hero-seeall { display: flex; align-items: center; justify-content: center; gap: 6.4px; padding: 12.8px 17.6px; border-top: 1px solid rgba(255,255,255,0.14); font-size: 11.2px; font-weight: 600; color: var(--lc-teal); }
+  }
+</style>

@@ -1,0 +1,58 @@
+---
+// ProductCTA — framework section 08: centred headline + email field beside
+// Get a Quote. There is no separate lead endpoint for this: the email is
+// handed to the Get a Quote wizard (sessionStorage, never the URL) and the
+// visitor lands there with the field already filled, so the lead goes through
+// the one quote pipeline that already exists.
+interface Props { heading: string; sub?: string; quoteHref?: string; }
+const { heading, sub, quoteHref = '/get-a-quote/' } = Astro.props;
+---
+<section class="pp-cta">
+  <div class="pp-cta__in">
+    <h2 class="pp-cta__h2">{heading}</h2>
+    {sub && <p class="pp-cta__sub">{sub}</p>}
+    <form class="pp-cta__form" data-quote-href={quoteHref} novalidate>
+      <input class="pp-cta__input" type="email" name="email" autocomplete="email" placeholder="Enter your work email" aria-label="Work email" />
+      <button type="submit" class="pp-cta__btn">
+        <span class="pp-cta__label">Get a Quote</span>
+        <span class="pp-cta__circle"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M7 17 17 7M17 7H9M17 7v8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+      </button>
+    </form>
+  </div>
+</section>
+
+<script>
+  const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i;
+  document.querySelectorAll<HTMLFormElement>('.pp-cta__form').forEach((form) => {
+    const input = form.querySelector<HTMLInputElement>('.pp-cta__input');
+    const label = form.querySelector<HTMLElement>('.pp-cta__label');
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = (input?.value || '').trim();
+      // An empty field still goes to the quote wizard; only a malformed one stops.
+      if (email && !EMAIL_RE.test(email)) { if (label) label.textContent = 'Enter a valid email'; return; }
+      try { if (email) sessionStorage.setItem('lc_quote_email', email); } catch { /* storage blocked — wizard just starts blank */ }
+      location.href = form.dataset.quoteHref || '/get-a-quote/';
+    });
+  });
+</script>
+
+<style>
+  .pp-cta { background: #fff; color: var(--lc-ink); border-top: 1px solid rgba(0,0,0,0.06); }
+  .pp-cta__in { max-width: 640px; margin: 0 auto; padding: 120px 20px 130px; box-sizing: border-box; text-align: center; }
+  .pp-cta__h2 { font-weight: 500; font-size: 56px; letter-spacing: -0.03em; line-height: 1.1; margin: 0; text-wrap: balance; }
+  .pp-cta__sub { margin: 18px 0 0; font-weight: 300; font-size: 18px; line-height: 1.55; color: var(--text-muted); }
+  .pp-cta__form { margin: 32px auto 0; display: flex; align-items: center; width: 460px; max-width: 100%; height: 61px; background: var(--lc-gray-100); border-radius: 1000px; padding: 8px; box-sizing: border-box; }
+  .pp-cta__input { flex: 1; min-width: 0; background: transparent; border: none; outline: none; color: var(--lc-ink); font: inherit; font-weight: 500; font-size: 14px; padding-left: 22px; }
+  .pp-cta__input::placeholder { color: var(--text-muted); font-weight: 500; }
+  .pp-cta__btn { display: inline-flex; align-items: center; height: 45px; background: var(--lc-teal); border-radius: 43px; border: none; cursor: pointer; padding: 0 4px 0 22px; flex: none; font: inherit; }
+  .pp-cta__label { font-weight: 500; font-size: 14px; color: #000; }
+  .pp-cta__circle { width: 38px; height: 38px; border-radius: 50%; background: #000; display: inline-flex; align-items: center; justify-content: center; margin-left: 12px; }
+  @media (max-width: 760px) {
+    .pp-cta__in { padding: 80px 20px 90px; }
+    .pp-cta__h2 { font-size: 32px; }
+    .pp-cta__sub { font-size: 16px; }
+    .pp-cta__input { padding-left: 16px; }
+    .pp-cta__btn { padding: 0 4px 0 16px; }
+  }
+</style>

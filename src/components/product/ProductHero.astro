@@ -1,0 +1,56 @@
+---
+// ProductHero — framework section 01: black band, eyebrow, H1, standfirst,
+// two CTAs and the product video (click-to-load YouTube facade, so the
+// player is never fetched until someone presses play).
+import Button from '../Button.astro';
+import VideoFacade from '../../islands/VideoFacade.tsx';
+
+interface Props {
+  eyebrow: string;
+  heading: string;
+  sub: string;
+  videoId: string;
+  videoTitle: string;
+  primary: { label: string; href: string };
+  secondary?: { label: string; href: string };
+}
+const { eyebrow, heading, sub, videoId, videoTitle, primary, secondary } = Astro.props;
+---
+<section class="pp-hero">
+  <span class="pp-hero__glow" aria-hidden="true"></span>
+  <div class="pp-hero__inner">
+    <div class="pp-hero__eyebrow">{eyebrow}</div>
+    <h1 class="pp-hero__h1">{heading}</h1>
+    <p class="pp-hero__sub">{sub}</p>
+    <div class="pp-hero__ctas">
+      <Button variant="primary" href={primary.href}>{primary.label}</Button>
+      {secondary && <Button variant="ghost" arrow={false} href={secondary.href}>{secondary.label}</Button>}
+    </div>
+    <div class="pp-hero__video">
+      {/* Above the fold and the LCP candidate — hydrate on load, eager thumb. */}
+      <VideoFacade client:load id={videoId} title={videoTitle} priority />
+    </div>
+  </div>
+</section>
+
+<style>
+  .pp-hero { background: #000; color: #fff; position: relative; overflow: hidden; }
+  .pp-hero__glow {
+    position: absolute; top: -280px; left: 50%; transform: translateX(-50%);
+    width: 1100px; height: 700px; pointer-events: none;
+    background: radial-gradient(closest-side, rgba(23,221,197,0.16), rgba(23,221,197,0));
+  }
+  .pp-hero__inner { position: relative; max-width: 1312px; margin: 0 auto; padding: 160px 64px 72px; box-sizing: border-box; text-align: center; }
+  .pp-hero__eyebrow { display: inline-flex; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.75); border-radius: 4px; padding: 5px 12px; font-weight: 700; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; line-height: 1; }
+  .pp-hero__h1 { font-weight: 700; font-size: 76px; line-height: 1.06; letter-spacing: -0.02em; margin: 22px auto 0; max-width: 980px; text-wrap: balance; }
+  .pp-hero__sub { margin: 24px auto 0; max-width: 660px; font-weight: 300; font-size: 18px; line-height: 1.55; color: rgba(255,255,255,0.55); text-wrap: balance; }
+  .pp-hero__ctas { display: flex; gap: 14px; justify-content: center; margin-top: 32px; flex-wrap: wrap; }
+  .pp-hero__video { margin: 56px auto 0; max-width: 1120px; }
+
+  @media (max-width: 760px) {
+    .pp-hero__inner { padding: 110px 20px 48px; }
+    .pp-hero__h1 { font-size: 38px; }
+    .pp-hero__sub { font-size: 16px; }
+    .pp-hero__video { margin-top: 36px; }
+  }
+</style>
