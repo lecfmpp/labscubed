@@ -11,7 +11,7 @@ import ScrollTopOnLoad from '../../../components/ScrollTopOnLoad.astro';
   {/* No countdown bar here — they have already registered. The header still
       sticks, matching the registration page. */}
   <div class="lc-sticky-top">
-    <Nav client:load inFlow showQuote={false} />
+    <Nav client:load inFlow />
   </div>
   <main class="lc-page">
     <ThankYouApp slug="npe-may-2027" client:only="react" />

@@ -8,9 +8,7 @@
 // registration form) instead of CTABanner's single-email form — CTABanner
 // itself is untouched since the homepage still uses the simple version.
 //
-// The header's primary CTA button is hidden on this page (showQuote={false}):
-// it's a short, single-purpose page and the form is already front and center,
-// so a second "download the white paper" button in the header is redundant.
+// The header keeps its Get a Quote button here like every other page.
 import Base from '../layouts/Base.astro';
 import Nav from '../islands/Nav.tsx';
 import WhitePaperHero from '../components/WhitePaperHero.astro';
@@ -38,7 +36,7 @@ const points = [
 ];
 ---
 <Base title={title} description={description}>
-  <Nav client:load showQuote={false} />
+  <Nav client:load />
   <main class="lc-page">
     <WhitePaperHero />
     <Section bg="#fff">
