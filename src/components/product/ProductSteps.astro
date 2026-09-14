@@ -2,13 +2,14 @@
 // ProductSteps — framework section 05: alternating looping clip + copy rows.
 // Clips are MP4 (not GIF) and only get their src once the row nears the
 // viewport; the poster paints immediately. Same approach as Setup.astro.
+// A step may pass `img` instead of `vid` when the page only has a still.
 import ProductSection from './ProductSection.astro';
 import ProductHeading from './ProductHeading.astro';
 
 interface Props {
   heading: string;
   sub?: string;
-  steps: { vid: string; poster: string; w: number; h: number; title: string; body: string }[];
+  steps: { vid?: string; poster?: string; img?: string; alt?: string; w: number; h: number; title: string; body: string }[];
 }
 const { heading, sub, steps } = Astro.props;
 ---
@@ -18,7 +19,9 @@ const { heading, sub, steps } = Astro.props;
     {steps.map((s, i) => (
       <div class:list={['pp-step', { 'pp-step--flip': i % 2 === 1 }]}>
         <div class="pp-step__media">
-          <video data-src={s.vid} poster={s.poster} width={s.w} height={s.h} loop muted playsinline preload="none" aria-label={s.title}></video>
+          {s.vid
+            ? <video data-src={s.vid} poster={s.poster} width={s.w} height={s.h} loop muted playsinline preload="none" aria-label={s.title}></video>
+            : <img src={s.img} alt={s.alt ?? s.title} width={s.w} height={s.h} loading="lazy" />}
         </div>
         <div>
           <div class="pp-step__n">{String(i + 1).padStart(2, '0')}</div>
@@ -58,7 +61,7 @@ const { heading, sub, steps } = Astro.props;
   .pp-step { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; align-items: center; }
   .pp-step--flip .pp-step__media { order: 1; }
   .pp-step__media { border-radius: 16px; overflow: hidden; background: var(--lc-gray-100); box-shadow: var(--shadow-edge); }
-  .pp-step__media video { width: 100%; height: auto; display: block; }
+  .pp-step__media video, .pp-step__media img { width: 100%; height: auto; display: block; }
   .pp-step__n { font-size: 14px; font-weight: 700; color: var(--lc-teal-deep); letter-spacing: 0.1em; }
   .pp-step__h3 { font-weight: 700; font-size: 37px; letter-spacing: -0.01em; margin: 10px 0 0; color: var(--lc-ink); }
   .pp-step__body { margin: 14px 0 0; font-size: 18px; line-height: 1.55; font-weight: 300; color: var(--text-muted); max-width: 420px; }

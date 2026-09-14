@@ -177,7 +177,8 @@ a:hover { color: inherit; }
 .lc-lt-phase strong { color: var(--lc-ink); font-weight: 600; }
 .lc-lt-phase-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--lc-gray-300, #c7c7cc); flex: none; }
 .lc-lt-phase--ramp .lc-lt-phase-dot { background: var(--lc-teal); animation: lcBlink .6s steps(1) infinite; }
-.lc-lt-phase--break .lc-lt-phase-dot { background: var(--lc-teal); box-shadow: 0 0 0 4px rgba(23,221,197,0.2); }
+.lc-lt-phase--active .lc-lt-phase-dot { background: var(--lc-teal); box-shadow: 0 0 0 4px rgba(23,221,197,0.2); }
+.lc-lt-phase--done .lc-lt-phase-dot { background: var(--lc-ink); }
 
 .lc-lt-graph svg { display: block; width: 100%; height: auto; margin-top: 10px; overflow: visible; }
 .lc-lt-graph-axis { stroke: var(--lc-line-strong); stroke-width: 1; }

@@ -34,7 +34,7 @@ export const MACHINES: Record<string, MachineInfo> = {
   },
   CubeOne: {
     name: 'CubeOne',
-    href: 'https://www.labscubed.com/rubber-testing',
+    href: '/rubber-testing/',
     img: '/assets/img/media/cubeone-01.webp',
     blurb: 'Built for rubber and elastomers — high-elongation pulls, tear dies and unattended runs.',
     specs: [['Force (Omega Load Cell)', 'Up to 1kN'], ['Max Speed', '150 mm/s (6 in/s)'], ['Footprint', '0.8 × 1.1m']],

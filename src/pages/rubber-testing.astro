@@ -1,0 +1,245 @@
+---
+/* Rubber Testing (CubeOne) — replaces the Webflow /rubber-testing page at the
+   same URL. Built on the same product-page framework as /plastic-testing, with
+   CubeOne content in place of CubeTen.
+
+   The entry in public/_redirects stops the catch-all proxy answering this path
+   from Webflow; the netlify.toml header stops an already-cached Webflow answer
+   outliving this page at the edge.
+
+   Copy is drawn from the live Webflow page (value props, sample coverage, the
+   three steps, specs, installation) and rewritten into the framework's
+   structure. The "real test" section is the black neoprene run from the
+   Rheolab webinar deck (slides 6–8), with numbers from its data export. */
+import Base from '../layouts/Base.astro';
+import Nav from '../islands/Nav.tsx';
+import Footer from '../components/Footer.astro';
+import SpecimenRail from '../components/SpecimenRail.astro';
+import ProductHero from '../components/product/ProductHero.astro';
+import ProductSection from '../components/product/ProductSection.astro';
+import ProductHeading from '../components/product/ProductHeading.astro';
+import ProductFeatures from '../components/product/ProductFeatures.astro';
+import ProductSteps from '../components/product/ProductSteps.astro';
+import ProductSpecs from '../components/product/ProductSpecs.astro';
+import ProductCTA from '../components/product/ProductCTA.astro';
+import Measurement from '../components/Measurement.astro';
+import FAQ from '../components/FAQ.astro';
+import SpecimenLibrary from '../islands/SpecimenLibrary.tsx';
+import TestimonialSlider from '../islands/TestimonialSlider.tsx';
+import ProductSlider from '../islands/ProductSlider.tsx';
+import LiveTestDemo from '../islands/LiveTestDemo.tsx';
+import { NEO_LIVE_TEST } from '../data/neoLiveTest';
+import { CUBEONE_TESTIMONIALS } from '../data/testimonials';
+import { RUBBER_FAQ_DATA } from '../lib/faq';
+import { SITE_URL } from '../site.mjs';
+
+const canonical = `${SITE_URL}/rubber-testing`;
+const title = 'Rubber Tensile Testing Machines | LabsCubed CubeOne';
+const description =
+  'Automate rubber tensile and tear testing with the LabsCubed CubeOne — up to 12 specimens tested unattended to ASTM D412, ISO 37 and ASTM D624, with automatic thickness measurement.';
+
+const IMG = '/assets/img/rubber-testing/';
+const MEDIA = '/assets/img/media/';
+const ICONS = '/assets/img/plastic-testing/';
+
+// CubeOne = rubber and elastomers only: ASTM D412 / ISO 37 dumbbells and the
+// ASTM D624 tear dies. Plastics bars (CubeTen) and flexure bars (CubeFlex) are out.
+const RUBBER_IDS = ['astm-d412-c', 'astm-d412-d', 'iso-37-2', 'astm-d624-c', 'astm-d624-b'];
+
+const features = [
+  { icon: ICONS + 'save-time.svg', title: 'Recover lab time', body: "Load the tray and walk away — the CubeOne saves up to 85% of your team's testing time for higher-value work." },
+  { icon: ICONS + 'save-money.svg', title: 'Optimize your lab', body: 'Maximize ROI while accelerating lab results and making better use of every technician hour.' },
+  { icon: ICONS + 'data-consistency.svg', title: 'Ensure data consistency', body: 'Automated testing delivers up to 40% more consistent results, proven by extensive studies.' },
+];
+
+// These are CubeOne customers, so they belong here as-is. The shared Momentive
+// photo is a CubeTen close-up; on the rubber page it becomes a CubeOne render.
+const testimonials = CUBEONE_TESTIMONIALS.map((t) =>
+  t.company === 'Momentive'
+    ? { ...t, photo: { src: IMG + 'cubeone-hero-1100.webp', alt: 'The CubeOne automated rubber tensile tester with its touchscreen' } }
+    : t,
+);
+
+const steps = [
+  { img: IMG + 'step-load-tray.webp', alt: 'Dumbbell specimens dropping into the CubeOne sample tray', w: 870, h: 492, title: 'Load your samples', body: 'Load up to 12 tensile or tear specimens at once — mix compounds and materials on the same tray.' },
+  { img: IMG + 'step-start-test-1100.webp', alt: 'Technician starting a test on the CubeOne touchscreen', w: 1100, h: 622, title: 'Start the test', body: 'Enter compound names on the touchscreen and start the run with a single touch.' },
+  { img: IMG + 'step-review-data.webp', alt: 'Stress–strain results on the CubeOne touchscreen', w: 870, h: 492, title: 'Review your data', body: 'When the run finishes, review results on the machine touchscreen, in your own system, or in the LabsCubed cloud.' },
+];
+
+const specs: [string, string][] = [
+  ['Tensile standards', 'ASTM D412 · ISO 37'],
+  ['Tear standard', 'ASTM D624 (Die B, Die C)'],
+  ['Force (Omega Load Cell)', 'Up to 1 kN'],
+  ['Max elongation', '1000%'],
+  ['Max speed', '150 mm/s (6 in/s)'],
+  ['Sample capacity', 'Up to 12 specimens per run'],
+  ['Thickness', 'Measured automatically'],
+  ['Strain measurement', 'Crosshead · video extensometer'],
+  ['Weight', '150 lbs (75 kg)'],
+  ['Power supply', 'Standard 110 V outlet'],
+];
+
+const slides = [
+  { src: IMG + 'portal-d412-1400.webp', srcSet: `${IMG}portal-d412-760.webp 760w, ${IMG}portal-d412-1400.webp 1400w`, width: 1400, height: 702, alt: 'LabsCubed portal reviewing an ASTM D412 rubber tensile run — stress-strain curve, statistics and per-specimen results', caption: 'Stress-strain curves, statistics and every specimen of an ASTM D412 run in one view.' },
+  { src: IMG + 'auto-thickness-760.webp', width: 760, height: 760, alt: 'Inside the CubeOne: automated thickness measurement station', caption: 'A look inside — thickness is measured automatically before every pull.' },
+  { src: IMG + 'cubeone-dimensions-1400.webp', width: 1400, height: 946, alt: 'CubeOne dimensions: 1.268 m long, 0.52 m deep, 0.42 m tall', caption: 'Bench-top footprint: 1.27 m × 0.52 m × 0.42 m, plugged into a standard outlet.' },
+];
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: title,
+    description,
+    url: canonical,
+    isPartOf: { '@type': 'WebSite', name: 'LabsCubed', url: `${SITE_URL}/` },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: 'CubeOne',
+    brand: { '@type': 'Brand', name: 'LabsCubed' },
+    image: `${SITE_URL}/assets/img/media/cubeone-01.webp`,
+    url: canonical,
+    description: 'Automated tensile and tear testing machine for rubber and elastomers — robotic loading, automatic thickness measurement, and testing to ASTM D412 / ISO 37 and ASTM D624, up to 1 kN.',
+    category: 'Automated Material Testing System',
+    additionalProperty: [
+      { '@type': 'PropertyValue', name: 'Standards', value: 'ASTM D412, ISO 37, ASTM D624' },
+      { '@type': 'PropertyValue', name: 'Force', value: 'Up to 1 kN' },
+      { '@type': 'PropertyValue', name: 'Elongation', value: 'Up to 1000%' },
+      { '@type': 'PropertyValue', name: 'Sample capacity', value: 'Up to 12 specimens' },
+    ],
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: RUBBER_FAQ_DATA.map(([q, a]) => ({
+      '@type': 'Question',
+      name: q,
+      acceptedAnswer: { '@type': 'Answer', text: a },
+    })),
+  },
+];
+---
+<Base
+  title={title}
+  description={description}
+  canonical={canonical}
+  ogType="website"
+  ogImage={`${SITE_URL}/assets/img/media/cubeone-01.webp`}
+  jsonLd={jsonLd}
+  preloadHero={false}
+>
+  <Nav client:load />
+  <main class="lc-page">
+    <!-- 01 — Hero + product video -->
+    <ProductHero
+      eyebrow="CubeOne · Rubber testing"
+      heading="Tensile testing, revolutionized for rubber."
+      sub="The CubeOne measures, grips and pulls up to 12 rubber specimens unattended — ASTM D412, ISO 37 and ASTM D624 results your whole lab can trust."
+      videoId="5nS3gFm5W-I"
+      videoTitle="Automated Tensile Testing Robot"
+      primary={{ label: 'Get a Quote', href: '/get-a-quote/' }}
+      secondary={{ label: 'See what it tests', href: '#specimen-library' }}
+    />
+
+    <!-- 01b — Specimen rail (same hover block as the homepage, CubeOne specimens only) -->
+    <section class="rt-rail" aria-label="Specimens the CubeOne tests">
+      <div class="rt-rail__label">Specimens the CubeOne tests</div>
+      <SpecimenRail ids={RUBBER_IDS} />
+    </section>
+
+    <!-- 02 — Features -->
+    <ProductFeatures
+      heading="Built to remove every variable."
+      sub="The CubeOne is a user-friendly automated testing machine designed specifically for rubber and elastomers."
+      items={features}
+    />
+
+    <!-- 03 — Samples it can test -->
+    <ProductSection bg="var(--lc-gray-100)">
+      <SpecimenLibrary
+        client:idle
+        ids={RUBBER_IDS}
+        defaultId="astm-d412-c"
+        eyebrow="Specimen library"
+        heading="Every rubber specimen the CubeOne tests."
+        sub="ASTM D412 and ISO 37 dumbbells for tensile, plus ASTM D624 tear dies — select one to see its dimensions. Mix compounds and specimen types on the same tray."
+      />
+    </ProductSection>
+
+    <!-- 04 — Testimonials -->
+    <ProductSection bg="#fff">
+      <ProductHeading heading="Trusted by quality teams worldwide." sub="Real words from rubber and elastomer labs running the CubeOne every day." />
+      <TestimonialSlider client:idle items={testimonials} />
+    </ProductSection>
+
+    <!-- 04b — A real test, synced: live speed readout + test video + results table -->
+    <ProductSection bg="var(--lc-gray-100)" id="real-test">
+      <ProductHeading
+        eyebrow="Real test · Black neoprene"
+        heading="Watch a real CubeOne test, synced to its data."
+        sub="Specimen 01 of a 10-specimen black neoprene run to ASTM D412 Die C. The CubeOne measures and grips the dumbbell, then pulls at a constant 500 mm/min until it breaks — follow the speed and strain as the point climbs the curve."
+      />
+      <LiveTestDemo
+        client:visible
+        data={NEO_LIVE_TEST}
+        video={{ src: IMG + 'neo-live-test.mp4', poster: IMG + 'neo-live-test-poster.webp', width: 1920, height: 570 }}
+        overlay={{ src: IMG + 'neo-stress-strain-overlay.webp', width: 1800, height: 480 }}
+      />
+    </ProductSection>
+
+    <!-- 05 — How it works -->
+    <ProductSteps
+      heading="Load, configure, press start. Done."
+      sub="Three steps from specimen to results — and the CubeOne handles everything in between."
+      steps={steps}
+    />
+
+    <!-- 06 — Value metrics + specification -->
+    <ProductSpecs
+      heading="The numbers that matter."
+      sub="Lead with the outcomes, then check them against the full specification."
+      metrics={[
+        { value: '85%', label: 'of technician testing time recovered for higher-value work.' },
+        { value: '40%', label: 'more consistent results, proven by extensive studies.' },
+        { value: '12', label: 'rubber specimens loaded and tested in a single run.' },
+      ]}
+      specHeading="CubeOne specification"
+      specSub="Key features and performance criteria of the CubeOne."
+      img={{ src: MEDIA + 'machine-cubeone.webp', alt: 'CubeOne automated rubber tensile testing machine', width: 2396, height: 900 }}
+      specs={specs}
+    />
+
+    <!-- 06b — Strain measurement options (CubeOne: crosshead + video only) -->
+    <Measurement
+      padTop
+      only={['crosshead', 'video']}
+      heading="How the CubeOne measures strain accurately"
+      sub="Every CubeOne pairs a built-in encoder with a non-contact video extensometer, so each elastomer is measured by the right method — even at very high elongations."
+    />
+
+    <!-- 07 — Data slider -->
+    <ProductSection bg="var(--lc-gray-100)">
+      <ProductHeading center heading="Your data, the moment it happens." sub="Every test delivers the full stress-strain curve, modulus at each elongation and the raw data behind it — on the touchscreen, in the cloud, or piped straight into the systems your lab already runs." />
+      <ProductSlider client:idle slides={slides} />
+    </ProductSection>
+
+    <!-- 07b — FAQ (homepage accordion, rubber-only questions) -->
+    <FAQ items={RUBBER_FAQ_DATA} />
+
+    <!-- 08 — Closing CTA -->
+    <ProductCTA heading="Ready to automate your rubber lab?" sub="Get a tailored CubeOne quote for your testing standards and daily volume." />
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .rt-rail { background: #000; color: #fff; }
+  .rt-rail__label { max-width: 1312px; margin: 0 auto; padding: 24px 64px 20px; box-sizing: border-box; font-weight: 700; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.5); }
+  .rt-rail :global(.hero-rail-outer) { padding-bottom: 110px; }
+  @media (max-width: 760px) {
+    .rt-rail__label { padding: 16px 20px 16px; }
+    .rt-rail :global(.hero-rail-outer) { padding-bottom: 64px; }
+  }
+</style>

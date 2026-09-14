@@ -21,8 +21,9 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import sharp from 'sharp';
 
-// dQooWFtCbBs is the CubeTen hero video on /plastic-testing (VideoFacade).
-const IDS = ['8IuGJsjw2AE', 'khQHHxJd2hM', 'eWPbdBoOrJ4', 'Y0qXEgPcf5U', 'RILG7TXhc-w', 'dQooWFtCbBs'];
+// dQooWFtCbBs is the CubeTen hero video on /plastic-testing and 5nS3gFm5W-I the
+// CubeOne hero video on /rubber-testing (both via VideoFacade).
+const IDS = ['8IuGJsjw2AE', 'khQHHxJd2hM', 'eWPbdBoOrJ4', 'Y0qXEgPcf5U', 'RILG7TXhc-w', 'dQooWFtCbBs', '5nS3gFm5W-I'];
 const here = path.dirname(fileURLToPath(import.meta.url));
 const outDir = path.resolve(here, '../public/assets/img/yt');
 const titlesFile = path.resolve(here, '../src/lib/yt-titles.json');

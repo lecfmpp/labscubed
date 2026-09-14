@@ -70,7 +70,7 @@ function SampleSelectCard({ s, active, onClick }: any) {
 }
 
 /* ---- Configurator question model ---- */
-const MACHINE_HREF: any = { CubeTen: "/plastic-testing/", CubeOne: "https://www.labscubed.com/rubber-testing", CubeGo: "https://www.labscubed.com/cubego" };
+const MACHINE_HREF: any = { CubeTen: "/plastic-testing/", CubeOne: "/rubber-testing/", CubeGo: "https://www.labscubed.com/cubego" };
 function machineBase(name: string) {
   if (name === "CubeOne") return MODELS["Rubber|Tensile"];
   if (name === "CubeGo") return CUSTOM_MODEL;
@@ -300,7 +300,7 @@ function CubeTenShowcase({ model, focus }: any) {
         <div style={{ display: "flex", justifyContent: "center", marginTop: m ? 16 : 18, position: "relative" }}>
           <span style={{ position: "absolute", width: 220, height: 46, top: 2, left: "50%", transform: "translateX(-50%)", borderRadius: 43, background: "#17DDC5", opacity: 0.36, filter: "blur(46px)", pointerEvents: "none" }} />
           <FadeSwap deps={model.name}>
-            <Button variant="primary" style={{ whiteSpace: "nowrap" }} href={({ CubeTen: "/plastic-testing/", CubeOne: "https://www.labscubed.com/rubber-testing", CubeGo: "https://www.labscubed.com/cubego" } as any)[model.name] || "/plastic-testing/"}>Explore {model.name}</Button>
+            <Button variant="primary" style={{ whiteSpace: "nowrap" }} href={({ CubeTen: "/plastic-testing/", CubeOne: "/rubber-testing/", CubeGo: "https://www.labscubed.com/cubego" } as any)[model.name] || "/plastic-testing/"}>Explore {model.name}</Button>
           </FadeSwap>
         </div>
         {!m &&

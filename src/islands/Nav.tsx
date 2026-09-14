@@ -9,7 +9,7 @@ const HOME = 'https://www.labscubed.com/';
 // proxies, so the visitor stays on the host that has the page. www.labscubed.com
 // 301s to the apex, so an absolute www URL costs a redirect hop.
 const mainLinks: [string, string][] = [
-  ['Rubber Testing', 'https://www.labscubed.com/rubber-testing'],
+  ['Rubber Testing', '/rubber-testing/'],
   ['Plastic Testing', '/plastic-testing/'],
   ['Webinars', '/webinar/'],
   ['Events', '/events/'],

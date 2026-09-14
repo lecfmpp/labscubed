@@ -89,3 +89,14 @@
   for = "/plastic-testing/*"
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
+
+# /rubber-testing (CubeOne) was proxied to Webflow until this page shipped.
+[[headers]]
+  for = "/rubber-testing"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/rubber-testing/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"

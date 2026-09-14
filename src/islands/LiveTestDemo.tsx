@@ -1,35 +1,30 @@
-/* LiveTestDemo island — "watch a real test" section on /plastic-testing.
+/* LiveTestDemo island — the "watch a real test" section on the product pages.
 
    Three stacked parts inside one card:
-   1. Live readout: crosshead speed (the number that matters — the method runs
-      1 mm/min to 0.3% strain, then 50 mm/min), a mini speed-over-time graph
-      with a playhead, and live time / strain / stress from the same specimen.
+   1. Live readout: crosshead speed (the number that matters), a mini
+      speed-over-time graph with a playhead, and live time / strain / stress.
    2. The test video (chart left, camera right). Plays muted when scrolled
       into view, pauses when it leaves; custom play/restart/seek controls.
-   3. Tabbed results table for all 10 PP specimens.
+   3. Tabbed results table for the whole run.
 
-   Sync: readout time = video.currentTime + syncOffset. Speed comes from
-   PP_SPEED_KEYFRAMES (video seconds); strain/stress from PP_SERIES (specimen 1,
-   test seconds). Tune `syncOffset` / the keyframes once the video is timed.
+   Everything material-specific arrives in the `data` prop (a LiveTestData from
+   src/data/ — ppLiveTest.ts for CubeTen, neoLiveTest.ts for CubeOne), so the
+   same island serves both pages. Speed and phase follow VIDEO time; strain and
+   stress follow the specimen series at video time + data.syncOffset.
 
-   The readout owns its own rAF loop and writes state locally so the table
-   never re-renders at 60 fps. Styles are global .lc-lt-* (scoped styles miss
-   islands); layout is CSS-responsive, no useIsMobile. */
+   The readout owns its own rAF loop and state so the table never re-renders at
+   60 fps. Styles are global .lc-lt-* (scoped styles miss islands); layout is
+   CSS-responsive, no useIsMobile. */
 import React from 'react';
-import {
-  PP_SERIES, PP_SPEED_KEYFRAMES, PP_SWITCH_TIME, PP_SUMMARY, PP_SAMPLES, PP_CONDITIONS, PP_KPIS,
-} from '../data/ppLiveTest';
+import type { LiveTestData } from '../data/liveTest';
 
 type Props = {
+  data: LiveTestData;
   video: { src: string; poster: string; width: number; height: number };
   overlay: { src: string; width: number; height: number };
-  syncOffset?: number;
 };
 
-const SPEED_MAX = 50;
-
-function speedAt(t: number) {
-  const kf = PP_SPEED_KEYFRAMES;
+function speedAt(kf: LiveTestData['speedKeyframes'], t: number) {
   if (t <= kf[0].t) return kf[0].v;
   for (let i = 1; i < kf.length; i++) {
     if (t <= kf[i].t) {
@@ -40,8 +35,7 @@ function speedAt(t: number) {
   return kf[kf.length - 1].v;
 }
 
-function seriesAt(t: number): [number, number] {
-  const s = PP_SERIES;
+function seriesAt(s: LiveTestData['series'], t: number): [number, number] {
   if (t <= s[0][0]) return [s[0][1], s[0][2]];
   if (t >= s[s.length - 1][0]) return [s[s.length - 1][1], s[s.length - 1][2]];
   let lo = 0, hi = s.length - 1;
@@ -50,13 +44,13 @@ function seriesAt(t: number): [number, number] {
   return [a[1] + (b[1] - a[1]) * k, a[2] + (b[2] - a[2]) * k];
 }
 
-const fmtSpeed = (v: number) => (v < 9.95 ? v.toFixed(1) : String(Math.round(v)));
+const fmtSpeed = (v: number) => (v < 0.05 ? '0' : v < 9.95 ? v.toFixed(1) : String(Math.round(v)));
 const nf = (v: number, d: number) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
 
 /* ---- 1. Live readout -------------------------------------------------- */
-function Readout({ videoRef, syncOffset }: { videoRef: React.RefObject<HTMLVideoElement>; syncOffset: number }) {
+function Readout({ data, videoRef }: { data: LiveTestData; videoRef: React.RefObject<HTMLVideoElement> }) {
   const [t, setT] = React.useState(0);
-  const [dur, setDur] = React.useState(50);
+  const [dur, setDur] = React.useState(data.duration);
   React.useEffect(() => {
     const v = videoRef.current;
     if (!v) return undefined;
@@ -74,27 +68,22 @@ function Readout({ videoRef, syncOffset }: { videoRef: React.RefObject<HTMLVideo
   }, [videoRef]);
 
   const vt = t;
-  const speed = speedAt(vt);
-  const [strain, stress] = seriesAt(Math.max(0, vt + syncOffset));
-  const switchEnd = PP_SPEED_KEYFRAMES[2].t;
-  const phase = vt < PP_SWITCH_TIME
-    ? { key: 'mod', label: 'Modulus phase', detail: 'Slow pull at 1 mm/min until 0.3% strain' }
-    : vt < switchEnd
-      ? { key: 'ramp', label: 'Speed change', detail: 'Accelerating from 1 to 50 mm/min' }
-      : { key: 'break', label: 'Pull to break', detail: 'Constant 50 mm/min until the specimen breaks' };
+  const speed = speedAt(data.speedKeyframes, vt);
+  const [strain, stress] = seriesAt(data.series, Math.max(0, vt + data.syncOffset));
+  const phase = data.phases.reduce((cur, p) => (vt >= p.from ? p : cur), data.phases[0]);
 
-  // Mini speed-over-time graph (linear on purpose: 1 mm/min really is ~0 next to 50).
+  // Mini speed-over-time graph (linear on purpose, so a slow phase really looks slow).
   const W = 280, H = 64, P = 4;
-  const x = (s: number) => P + (Math.min(s, dur) / dur) * (W - P * 2);
-  const y = (v: number) => H - P - (v / SPEED_MAX) * (H - P * 2);
-  const pts = PP_SPEED_KEYFRAMES.filter((k) => k.t <= dur).concat([{ t: dur, v: speedAt(dur) }]);
+  const x = (s: number) => P + (Math.min(Math.max(s, 0), dur) / dur) * (W - P * 2);
+  const y = (v: number) => H - P - (v / data.speedMax) * (H - P * 2);
+  const pts = data.speedKeyframes.filter((k) => k.t <= dur).concat([{ t: dur, v: speedAt(data.speedKeyframes, dur) }]);
   const path = pts.map((k, i) => `${i ? 'L' : 'M'}${x(k.t).toFixed(1)} ${y(k.v).toFixed(1)}`).join(' ');
 
   return (
     <div className="lc-lt-readout">
       <div className="lc-lt-speed">
         <div className="lc-lt-label">Crosshead speed</div>
-        <div className="lc-lt-speed-val" aria-live="off">
+        <div className="lc-lt-speed-val">
           <span className="lc-lt-speed-num">{fmtSpeed(speed)}</span>
           <span className="lc-lt-speed-unit">mm/min</span>
         </div>
@@ -105,29 +94,30 @@ function Readout({ videoRef, syncOffset }: { videoRef: React.RefObject<HTMLVideo
       </div>
       <div className="lc-lt-graph">
         <div className="lc-lt-label">Speed over the test</div>
-        <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Crosshead speed over time: 1 mm/min, then 50 mm/min after the 0.3% strain point">
+        <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={data.graphAria}>
           <line x1={P} x2={W - P} y1={y(0)} y2={y(0)} className="lc-lt-graph-axis" />
-          <line x1={P} x2={W - P} y1={y(50)} y2={y(50)} className="lc-lt-graph-grid" />
+          <line x1={P} x2={W - P} y1={y(data.speedMax)} y2={y(data.speedMax)} className="lc-lt-graph-grid" />
           <path d={path} className="lc-lt-graph-line" />
           <line x1={x(vt)} x2={x(vt)} y1={P} y2={H - P} className="lc-lt-graph-head" />
           <circle cx={x(vt)} cy={y(speed)} r="4" className="lc-lt-graph-dot" />
         </svg>
-        <div className="lc-lt-graph-scale"><span>1 mm/min</span><span>50 mm/min</span></div>
+        <div className="lc-lt-graph-scale"><span>{data.graphScale[0]}</span><span>{data.graphScale[1]}</span></div>
       </div>
       <dl className="lc-lt-stats">
-        <div><dt>Test time</dt><dd>{nf(vt, 1)}<small> s</small></dd></div>
-        <div><dt>Strain</dt><dd>{nf(Math.max(0, strain), 2)}<small> %</small></dd></div>
-        <div><dt>Stress</dt><dd>{nf(Math.max(0, stress), 1)}<small> MPa</small></dd></div>
+        <div><dt>Video time</dt><dd>{nf(vt, 1)}<small> s</small></dd></div>
+        <div><dt>Strain</dt><dd>{nf(Math.max(0, strain), strain >= 100 ? 0 : 2)}<small> %</small></dd></div>
+        <div><dt>Stress</dt><dd>{nf(Math.max(0, stress), 2)}<small> MPa</small></dd></div>
       </dl>
     </div>
   );
 }
 
 /* ---- 2. Video ------------------------------------------------------- */
-function Player({ video, videoRef }: { video: Props['video']; videoRef: React.RefObject<HTMLVideoElement> }) {
+function Player({ data, video, videoRef }: { data: LiveTestData; video: Props['video']; videoRef: React.RefObject<HTMLVideoElement> }) {
   const wrapRef = React.useRef<HTMLDivElement>(null);
   const [playing, setPlaying] = React.useState(false);
   const [progress, setProgress] = React.useState(0);
+  const [dur, setDur] = React.useState(data.duration);
   const userPaused = React.useRef(false);
 
   React.useEffect(() => {
@@ -136,7 +126,8 @@ function Player({ video, videoRef }: { video: Props['video']; videoRef: React.Re
     const onPlay = () => setPlaying(true);
     const onPause = () => setPlaying(false);
     const onTime = () => setProgress(v.duration ? v.currentTime / v.duration : 0);
-    v.addEventListener('play', onPlay); v.addEventListener('pause', onPause); v.addEventListener('timeupdate', onTime);
+    const onMeta = () => { if (isFinite(v.duration) && v.duration > 0) setDur(v.duration); };
+    v.addEventListener('play', onPlay); v.addEventListener('pause', onPause); v.addEventListener('timeupdate', onTime); v.addEventListener('loadedmetadata', onMeta);
     let io: IntersectionObserver | null = null;
     if ('IntersectionObserver' in window) {
       io = new IntersectionObserver(([e]) => {
@@ -145,7 +136,7 @@ function Player({ video, videoRef }: { video: Props['video']; videoRef: React.Re
       }, { threshold: 0.4 });
       io.observe(wrap);
     }
-    return () => { io?.disconnect(); v.removeEventListener('play', onPlay); v.removeEventListener('pause', onPause); v.removeEventListener('timeupdate', onTime); };
+    return () => { io?.disconnect(); v.removeEventListener('play', onPlay); v.removeEventListener('pause', onPause); v.removeEventListener('timeupdate', onTime); v.removeEventListener('loadedmetadata', onMeta); };
   }, [videoRef]);
 
   const toggle = () => {
@@ -162,7 +153,7 @@ function Player({ video, videoRef }: { video: Props['video']; videoRef: React.Re
   return (
     <div className="lc-lt-player" ref={wrapRef}>
       <div className="lc-lt-video-frame" style={{ aspectRatio: `${video.width} / ${video.height}` }}>
-        <video ref={videoRef} src={video.src} poster={video.poster} width={video.width} height={video.height} muted playsInline loop preload="none" aria-label="Polypropylene tensile test: stress–strain chart synced with the camera view of the specimen" />
+        <video ref={videoRef} src={video.src} poster={video.poster} width={video.width} height={video.height} muted playsInline loop preload="none" aria-label={data.videoAria} />
         <div className="lc-lt-video-tags" aria-hidden="true">
           <span>Stress–strain curve</span><span>Specimen camera</span>
         </div>
@@ -178,7 +169,9 @@ function Player({ video, videoRef }: { video: Props['video']; videoRef: React.Re
         </button>
         <div className="lc-lt-seek" onClick={seek} role="presentation">
           <div className="lc-lt-seek-fill" style={{ width: `${progress * 100}%` }} />
-          <div className="lc-lt-seek-switch" style={{ left: `${(PP_SWITCH_TIME / 49.87) * 100}%` }} title="Speed switches to 50 mm/min" />
+          {data.speedMarks.map((m) => (
+            <div key={m.t} className="lc-lt-seek-switch" style={{ left: `${Math.min((m.t / dur) * 100, 100)}%` }} title={m.title} />
+          ))}
         </div>
       </div>
     </div>
@@ -186,27 +179,26 @@ function Player({ video, videoRef }: { video: Props['video']; videoRef: React.Re
 }
 
 /* ---- 3. Results table -------------------------------------------------- */
-const TABS = [
-  { id: 'summary', label: 'Summary statistics' },
-  { id: 'specimens', label: 'All 10 specimens' },
-  { id: 'overlay', label: 'Stress–strain overlay' },
-  { id: 'conditions', label: 'Test conditions' },
-] as const;
-
-function Results({ overlay }: { overlay: Props['overlay'] }) {
-  const [tab, setTab] = React.useState<(typeof TABS)[number]['id']>('summary');
+function Results({ data, overlay }: { data: LiveTestData; overlay: Props['overlay'] }) {
+  const TABS = [
+    { id: 'summary', label: 'Summary statistics' },
+    { id: 'specimens', label: data.specimensTabLabel },
+    { id: 'overlay', label: 'Stress–strain overlay' },
+    { id: 'conditions', label: 'Test conditions' },
+  ];
+  const [tab, setTab] = React.useState('summary');
   const refs = React.useRef<(HTMLButtonElement | null)[]>([]);
   const onKey = (e: React.KeyboardEvent, i: number) => {
     if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
     const n = (i + (e.key === 'ArrowRight' ? 1 : -1) + TABS.length) % TABS.length;
     setTab(TABS[n].id); refs.current[n]?.focus();
   };
-  const mean = (k: keyof (typeof PP_SAMPLES)[number]) => PP_SAMPLES.reduce((a, s) => a + (s[k] as number), 0) / PP_SAMPLES.length;
+  const mean = (k: string) => data.samples.reduce((a, s) => a + Number(s[k]), 0) / data.samples.length;
 
   return (
     <div className="lc-lt-results">
       <div className="lc-lt-kpis">
-        {PP_KPIS.map((k) => (
+        {data.kpis.map((k) => (
           <div key={k.label} className="lc-lt-kpi">
             <div className="lc-lt-kpi-v">{k.value}</div>
             <div className="lc-lt-kpi-l">{k.label}</div>
@@ -215,7 +207,7 @@ function Results({ overlay }: { overlay: Props['overlay'] }) {
         ))}
       </div>
 
-      <div className="lc-lt-tabs" role="tablist" aria-label="Polypropylene test results">
+      <div className="lc-lt-tabs" role="tablist" aria-label={data.resultsLabel}>
         {TABS.map((t, i) => (
           <button key={t.id} ref={(el) => { refs.current[i] = el; }} type="button" role="tab" id={`lt-tab-${t.id}`} aria-controls={`lt-panel-${t.id}`} aria-selected={tab === t.id} tabIndex={tab === t.id ? 0 : -1} className={`lc-lt-tab${tab === t.id ? ' is-on' : ''}`} onClick={() => setTab(t.id)} onKeyDown={(e) => onKey(e, i)}>{t.label}</button>
         ))}
@@ -227,7 +219,7 @@ function Results({ overlay }: { overlay: Props['overlay'] }) {
             <table className="lc-lt-table">
               <thead><tr><th scope="col">Property</th><th scope="col">Mean</th><th scope="col">± SD</th><th scope="col">CV</th><th scope="col">Min</th><th scope="col">Max</th></tr></thead>
               <tbody>
-                {PP_SUMMARY.map((r) => {
+                {data.summary.map((r) => {
                   const d = r.unit === 'MPa' && r.mean > 200 ? 1 : 2;
                   return (
                     <tr key={r.label}>
@@ -250,30 +242,24 @@ function Results({ overlay }: { overlay: Props['overlay'] }) {
             <table className="lc-lt-table lc-lt-table--num">
               <thead>
                 <tr>
-                  <th scope="col">#</th>
-                  <th scope="col">Yield stress <span className="lc-lt-unit">MPa</span></th>
-                  <th scope="col">Elong. at yield <span className="lc-lt-unit">%</span></th>
-                  <th scope="col">Break stress <span className="lc-lt-unit">MPa</span></th>
-                  <th scope="col">Break strain <span className="lc-lt-unit">%</span></th>
-                  <th scope="col">Chord modulus <span className="lc-lt-unit">MPa</span></th>
-                  <th scope="col">Auto modulus <span className="lc-lt-unit">MPa</span></th>
-                  <th scope="col">Width (auto) <span className="lc-lt-unit">mm</span></th>
+                  <th scope="col">{data.sampleIdLabel}</th>
+                  {data.sampleColumns.map((c) => (
+                    <th key={c.key} scope="col">{c.label}{c.unit ? <> <span className="lc-lt-unit">{c.unit}</span></> : null}</th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
-                {PP_SAMPLES.map((s) => (
-                  <tr key={s.n}>
-                    <th scope="row">{String(s.n).padStart(2, '0')}</th>
-                    <td>{nf(s.yieldStress, 2)}</td><td>{nf(s.elongYield, 2)}</td><td>{nf(s.breakStress, 2)}</td><td>{nf(s.breakStrain, 2)}</td>
-                    <td>{nf(s.chordMoE, 1)}</td><td>{nf(s.autoMoE, 1)}</td><td>{nf(s.width, 2)}</td>
+                {data.samples.map((s) => (
+                  <tr key={s.id}>
+                    <th scope="row">{s.id}</th>
+                    {data.sampleColumns.map((c) => <td key={c.key}>{nf(Number(s[c.key]), c.digits)}</td>)}
                   </tr>
                 ))}
               </tbody>
               <tfoot>
                 <tr>
                   <th scope="row">Mean</th>
-                  <td>{nf(mean('yieldStress'), 2)}</td><td>{nf(mean('elongYield'), 2)}</td><td>{nf(mean('breakStress'), 2)}</td><td>{nf(mean('breakStrain'), 2)}</td>
-                  <td>{nf(mean('chordMoE'), 1)}</td><td>{nf(mean('autoMoE'), 1)}</td><td>{nf(mean('width'), 2)}</td>
+                  {data.sampleColumns.map((c) => <td key={c.key}>{nf(mean(c.key), c.digits)}</td>)}
                 </tr>
               </tfoot>
             </table>
@@ -282,14 +268,14 @@ function Results({ overlay }: { overlay: Props['overlay'] }) {
 
         {tab === 'overlay' && (
           <figure className="lc-lt-overlay">
-            <img src={overlay.src} width={overlay.width} height={overlay.height} loading="lazy" alt="Stress–strain curves of all 10 polypropylene specimens overlaid, nearly identical up to break around 290–300% strain" />
-            <figcaption>All 10 specimens overlaid — the curves sit on top of each other from yield to the long drawing plateau, and diverge only at break.</figcaption>
+            <img src={overlay.src} width={overlay.width} height={overlay.height} loading="lazy" alt={data.overlayAlt} />
+            <figcaption>{data.overlayCaption}</figcaption>
           </figure>
         )}
 
         {tab === 'conditions' && (
           <dl className="lc-lt-conditions">
-            {PP_CONDITIONS.map(([k, v]) => (<div key={k}><dt>{k}</dt><dd>{v}</dd></div>))}
+            {data.conditions.map(([k, v]) => (<div key={k}><dt>{k}</dt><dd>{v}</dd></div>))}
           </dl>
         )}
       </div>
@@ -297,15 +283,15 @@ function Results({ overlay }: { overlay: Props['overlay'] }) {
   );
 }
 
-export default function LiveTestDemo({ video, overlay, syncOffset = 0 }: Props) {
+export default function LiveTestDemo({ data, video, overlay }: Props) {
   const videoRef = React.useRef<HTMLVideoElement>(null);
   return (
     <div className="lc-lt">
       <div className="lc-lt-card">
-        <Readout videoRef={videoRef} syncOffset={syncOffset} />
-        <Player video={video} videoRef={videoRef} />
+        <Readout data={data} videoRef={videoRef} />
+        <Player data={data} video={video} videoRef={videoRef} />
       </div>
-      <Results overlay={overlay} />
+      <Results data={data} overlay={overlay} />
     </div>
   );
 }

@@ -95,6 +95,15 @@ const JOBS = [
   { from: 'plastic-testing/integrating-data.webp', to: 'plastic-testing/integrating-data-1400.webp', width: 1400, mode: 'photo', quality: 84 },
   { from: 'plastic-testing/auto-thickness.webp', to: 'plastic-testing/auto-thickness-760.webp', width: 760, mode: 'photo' },
 
+  // --- /rubber-testing. Sources are the Webflow CubeOne page images. The slider
+  // spans the shell like the plastic page; step images sit in a half-width column.
+  { from: 'rubber-testing/portal-d412.webp', to: 'rubber-testing/portal-d412-760.webp', width: 760, mode: 'photo', quality: 84 },
+  { from: 'rubber-testing/portal-d412.webp', to: 'rubber-testing/portal-d412-1400.webp', width: 1400, mode: 'photo', quality: 84 },
+  { from: 'rubber-testing/auto-thickness.webp', to: 'rubber-testing/auto-thickness-760.webp', width: 760, mode: 'photo' },
+  { from: 'rubber-testing/cubeone-dimensions.webp', to: 'rubber-testing/cubeone-dimensions-1400.webp', width: 1400, mode: 'photo', quality: 84 },
+  { from: 'rubber-testing/step-start-test.webp', to: 'rubber-testing/step-start-test-1100.webp', width: 1100, mode: 'photo' },
+  { from: 'rubber-testing/cubeone-hero.webp', to: 'rubber-testing/cubeone-hero-1100.webp', width: 1100, mode: 'photo' },
+
   // --- Testimonial slider photos (one per quote, crossfaded). The panel is
   // ~570px wide on desktop and full-bleed on phones, so 1100w covers DPR-2.
   // Sources are the Webflow product-page renders, kept as *-src.webp.
