@@ -50,8 +50,10 @@ const updatedLabel = new Date(updated + 'T00:00:00').toLocaleDateString('en-US',
   </div>
 </section>
 <style>
+  /* The site Nav floats absolutely over this hero (~70px desktop, ~74px mobile), so the
+     top padding has to clear it — matches WhitePaperHero (150px / 110px). */
   .rs-hero { background: #000; color: #fff; }
-  .rs-hero__inner { max-width: 1312px; margin: 0 auto; padding: 72px 64px 96px; box-sizing: border-box; }
+  .rs-hero__inner { max-width: 1312px; margin: 0 auto; padding: 150px 64px 96px; box-sizing: border-box; }
   .rs-crumbs { margin-bottom: 22px; }
   .rs-crumbs ol { list-style: none; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0; padding: 0; font-size: 13px; }
   .rs-crumbs li { display: flex; align-items: center; gap: 8px; }
@@ -67,7 +69,7 @@ const updatedLabel = new Date(updated + 'T00:00:00').toLocaleDateString('en-US',
   .rs-hero__ctas { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 36px; }
 
   @media (max-width: 860px) {
-    .rs-hero__inner { padding: 40px 20px 64px; }
+    .rs-hero__inner { padding: 110px 20px 64px; }
     .rs-hero__h1 { font-size: 36px; }
     .rs-hero__deck { font-size: 17px; }
   }
