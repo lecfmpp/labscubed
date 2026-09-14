@@ -55,3 +55,16 @@
   for = "/events"
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
+
+# /about-us was proxied to Webflow by the catch-all until this page shipped, so
+# an edge-cached Webflow answer could otherwise outlive it. Same reasoning as
+# the webinar and events entries above.
+[[headers]]
+  for = "/about-us"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/about-us/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"

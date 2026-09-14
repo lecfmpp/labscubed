@@ -75,6 +75,18 @@ const JOBS = [
   { from: 'media/integ-alpha.png', to: 'media/integ-alpha.webp', mode: 'photo', quality: 88 },
   { from: 'media/integ-sap.png', to: 'media/integ-sap.webp', mode: 'photo', quality: 88 },
   { from: 'media/integ-uncountable.png', to: 'media/integ-uncountable.webp', mode: 'photo', quality: 88 },
+
+  // --- About-page timeline collages, pulled off the Webflow CDN at their
+  // native 2486x988. They are drawn at half of the 1312px shell (~620px) on
+  // desktop and full-bleed at 350px on a phone, so 1280w covers DPR-2 desktop
+  // and DPR-3 mobile with room to spare. The two 700x524 milestones are already
+  // at display size and need no job.
+  { from: 'about/2017-2018-industry-insight.webp', to: 'about/2017-2018-industry-insight-1280.webp', width: 1280, mode: 'photo' },
+  { from: 'about/2019-competition-triumph.webp', to: 'about/2019-competition-triumph-1280.webp', width: 1280, mode: 'photo' },
+  { from: 'about/2019-introducing-cubeone.webp', to: 'about/2019-introducing-cubeone-1280.webp', width: 1280, mode: 'photo' },
+  { from: 'about/2020-expansion-and-advancement.webp', to: 'about/2020-expansion-and-advancement-1280.webp', width: 1280, mode: 'photo' },
+  { from: 'about/2021-milestone-achievement.webp', to: 'about/2021-milestone-achievement-1280.webp', width: 1280, mode: 'photo' },
+  { from: 'about/2022-2023-momentum-builds.webp', to: 'about/2022-2023-momentum-builds-1280.webp', width: 1280, mode: 'photo' },
 ];
 
 const encoderFor = (job) =>

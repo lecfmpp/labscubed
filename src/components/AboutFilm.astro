@@ -1,0 +1,17 @@
+---
+// Black band carrying the second story film. No heading — the live Webflow
+// page does not give this video one either.
+import VideoFacade from '../islands/VideoFacade.tsx';
+---
+<section class="ab-film">
+  <div class="ab-film__inner">
+    {/* Well below the fold and inert until clicked — hydrate when idle. */}
+    <VideoFacade client:idle id="eWPbdBoOrJ4" title="LabsCubed — Discover Our Story" />
+  </div>
+</section>
+
+<style>
+  .ab-film { background: #000; color: #fff; }
+  .ab-film__inner { max-width: 1312px; margin: 0 auto; padding: 120px 64px; box-sizing: border-box; }
+  @media (max-width: 760px) { .ab-film__inner { padding: 72px 20px; } }
+</style>

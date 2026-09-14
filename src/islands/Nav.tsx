@@ -16,7 +16,7 @@ const mainLinks: [string, string][] = [
   // Promoted out of the Resources dropdown — it was the most useful thing in
   // there and invisible behind a hover.
   ['Blog', '/blog'],
-  ['About Us', 'https://www.labscubed.com/about-us'],
+  ['About Us', '/about-us'],
   ['Testimonials', 'https://www.labscubed.com/#testimonials'],
 ];
 const resourceLinks: [string, string][] = [

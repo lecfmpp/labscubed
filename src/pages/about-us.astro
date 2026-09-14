@@ -1,0 +1,66 @@
+---
+/* About Us — replaces the Webflow /about-us page at the same URL (a same-URL
+   swap like /get-a-quote and the blog, so no redirect is involved; the entry
+   added to public/_redirects only stops the catch-all proxy from answering
+   this path from Webflow, and the netlify.toml header stops an already-cached
+   Webflow answer from outliving this page at the edge).
+
+   Copy, images and both video ids come verbatim from the live Webflow page.
+   The one deliberate change: the final milestone reads 2026 on every
+   breakpoint — Webflow showed 2026 on desktop and 2024 on mobile. */
+import Base from '../layouts/Base.astro';
+import Nav from '../islands/Nav.tsx';
+import Footer from '../components/Footer.astro';
+import AboutHero from '../components/AboutHero.astro';
+import AboutTimeline from '../components/AboutTimeline.astro';
+import AboutFilm from '../components/AboutFilm.astro';
+import AboutContact from '../components/AboutContact.astro';
+import { SITE_URL } from '../site.mjs';
+
+const canonical = `${SITE_URL}/about-us`;
+const title = 'About LabsCubed | Automated Tensile Testing Solutions';
+const description =
+  "Learn about LabsCubed's mission to revolutionize material testing with innovative automated tensile testing machines for rubber and plastics. Our vision, team, and commitment to quality.";
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'AboutPage',
+    name: title,
+    description,
+    url: canonical,
+    isPartOf: { '@type': 'WebSite', name: 'LabsCubed', url: `${SITE_URL}/` },
+    about: {
+      '@type': 'Organization',
+      name: 'LabsCubed Inc.',
+      url: SITE_URL,
+      email: 'info@labscubed.com',
+      foundingDate: '2016',
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: '14 Hoffman St.',
+        addressLocality: 'Kitchener',
+        addressRegion: 'ON',
+        addressCountry: 'CA',
+      },
+    },
+  },
+];
+---
+<Base
+  title={title}
+  description={description}
+  canonical={canonical}
+  ogType="website"
+  jsonLd={jsonLd}
+  preloadHero={false}
+>
+  <Nav client:load />
+  <main class="lc-page">
+    <AboutHero />
+    <AboutTimeline />
+    <AboutFilm />
+    <AboutContact />
+  </main>
+  <Footer />
+</Base>

@@ -1,0 +1,69 @@
+---
+// Stay in touch — email + office, next to the office-location map.
+// Email and Office only, matching the live page (it lists no phone number).
+// The map ships as two SVGs, a wide one and a portrait mobile one; both are
+// rendered and CSS picks, so there is no layout shift and no JS.
+---
+<section class="ab-contact">
+  <div class="ab-contact__inner">
+    <div class="ab-contact__cols">
+      <div class="ab-contact__col">
+        <div class="ab-contact__eyebrow">Ontario, Canada</div>
+        <h2 class="ab-contact__h2">Stay in touch.</h2>
+        <dl class="ab-contact__rows">
+          <div class="ab-contact__row">
+            <dt>Email</dt>
+            <dd><a href="mailto:info@labscubed.com">info@labscubed.com</a></dd>
+          </div>
+          <div class="ab-contact__row">
+            <dt>Office</dt>
+            <dd>14 Hoffman St., Kitchener, Ontario, Canada</dd>
+          </div>
+        </dl>
+      </div>
+      <div class="ab-contact__col">
+        <div class="ab-contact__mapcard">
+          <div class="ab-contact__mapbox">
+            <img class="ab-contact__map ab-contact__map--wide" src="/assets/img/about/location-map.svg" alt="World map with the LabsCubed office marked in Kitchener, Ontario, Canada" width="1158" height="570" loading="lazy" />
+            <img class="ab-contact__map ab-contact__map--narrow" src="/assets/img/about/location-map-mobile.svg" alt="" width="600" height="400" loading="lazy" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .ab-contact { background: var(--lc-gray-100); color: var(--lc-ink); }
+  .ab-contact__inner { max-width: 1312px; margin: 0 auto; padding: 140px 64px; box-sizing: border-box; }
+  .ab-contact__cols { display: flex; flex-direction: row; gap: 80px; align-items: center; }
+  .ab-contact__col { flex: 1 1 0; min-width: 0; width: 100%; }
+
+  .ab-contact__eyebrow { font-weight: 700; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-muted); }
+  .ab-contact__h2 { font-weight: 700; font-size: 56px; line-height: 1.06; letter-spacing: -0.03em; margin: 18px 0 0; }
+
+  .ab-contact__rows { margin: 44px 0 0; display: flex; flex-direction: column; }
+  .ab-contact__row { display: flex; gap: 24px; padding: 18px 0; border-top: 1px solid rgba(0,0,0,0.05); }
+  .ab-contact__row:first-child { border-top: 1px solid rgba(0,0,0,0.1); }
+  .ab-contact__row dt { width: 92px; flex: none; font-weight: 700; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-muted); padding-top: 4px; }
+  .ab-contact__row dd { margin: 0; font-size: 18px; font-weight: 400; line-height: 1.5; }
+  .ab-contact__row a { color: var(--lc-ink); text-decoration: none; }
+  .ab-contact__row a:hover { text-decoration: underline; }
+
+  .ab-contact__mapcard { border-radius: 32px; overflow: hidden; background: #fff; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05); padding: 28px; }
+  .ab-contact__mapbox { width: 100%; aspect-ratio: 16 / 10; }
+  .ab-contact__map { width: 100%; height: 100%; object-fit: contain; display: block; }
+  .ab-contact__map--narrow { display: none; }
+
+  @media (max-width: 760px) {
+    .ab-contact__inner { padding: 72px 20px; }
+    .ab-contact__cols { flex-direction: column; gap: 32px; }
+    .ab-contact__h2 { font-size: 34px; }
+    .ab-contact__rows { margin-top: 28px; }
+    .ab-contact__row dd { font-size: 16px; }
+    .ab-contact__mapcard { border-radius: 16px; padding: 16px; }
+    .ab-contact__mapbox { aspect-ratio: 3 / 2; }
+    .ab-contact__map--wide { display: none; }
+    .ab-contact__map--narrow { display: block; }
+  }
+</style>

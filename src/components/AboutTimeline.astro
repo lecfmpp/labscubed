@@ -1,0 +1,90 @@
+---
+// Our Story — eight milestones, 2016 → 2026, alternating image/text rows.
+// Copy is verbatim from the Webflow /about-us page.
+//
+// The alternation is CSS `order` on odd rows rather than a branch in the
+// markup, so the DOM order stays image-then-text everywhere — which is also
+// the mobile order, and means the phone layout needs no JS at all.
+//
+// `ratio` is each image's native aspect ratio (the collages are 2486x988, the
+// two portrait-ish milestones 700x524); it is set on the frame so a wide
+// collage is never cropped. The 2486px originals are served through the 1280w
+// copies written by scripts/optimize-images.mjs — see the jobs there.
+import Section from './Section.astro';
+import Button from './Button.astro';
+
+const MILESTONES = [
+  { year: '2016', title: 'The Journey Begins', body: "Our startup journey commenced with a profound realization of the transformative power of materials in engineering. Fuelled by this insight and driven by the founders' frustration with manual sample testing, LabsCubed was born.", ratio: '700 / 524', img: '/assets/img/about/2016-the-journey-begins.webp', w: 700, h: 524, alt: "Engineer's desk setup with laptop, monitor, and LabsCubed branded water bottles." },
+  { year: '2017—2018', title: 'Industry Insight', body: 'Engaging with over 100 professionals in the rubber industry revealed a pressing need for faster and more efficient sample testing methods. Over the ensuing two years, we dedicated ourselves to crafting innovative solutions to address these pervasive industry challenges.', ratio: '2486 / 988', img: '/assets/img/about/2017-2018-industry-insight-1280.webp', w: 1280, h: 509, alt: 'LabsCubed engineers collaborating on CAD design for tensile testing equipment development.' },
+  { year: '2019', title: 'Competition Triumph', body: 'LabsCubed emerged victorious, clinching the top prize at the prestigious PLAST-EX and Advanced Design & Manufacturing Expo competition, validating our commitment to innovation and excellence.', ratio: '2486 / 988', img: '/assets/img/about/2019-competition-triumph-1280.webp', w: 1280, h: 509, alt: 'LabsCubed team members shaking hands and networking at an industry event.' },
+  { year: '2019', title: 'Introducing CubeOne', body: 'Following six rigorous prototype iterations and extensive testing of over 10,000 samples, coupled with significant venture capital investment, we proudly unveiled CubeOne. This cutting-edge tensile testing machine boasted unparalleled accuracy and consistency, setting a new standard in the industry.', ratio: '2486 / 988', img: '/assets/img/about/2019-introducing-cubeone-1280.webp', w: 1280, h: 509, alt: 'LabsCubed CubeOne and CubeTen automated tensile testing machines in a modern material testing laboratory.' },
+  { year: '2020', title: 'Expansion and Advancement', body: 'Our relocation to a state-of-the-art manufacturing and office facility in 2020 marked a pivotal moment in our growth trajectory. This strategic move empowered LabsCubed to scale up production and accommodate our burgeoning team, laying the foundation for future success.', ratio: '2486 / 988', img: '/assets/img/about/2020-expansion-and-advancement-1280.webp', w: 1280, h: 509, alt: 'LabsCubed CubeOne automated rubber tensile testing machine in its shipping packaging, ready for delivery.' },
+  { year: '2021', title: 'Milestone Achievement', body: 'The culmination of years of unwavering dedication and relentless pursuit of excellence culminated in the delivery of our first full-production machines to customers in 2021. This significant milestone underscored our commitment to pushing the boundaries of innovation and delivering superior solutions to our valued clients.', ratio: '2486 / 988', img: '/assets/img/about/2021-milestone-achievement-1280.webp', w: 1280, h: 509, alt: 'Collage showcasing LabsCubed automated tensile testing technology, including robotic sample handling and production.' },
+  { year: '2022—2023', title: 'Momentum Builds', body: 'Buoyed by our achievements, we intensified our efforts to enhance our machines, focusing on optimizing user-friendliness, calibration, and serviceability. Simultaneously, we embarked on ambitious projects, including the development of a groundbreaking plastics and adhesives machine, driven by customer demand and market trends.', ratio: '2486 / 988', img: '/assets/img/about/2022-2023-momentum-builds-1280.webp', w: 1280, h: 509, alt: 'Collage of LabsCubed machines and production line.' },
+  { year: '2026', title: 'Expanding Horizons', body: 'With a robust presence established in production facilities in North America, LabsCubed now sets its sights on broader horizons. Our strategic roadmap includes diversifying our product lines and venturing into the European market, poised to revolutionize the industry with our innovative solutions.', ratio: '700 / 524', img: '/assets/img/about/2026-expanding-horizons.webp', w: 700, h: 524, alt: 'LabsCubed automated tensile testing machine and team.' },
+];
+---
+<Section bg="#fff">
+  <div class="ab-tl">
+    <div class="ab-tl__eyebrow">Our Story</div>
+    <h2 class="ab-tl__h2">Discover our story.</h2>
+    <div class="ab-tl__rows">
+      {MILESTONES.map((s) => (
+        <div class="ab-tl__row">
+          <div class="ab-tl__media">
+            <div class="ab-tl__frame" style={`aspect-ratio:${s.ratio}`}>
+              <img src={s.img} alt={s.alt} width={s.w} height={s.h} loading="lazy" decoding="async" />
+            </div>
+          </div>
+          <div class="ab-tl__text">
+            <div class="ab-tl__year"><span class="ab-tl__dot"></span><span>{s.year}</span></div>
+            <h3 class="ab-tl__h3">{s.title}</h3>
+            <p class="ab-tl__body">{s.body}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+    <div class="ab-tl__cta"><Button variant="dark" href="/get-a-quote">Book a Demo</Button></div>
+  </div>
+</Section>
+
+<style>
+  .ab-tl { padding: 140px 0 0; }
+  .ab-tl__eyebrow { font-weight: 700; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-muted); }
+  .ab-tl__h2 { font-weight: 700; font-size: 56px; line-height: 1.06; letter-spacing: -0.03em; margin: 18px 0 0; max-width: 760px; color: var(--lc-ink); }
+  .ab-tl__rows { margin-top: 96px; display: flex; flex-direction: column; }
+
+  .ab-tl__row { display: flex; flex-direction: row; gap: 72px; align-items: center; padding: 56px 0; }
+  .ab-tl__row + .ab-tl__row { border-top: 1px solid rgba(0,0,0,0.07); }
+  /* Odd rows (the 1st, 3rd, …) read text-first on desktop; the DOM order stays
+     image-first for everyone, which is what mobile wants. */
+  .ab-tl__row:nth-child(odd) .ab-tl__media { order: 2; }
+  .ab-tl__row:nth-child(odd) .ab-tl__text { order: 1; }
+
+  .ab-tl__media { flex: 1 1 0; min-width: 0; width: 100%; }
+  .ab-tl__frame { border-radius: 32px; overflow: hidden; background: var(--lc-gray-100); box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05); }
+  .ab-tl__frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  .ab-tl__text { flex: 1 1 0; min-width: 0; width: 100%; display: flex; flex-direction: column; justify-content: center; padding: 0 8px; }
+  .ab-tl__year { display: inline-flex; align-items: center; gap: 10px; font-weight: 700; font-size: 12px; letter-spacing: 0.16em; color: var(--text-muted); }
+  .ab-tl__dot { width: 7px; height: 7px; border-radius: 50%; background: var(--lc-teal); flex: none; }
+  .ab-tl__h3 { font-weight: 700; font-size: 37px; line-height: 1.1; letter-spacing: -0.02em; margin: 16px 0 0; color: var(--lc-ink); }
+  .ab-tl__body { font-weight: 300; font-size: 18px; line-height: 1.6; color: var(--text-muted); margin: 16px 0 0; max-width: 520px; text-wrap: pretty; }
+
+  .ab-tl__cta { display: flex; justify-content: center; padding: 80px 0 140px; }
+
+  @media (max-width: 760px) {
+    .ab-tl { padding: 72px 0 0; }
+    .ab-tl__h2 { font-size: 34px; }
+    .ab-tl__rows { margin-top: 48px; gap: 56px; }
+    .ab-tl__row { flex-direction: column; gap: 20px; align-items: stretch; padding: 0; }
+    .ab-tl__row + .ab-tl__row { border-top: none; }
+    .ab-tl__row:nth-child(odd) .ab-tl__media,
+    .ab-tl__row:nth-child(odd) .ab-tl__text { order: 0; }
+    .ab-tl__frame { border-radius: 16px; }
+    .ab-tl__text { padding: 0; }
+    .ab-tl__h3 { font-size: 26px; }
+    .ab-tl__body { font-size: 15px; }
+    .ab-tl__cta { padding: 48px 0 72px; }
+  }
+</style>
