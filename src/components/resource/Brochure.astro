@@ -50,6 +50,30 @@ const { heading, body, imgSrc, imgAlt, asset = 'cubeten-brochure', formId = 'bro
 </style>
 <script>
   const ENDPOINT = 'https://grozewxrymeiruhggcdy.supabase.co/functions/v1/download-request';
+  // First-touch attribution — same lc_first_touch cookie the white-paper form
+  // and CTABanner use, so a lead that lands via a UTM link and downloads later
+  // still carries its campaign into webform_leads.
+  const UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'];
+  const COOKIE = 'lc_first_touch';
+  function firstTouch(): Record<string, string> {
+    let s: Record<string, string> = {};
+    try {
+      const m = document.cookie.match('(^|;)\\s*' + COOKIE + '\\s*=\\s*([^;]+)');
+      s = JSON.parse(m ? decodeURIComponent(m.pop() as string) : '{}') || {};
+    } catch { s = {}; }
+    if (!UTM_KEYS.some((k) => s[k])) {
+      const p = new URLSearchParams(location.search);
+      const cur: Record<string, string> = {};
+      UTM_KEYS.forEach((k) => { const v = p.get(k); if (v) cur[k] = v; });
+      if (Object.keys(cur).length) {
+        Object.assign(cur, { landing_page: location.pathname, referrer: document.referrer || '', ts: new Date().toISOString() });
+        document.cookie = `${COOKIE}=${encodeURIComponent(JSON.stringify(cur))};path=/;max-age=${60 * 60 * 24 * 90};SameSite=Lax`;
+        s = cur;
+      }
+    }
+    return s;
+  }
+  firstTouch();
   document.querySelectorAll<HTMLFormElement>('form[data-lc-asset]').forEach((form) => {
     const wrap = form.closest('.rs-brochure__copy');
     const success = wrap?.querySelector<HTMLElement>('.rs-brochure__success');
@@ -64,16 +88,24 @@ const { heading, body, imgSrc, imgAlt, asset = 'cubeten-brochure', formId = 'bro
       const name = String(data.get('name') || '').trim();
       const company = String(data.get('company') || '').trim();
       if (submit) { submit.disabled = true; submit.textContent = 'Sending…'; }
+      const ft = firstTouch();
       fetch(ENDPOINT, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, name, company, asset, source: location.pathname, landing_page: location.pathname, referrer: document.referrer || '', origin: 'astro-site' }),
+        body: JSON.stringify({
+          email, name, company, asset, origin: 'astro-site',
+          source: location.pathname,
+          utm_source: ft.utm_source || '', utm_medium: ft.utm_medium || '', utm_campaign: ft.utm_campaign || '',
+          utm_content: ft.utm_content || '', utm_term: ft.utm_term || '',
+          referrer: ft.referrer || document.referrer || '',
+          landing_page: ft.landing_page || location.pathname,
+        }),
       })
         .then((r) => r.json().catch(() => ({})).then((d) => ({ status: r.status, data: d })))
         .then(({ status, data: resp }) => {
           if (status === 200 && resp && resp.success) {
             form.hidden = true;
-            if (success) success.hidden = false;
+            if (success) { success.textContent = `Check your inbox! The brochure is on its way to ${email}.`; success.hidden = false; }
           } else if (errorEl) {
             errorEl.hidden = false;
             errorEl.textContent = status === 422 ? 'Please use your work email.' : 'Something went wrong. Please try again.';
