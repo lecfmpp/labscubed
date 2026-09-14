@@ -68,3 +68,13 @@
   for = "/about-us/*"
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/privacy-policy"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/privacy-policy/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
