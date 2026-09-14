@@ -541,7 +541,7 @@ export default function QuoteWizard() {
           otherSample: data.otherSample,
           dailyVolume: data.dailyIdx !== null ? (DAILY_OPTIONS[data.dailyIdx] || {}).label : '',
           recommendedMachine: rec.name,
-          source: location.pathname, landing_page: location.pathname, referrer: document.referrer || '',
+          source: location.pathname, landing_page: location.pathname, referrer: document.referrer || '', origin: 'astro-site',
         }),
       });
       const resp = await r.json().catch(() => ({}));

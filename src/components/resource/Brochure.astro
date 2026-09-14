@@ -67,7 +67,7 @@ const { heading, body, imgSrc, imgAlt, asset = 'cubeten-brochure', formId = 'bro
       fetch(ENDPOINT, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, name, company, asset, source: location.pathname, landing_page: location.pathname, referrer: document.referrer || '' }),
+        body: JSON.stringify({ email, name, company, asset, source: location.pathname, landing_page: location.pathname, referrer: document.referrer || '', origin: 'astro-site' }),
       })
         .then((r) => r.json().catch(() => ({})).then((d) => ({ status: r.status, data: d })))
         .then(({ status, data: resp }) => {

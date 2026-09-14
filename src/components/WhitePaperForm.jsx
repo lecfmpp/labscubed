@@ -134,6 +134,7 @@ export default function WhitePaperForm() {
       volume: details.volume,
       location: details.location,
       asset: 'whitepaper',
+      origin: 'astro-site',
       source: location.pathname,
       utm_source: ft.utm_source || '',
       utm_medium: ft.utm_medium || '',
