@@ -49,11 +49,23 @@ const features = [
 
 // NOTE: these four quotes are CubeOne (rubber) customers, carried over from
 // the framework handoff. Swap in CubeTen customers as soon as quotes exist.
+// Logos and headshots come from the old Webflow homepage review tabs; Webflow
+// had no real headshot for Jean-Damien (its hidden image was Tom Roberts), so
+// that card falls back to initials.
+const T = '/assets/img/testimonials/';
 const testimonials = [
-  { quote: "We've added the CubeOne to our quality department. This allowed for better repeatability of the measurements and gave the technician time to perform other tasks during each test sequence. The LabsCubed team was very responsive in adapting the interface with our other systems.", name: 'Jean-Damien', role: 'R&D Laboratory Chemist', company: 'Soucy Techno', loc: 'Quebec, Canada' },
-  { quote: "The CubeOne has been a great addition to ACE's laboratory from both a productivity and repeatability standpoint. Anyone can load it, walk away to perform other tasks, and let the Cube do its job — without the variation we'd typically see from stop-go interruptions and personnel changes.", name: 'Doug Foster', role: 'Director of Operations', company: 'ACE Laboratories', loc: 'Ohio, USA' },
-  { quote: 'The CubeOne tensometer is an excellent fit with our strategy to create A Quality Difference by implementing state-of-the-art testing processes in all our test laboratories that provide more reliable, predictive results for our customers.', name: 'Tom Roberts', role: 'Director of Quality', company: 'HEXPOL Compounding Americas', loc: '' },
-  { quote: "We are really happy with the performance of the CubeOne and with your responsiveness. It has absolutely streamlined our testing and data retrieval process to the point where it's actually enjoyable to do.", name: 'Raymond Franklin', role: 'Rheology Laboratory', company: 'Momentive', loc: 'North Carolina, USA' },
+  { quote: "We've added the CubeOne to our quality department. This allowed for better repeatability of the measurements and gave the technician time to perform other tasks during each test sequence. The LabsCubed team was very responsive in adapting the interface with our other systems.", name: 'Jean-Damien', role: 'R&D Laboratory Chemist', company: 'Soucy Techno', loc: 'Quebec, Canada',
+    logo: { src: T + 'logo-soucy.webp', width: 156, height: 26 },
+    photo: { src: IMG + 'stats-bg.webp', alt: 'Technician loading specimens onto a LabsCubed tray' } },
+  { quote: "The CubeOne has been a great addition to ACE's laboratory from both a productivity and repeatability standpoint. Anyone can load it, walk away to perform other tasks, and let the Cube do its job — without the variation we'd typically see from stop-go interruptions and personnel changes.", name: 'Doug Foster', role: 'Director of Operations', company: 'ACE Laboratories', loc: 'Ohio, USA',
+    avatar: T + 'doug-foster.webp', logo: { src: T + 'logo-ace.webp', width: 112, height: 32 },
+    photo: { src: T + 'photo-ace.webp', alt: 'LabsCubed automated tensile testing machine with its touchscreen' } },
+  { quote: 'The CubeOne tensometer is an excellent fit with our strategy to create A Quality Difference by implementing state-of-the-art testing processes in all our test laboratories that provide more reliable, predictive results for our customers.', name: 'Tom Roberts', role: 'Director of Quality', company: 'HEXPOL Compounding Americas', loc: '',
+    avatar: T + 'tom-roberts.webp', logo: { src: T + 'logo-hexpol.webp', width: 156, height: 26 },
+    photo: { src: T + 'photo-hexpol.webp', alt: 'Side view of a LabsCubed automated tensile testing machine' } },
+  { quote: "We are really happy with the performance of the CubeOne and with your responsiveness. It has absolutely streamlined our testing and data retrieval process to the point where it's actually enjoyable to do.", name: 'Raymond Franklin', role: 'Rheology Laboratory', company: 'Momentive', loc: 'North Carolina, USA',
+    avatar: T + 'ray-franklin.webp', logo: { src: T + 'logo-momentive.webp', width: 119, height: 20 },
+    photo: { src: T + 'photo-momentive.webp', alt: 'Close-up of the CubeTen status light and controls' } },
 ];
 
 const steps = [
@@ -165,7 +177,7 @@ const jsonLd = [
     <!-- 04 — Testimonials -->
     <ProductSection bg="#fff">
       <ProductHeading heading="Trusted by quality teams worldwide." sub="Real words from polymer and elastomer labs running LabsCubed automation every day." />
-      <TestimonialSlider client:idle items={testimonials} img={IMG + 'stats-bg.webp'} imgAlt="Technician loading specimens onto a LabsCubed tray" />
+      <TestimonialSlider client:idle items={testimonials} />
     </ProductSection>
 
     <!-- 05 — How it works -->

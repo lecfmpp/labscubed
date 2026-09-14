@@ -94,6 +94,13 @@ const JOBS = [
   { from: 'plastic-testing/integrating-data.webp', to: 'plastic-testing/integrating-data-760.webp', width: 760, mode: 'photo', quality: 84 },
   { from: 'plastic-testing/integrating-data.webp', to: 'plastic-testing/integrating-data-1400.webp', width: 1400, mode: 'photo', quality: 84 },
   { from: 'plastic-testing/auto-thickness.webp', to: 'plastic-testing/auto-thickness-760.webp', width: 760, mode: 'photo' },
+
+  // --- Testimonial slider photos (one per quote, crossfaded). The panel is
+  // ~570px wide on desktop and full-bleed on phones, so 1100w covers DPR-2.
+  // Sources are the Webflow product-page renders, kept as *-src.webp.
+  { from: 'testimonials/photo-ace-src.webp', to: 'testimonials/photo-ace.webp', width: 1100, mode: 'photo' },
+  { from: 'testimonials/photo-hexpol-src.webp', to: 'testimonials/photo-hexpol.webp', width: 1100, mode: 'photo' },
+  { from: 'testimonials/photo-momentive-src.webp', to: 'testimonials/photo-momentive.webp', width: 1100, mode: 'photo' },
 ];
 
 const encoderFor = (job) =>

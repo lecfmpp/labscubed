@@ -1,13 +1,26 @@
 /* TestimonialSlider island — framework section 04. Auto-rotating quote
-   (7s, paused while hovered) beside a lab photo, with dots.
+   (7s, paused while hovered) beside a photo that crossfades with it, plus
+   the customer's headshot and company logo (real assets from the old Webflow
+   review tabs). Every photo is stacked in the panel and toggled by opacity,
+   so switching quotes never waits on a network fetch.
    Layout and responsive rules live in styles.css as .lc-ts-* — Astro's scoped
    styles never reach island-rendered DOM, and CSS keeps the server HTML
    correct on phones before hydration. */
 import React from 'react';
 
-type Item = { quote: string; name: string; role: string; company: string; loc?: string };
+type Item = {
+  quote: string;
+  name: string;
+  role: string;
+  company: string;
+  loc?: string;
+  /** Headshot; falls back to initials when absent. */
+  avatar?: string;
+  logo?: { src: string; width: number; height: number };
+  photo: { src: string; alt: string };
+};
 
-export default function TestimonialSlider({ items, img, imgAlt = '' }: { items: Item[]; img: string; imgAlt?: string }) {
+export default function TestimonialSlider({ items }: { items: Item[] }) {
   const [i, setI] = React.useState(0);
   const [paused, setPaused] = React.useState(false);
   const n = items.length;
@@ -30,23 +43,40 @@ export default function TestimonialSlider({ items, img, imgAlt = '' }: { items: 
           <blockquote className="lc-ts-quote">“{t.quote}”</blockquote>
         </div>
         <div>
-          <div className="lc-ts-who">
-            <span className="lc-ts-avatar" aria-hidden="true">{initials}</span>
+          <div key={`who-${i}`} className="lc-ts-who lc-ts-fade">
+            <span className="lc-ts-avatar" aria-hidden="true">
+              {t.avatar ? <img src={t.avatar} alt="" width={52} height={52} loading="lazy" /> : initials}
+            </span>
             <div>
               <div className="lc-ts-name">{t.name}</div>
               <div className="lc-ts-role">{t.role}{t.loc ? ` · ${t.loc}` : ''}</div>
             </div>
           </div>
-          <span className="lc-ts-company">{t.company}</span>
+          <div key={`co-${i}`} className="lc-ts-company lc-ts-fade">
+            {t.logo
+              ? <img src={t.logo.src} alt={t.company} width={t.logo.width} height={t.logo.height} loading="lazy" className="lc-ts-logo" />
+              : <span className="lc-ts-company-name">{t.company}</span>}
+          </div>
           <div className="lc-ts-dots">
-            {items.map((_, idx) => (
-              <button key={idx} type="button" onClick={() => setI(idx)} aria-label={`Testimonial ${idx + 1}`} aria-current={i === idx} className={`lc-dot${i === idx ? ' is-on' : ''}`} />
+            {items.map((it, idx) => (
+              <button key={idx} type="button" onClick={() => setI(idx)} aria-label={`Testimonial from ${it.company}`} aria-current={i === idx} className={`lc-dot${i === idx ? ' is-on' : ''}`} />
             ))}
           </div>
         </div>
       </div>
       <div className="lc-ts-photo">
-        <img src={img} alt={imgAlt} width={1200} height={673} loading="lazy" />
+        {items.map((it, idx) => (
+          <img
+            key={it.photo.src}
+            src={it.photo.src}
+            alt={idx === i ? it.photo.alt : ''}
+            aria-hidden={idx !== i}
+            width={1100}
+            height={1000}
+            loading="lazy"
+            className={idx === i ? 'is-on' : undefined}
+          />
+        ))}
       </div>
     </div>
   );
