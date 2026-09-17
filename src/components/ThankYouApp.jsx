@@ -95,13 +95,24 @@ function Hero() {
 
   return (
     <section style={{ background: "#000", color: "#fff" }}>
-      <div style={{ maxWidth: 1312, margin: "0 auto", padding: m ? "48px 20px 64px" : "80px 64px 100px", display: "grid", gridTemplateColumns: m ? "1fr" : "1fr 1fr", gap: m ? 32 : 56, alignItems: "center" }}>
-        <div>
+      <div style={{ maxWidth: 1312, margin: "0 auto", padding: m ? "40px 20px 64px" : "64px 64px 100px" }}>
+        {/* Breadcrumb and partnership badge share the top of the hero: opposite
+            ends on desktop, stacked with the badge centred on a phone. */}
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 32 }}>
           <nav aria-label="Breadcrumb" style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, marginBottom: m ? 18 : 22 }}>
             <a href={isShow ? "/events/" : "/webinar/"} style={{ color: "rgba(255,255,255,0.65)", textDecoration: "none", borderBottom: "1px solid rgba(255,255,255,0.25)", paddingBottom: 1 }}>{isShow ? "All events" : "All webinars"}</a>
             <span aria-hidden="true" style={{ color: "rgba(255,255,255,0.3)" }}>/</span>
             <span style={{ color: "rgba(255,255,255,0.45)" }}>{isShow ? "Demo booked" : "Registered"}</span>
           </nav>
+          {!m && CONFIG.partner && <PartnershipBadge partner={CONFIG.partner} />}
+        </div>
+        {m && CONFIG.partner && (
+          <div style={{ display: "flex", justifyContent: "center", marginBottom: 24 }}>
+            <PartnershipBadge partner={CONFIG.partner} />
+          </div>
+        )}
+        <div style={{ display: "grid", gridTemplateColumns: m ? "1fr" : "1fr 1fr", gap: m ? 32 : 56, alignItems: "center" }}>
+        <div>
           <span style={{ width: 56, height: 56, borderRadius: "50%", background: COLORS.teal, display: "inline-flex", alignItems: "center", justifyContent: "center", marginBottom: 24 }}>
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4 10-11" stroke="#000" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
           </span>
@@ -113,7 +124,6 @@ function Hero() {
             <span style={{ fontWeight: 600, fontSize: 15 }}>{CONFIG.title}</span>
             <span style={{ fontSize: 13, color: "rgba(255,255,255,0.5)" }}>{CONFIG.dateLabel} · {CONFIG.timeLabel}</span>
           </div>
-          {CONFIG.partner && <div style={{ marginTop: 24 }}><PartnershipBadge partner={CONFIG.partner} /></div>}
           <div style={{ display: "flex", gap: 12, marginTop: 28, flexWrap: "wrap" }}>
             {calendarButtons.map((btn) => (
               <a key={btn.name} href={btn.href} target="_blank" rel="noopener noreferrer" style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 500, color: "#fff", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 999, padding: "10px 16px", textDecoration: "none", transition: "all 0.2s" }}>
@@ -125,6 +135,7 @@ function Hero() {
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 0, minWidth: 0 }}>
           <HeroVideo label={isShow ? "CubeOne in action" : "Event preview"} video={CONFIG.thankYouVideoUrl || CONFIG.heroVideoUrl} image={CONFIG.heroImageUrl} imageAlt={CONFIG.heroImageAlt} />
+        </div>
         </div>
       </div>
     </section>

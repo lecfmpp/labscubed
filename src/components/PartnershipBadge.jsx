@@ -38,7 +38,7 @@ export default function PartnershipBadge({ partner }) {
 
   const label = partner.label || 'Official Partnership Webinar';
   // Both logos shrink together on a phone so the row keeps its proportions.
-  const scale = m ? 0.82 : 1;
+  const scale = m ? 0.68 : 1;
   const lcHeight = Math.round(22 * scale);
   const partnerHeight = Math.round((partner.logoHeight || 30) * scale);
   const dividerHeight = Math.max(lcHeight, partnerHeight) + 6;
@@ -52,15 +52,15 @@ export default function PartnershipBadge({ partner }) {
         gap: m ? 9 : 11,
         maxWidth: '100%',
         boxSizing: 'border-box',
-        padding: m ? '13px 16px' : '15px 22px',
-        borderRadius: 16,
+        padding: m ? '11px 14px' : '15px 22px',
+        borderRadius: m ? 13 : 16,
         background: '#fff',
         boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.08), 0 18px 36px rgba(0,0,0,0.18)',
       }}
     >
       <span
         style={{
-          fontSize: m ? 9.5 : 10,
+          fontSize: m ? 8.5 : 10,
           fontWeight: 700,
           letterSpacing: '0.16em',
           textTransform: 'uppercase',
@@ -71,7 +71,7 @@ export default function PartnershipBadge({ partner }) {
       >
         {label}
       </span>
-      <div style={{ display: 'flex', alignItems: 'center', gap: m ? 14 : 18 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: m ? 11 : 18 }}>
         <img
           src={LC_LOGO}
           alt="LabsCubed"

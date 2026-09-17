@@ -149,14 +149,16 @@ function Hero() {
       {CONFIG.kind === "tradeshow" ? "Live demo" : "Live webinar"}
     </span>
   );
-  /* The live pill and the partnership badge share one wrapping row, so on a
-     phone the badge drops under the pill instead of squeezing it. */
-  const badgeRow = CONFIG.partner ? (
-    <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: m ? 12 : 16 }}>
-      {badge}
-      <PartnershipBadge partner={CONFIG.partner} />
+  /* The partnership badge sits opposite the breadcrumb at the top of the hero
+     on desktop, and centred on its own line on a phone, where there is no room
+     beside anything. */
+  const partnerBadge = CONFIG.partner ? <PartnershipBadge partner={CONFIG.partner} /> : null;
+  const topRow = (
+    <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 32 }}>
+      {breadcrumb}
+      {partnerBadge}
     </div>
-  ) : badge;
+  );
   const headline = (
     <h1 style={{ fontWeight: 700, fontSize: m ? 30 : 56, lineHeight: 1.1, letterSpacing: "-0.02em", margin: m ? "16px 0 0" : "20px 0 0" }}>{CONFIG.title}</h1>
   );
@@ -201,7 +203,12 @@ function Hero() {
       <section style={{ background: "#000", color: "#fff" }}>
         {livePulse}
         <div style={{ padding: "32px 20px 48px", display: "flex", flexDirection: "column", gap: 20 }}>
-          <div>{breadcrumb}{badgeRow}{headline}</div>
+          <div>
+            {breadcrumb}
+            {partnerBadge && <div style={{ display: "flex", justifyContent: "center", marginBottom: 20 }}>{partnerBadge}</div>}
+            {badge}
+            {headline}
+          </div>
           {media}
           {cta}
           {copy}
@@ -215,10 +222,11 @@ function Hero() {
   return (
     <section style={{ background: "#000", color: "#fff" }}>
       {livePulse}
-      <div style={{ maxWidth: 1312, margin: "0 auto", padding: "72px 64px 100px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 56, alignItems: "center" }}>
+      <div style={{ maxWidth: 1312, margin: "0 auto", padding: "56px 64px 100px" }}>
+        {topRow}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 56, alignItems: "center" }}>
         <div>
-          {breadcrumb}
-          {badgeRow}
+          {badge}
           {headline}
           <div style={{ marginTop: 20 }}>{copy}</div>
           <div style={{ marginTop: 28 }}>{schedule}</div>
@@ -226,6 +234,7 @@ function Hero() {
           <div style={{ marginTop: 40 }}>{speaker}</div>
         </div>
         {media}
+        </div>
       </div>
     </section>
   );
