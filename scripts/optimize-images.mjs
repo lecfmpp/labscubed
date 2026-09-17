@@ -61,6 +61,8 @@ const JOBS = [
   // parker-hannifin ships at 3840x2160 to be drawn 42px tall.
   { from: 'partners/parker-hannifin.png', to: 'partners/parker-hannifin.webp', height: 130, mode: 'art' },
   { from: 'partners/chevron-phillips.png', to: 'partners/chevron-phillips.webp', height: 150, mode: 'art' },
+  // Webinar partnership badge — ships at its native 231x73, drawn 30px tall.
+  { from: 'partners/spe.png', to: 'partners/spe.webp', height: 73, mode: 'art' },
 
   // --- Standards marks. Largest display is 26px tall in the hero rail.
   { from: 'standards/astm-logo.png', to: 'standards/astm-logo.webp', height: 84, mode: 'art' },

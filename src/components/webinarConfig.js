@@ -106,6 +106,20 @@ export const WEBINARS = {
     ],
     exploreCtaLabel: "Explore CubeTen",
     exploreCtaHref: "https://labscubed.com/plastic-testing",
+    // Co-branding. Set this and the registration + confirmation pages show the
+    // partnership badge (PartnershipBadge.jsx); leave it out and they show
+    // nothing. logoHeight is the drawn height in px, which the badge scales
+    // down on a phone. logoWidth/logoNativeHeight are the file's own pixel
+    // dimensions, used only to reserve the box before the image loads.
+    partner: {
+      name: "SPE",
+      label: "Official Partnership Webinar",
+      logoSrc: "/assets/img/partners/spe.webp",
+      logoAlt: "SPE — Inspiring Plastics Professionals",
+      logoHeight: 36,
+      logoWidth: 231,
+      logoNativeHeight: 73,
+    },
     // Video slots. Paste a YouTube URL, a share link, or the whole <iframe>
     // embed snippet — anything youTubeId() can read. Leave null for the
     // placeholder.

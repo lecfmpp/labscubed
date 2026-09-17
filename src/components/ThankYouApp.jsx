@@ -1,5 +1,6 @@
 import React from 'react';
 import { getWebinar, youTubeId, COLORS } from './webinarConfig.js';
+import PartnershipBadge from './PartnershipBadge.jsx';
 
 const WebinarContext = React.createContext(null);
 const useWebinar = () => React.useContext(WebinarContext);
@@ -112,6 +113,7 @@ function Hero() {
             <span style={{ fontWeight: 600, fontSize: 15 }}>{CONFIG.title}</span>
             <span style={{ fontSize: 13, color: "rgba(255,255,255,0.5)" }}>{CONFIG.dateLabel} · {CONFIG.timeLabel}</span>
           </div>
+          {CONFIG.partner && <div style={{ marginTop: 24 }}><PartnershipBadge partner={CONFIG.partner} /></div>}
           <div style={{ display: "flex", gap: 12, marginTop: 28, flexWrap: "wrap" }}>
             {calendarButtons.map((btn) => (
               <a key={btn.name} href={btn.href} target="_blank" rel="noopener noreferrer" style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 500, color: "#fff", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 999, padding: "10px 16px", textDecoration: "none", transition: "all 0.2s" }}>

@@ -1,5 +1,6 @@
 import React from 'react';
 import LogoSlider from './LogoSlider.jsx';
+import PartnershipBadge from './PartnershipBadge.jsx';
 import { getWebinar, youTubeId, COLORS } from './webinarConfig.js';
 
 // The countdown strip is NOT rendered here — it sits above the site header, so
@@ -148,6 +149,14 @@ function Hero() {
       {CONFIG.kind === "tradeshow" ? "Live demo" : "Live webinar"}
     </span>
   );
+  /* The live pill and the partnership badge share one wrapping row, so on a
+     phone the badge drops under the pill instead of squeezing it. */
+  const badgeRow = CONFIG.partner ? (
+    <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: m ? 12 : 16 }}>
+      {badge}
+      <PartnershipBadge partner={CONFIG.partner} />
+    </div>
+  ) : badge;
   const headline = (
     <h1 style={{ fontWeight: 700, fontSize: m ? 30 : 56, lineHeight: 1.1, letterSpacing: "-0.02em", margin: m ? "16px 0 0" : "20px 0 0" }}>{CONFIG.title}</h1>
   );
@@ -192,7 +201,7 @@ function Hero() {
       <section style={{ background: "#000", color: "#fff" }}>
         {livePulse}
         <div style={{ padding: "32px 20px 48px", display: "flex", flexDirection: "column", gap: 20 }}>
-          <div>{breadcrumb}{badge}{headline}</div>
+          <div>{breadcrumb}{badgeRow}{headline}</div>
           {media}
           {cta}
           {copy}
@@ -209,7 +218,7 @@ function Hero() {
       <div style={{ maxWidth: 1312, margin: "0 auto", padding: "72px 64px 100px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 56, alignItems: "center" }}>
         <div>
           {breadcrumb}
-          {badge}
+          {badgeRow}
           {headline}
           <div style={{ marginTop: 20 }}>{copy}</div>
           <div style={{ marginTop: 28 }}>{schedule}</div>
