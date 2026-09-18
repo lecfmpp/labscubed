@@ -1,0 +1,95 @@
+---
+/* WebMCP — exposes the site's key actions to AI agents running in the browser
+   (https://webmachinelearning.github.io/webmcp/). Feature-detected: without
+   navigator.modelContext this does nothing, so ordinary browsers are untouched.
+
+   Tools read the build-time files from scripts/build-agent-files.mjs
+   (/search-index.json and each page's index.md), so they stay in step with the
+   site without any extra data here. open_quote_form uses the same
+   sessionStorage `lc_quote_email` hand-off as the product-page CTA. */
+---
+<script>
+  type Tool = {
+    name: string;
+    description: string;
+    inputSchema: Record<string, unknown>;
+    execute: (input: any) => Promise<unknown>;
+  };
+  type Entry = { url: string; path: string; title: string; description: string };
+
+  const mc = (navigator as any).modelContext;
+  if (mc) {
+    const text = (t: string) => ({ content: [{ type: 'text', text: t }] });
+    let index: Promise<Entry[]> | null = null;
+    const loadIndex = () => (index ??= fetch('/search-index.json').then((r) => r.json()).catch(() => []));
+    const readMd = async (path: string) => {
+      const p = new URL(path, location.origin).pathname.replace(/\/?$/, '/');
+      const r = await fetch(`${p}index.md`);
+      return r.ok ? r.text() : `No page found at ${p}`;
+    };
+    const list = (rows: Entry[]) =>
+      rows.length ? rows.map((e) => `- ${e.title} — ${e.url}${e.description ? `\n  ${e.description}` : ''}`).join('\n') : 'No matches.';
+
+    const tools: Tool[] = [
+      {
+        name: 'search_blog',
+        description: 'Search LabsCubed articles and guides (tensile testing, ASTM/ISO standards, lab automation) by keywords. Returns titles, URLs and summaries.',
+        inputSchema: { type: 'object', properties: { query: { type: 'string', description: 'Keywords, e.g. "ASTM D638 automation"' } }, required: ['query'] },
+        async execute({ query }) {
+          const words = String(query || '').toLowerCase().split(/\s+/).filter(Boolean);
+          const rows = (await loadIndex())
+            .filter((e) => e.path.startsWith('/post/') || e.path.startsWith('/resources/'))
+            .map((e) => ({ e, score: words.filter((w) => `${e.title} ${e.description}`.toLowerCase().includes(w)).length }))
+            .filter((x) => x.score > 0)
+            .sort((a, b) => b.score - a.score)
+            .slice(0, 10)
+            .map((x) => x.e);
+          return text(list(rows));
+        },
+      },
+      {
+        name: 'read_page',
+        description: 'Read any labscubed.com page as Markdown, by path (e.g. "/about-us/" or "/post/automated-tensile-testing").',
+        inputSchema: { type: 'object', properties: { path: { type: 'string', description: 'Site path starting with /' } }, required: ['path'] },
+        async execute({ path }) { return text(await readMd(String(path || '/'))); },
+      },
+      {
+        name: 'get_product_specs',
+        description: 'Get the full page, including the spec table, for a LabsCubed machine: "cubeten" (plastics, ASTM D638/ISO 527, 10 kN) or "cubeone" (rubber, ASTM D412/ISO 37, 1 kN).',
+        inputSchema: { type: 'object', properties: { product: { type: 'string', enum: ['cubeten', 'cubeone'] } }, required: ['product'] },
+        async execute({ product }) { return text(await readMd(product === 'cubeone' ? '/rubber-testing/' : '/plastic-testing/')); },
+      },
+      {
+        name: 'list_events',
+        description: 'List upcoming LabsCubed webinars and trade-show appearances with their registration pages.',
+        inputSchema: { type: 'object', properties: {} },
+        async execute() {
+          const rows = (await loadIndex()).filter((e) => /^\/(webinar|events)\/[^/]+\/$/.test(e.path));
+          return text(list(rows));
+        },
+      },
+      {
+        name: 'open_quote_form',
+        description: 'Open the LabsCubed "Get a Quote" form so the user can request pricing. Optionally pre-fills their email. Does not submit anything.',
+        inputSchema: { type: 'object', properties: { email: { type: 'string', format: 'email', description: "The user's work email (optional)" } } },
+        async execute({ email } = {}) {
+          try { if (email) sessionStorage.setItem('lc_quote_email', String(email)); } catch { /* storage blocked */ }
+          location.assign('/get-a-quote/');
+          return text('Opened https://labscubed.com/get-a-quote/ — the user completes and submits the form.');
+        },
+      },
+    ];
+
+    try {
+      if (typeof mc.registerTool === 'function') {
+        const ctrl = new AbortController();
+        for (const t of tools) mc.registerTool(t, { signal: ctrl.signal });
+        addEventListener('pagehide', () => ctrl.abort(), { once: true });
+      } else if (typeof mc.provideContext === 'function') {
+        mc.provideContext({ tools });
+      }
+    } catch (e) {
+      console.warn('[webmcp] registration failed', e);
+    }
+  }
+</script>

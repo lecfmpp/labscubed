@@ -1,0 +1,50 @@
+---
+/* 404 — Netlify serves dist/404.html for any path that has no file and no
+   redirect rule. Until the Webflow cutover the catch-all in public/_redirects
+   proxied every unknown path to Webflow instead, so this page only exists now
+   that Webflow is gone. noindex: a not-found page must never be indexed. */
+import Base from '../layouts/Base.astro';
+import Nav from '../islands/Nav.tsx';
+import Footer from '../components/Footer.astro';
+
+const links = [
+  { href: '/plastic-testing/', label: 'CubeTen — plastic testing', note: 'ASTM D638 / ISO 527, fully automated' },
+  { href: '/rubber-testing/', label: 'CubeOne — rubber testing', note: 'ASTM D412 / ISO 37, walk-away batches' },
+  { href: '/blog', label: 'Blog', note: 'Guides to tensile testing and lab automation' },
+  { href: '/get-a-quote/', label: 'Get a quote', note: 'Tell us what you test — we recommend a machine' },
+];
+---
+<Base title="Page not found | LabsCubed" description="The page you were looking for does not exist." preloadHero={false} noindex>
+  <Nav client:load sticky />
+  <main class="lc-page nf">
+    <p class="nf-code">404</p>
+    <h1 class="nf-title">This page doesn't exist.</h1>
+    <p class="nf-lede">It may have moved when we rebuilt the site. One of these is probably what you're after:</p>
+    <ul class="nf-links">
+      {links.map((l) => (
+        <li><a href={l.href}><strong>{l.label}</strong><span>{l.note}</span></a></li>
+      ))}
+    </ul>
+    <p class="nf-home"><a href="/">← Back to the homepage</a></p>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .nf { max-width: 880px; margin: 0 auto; padding: 96px 64px 120px; }
+  .nf-code { font-weight: 700; font-size: 14px; letter-spacing: 0.12em; color: var(--lc-teal); margin: 0; }
+  .nf-title { font-weight: 700; font-size: 56px; letter-spacing: -0.03em; line-height: 1.07; margin: 12px 0 0; color: var(--lc-ink); }
+  .nf-lede { font-weight: 300; font-size: 18px; line-height: 1.6; color: var(--text-muted); margin: 20px 0 0; }
+  .nf-links { list-style: none; padding: 0; margin: 40px 0 0; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .nf-links a { display: flex; flex-direction: column; gap: 6px; padding: 22px 24px; border: 1px solid rgba(0,0,0,0.08); border-radius: 16px; color: var(--lc-ink); text-decoration: none; transition: border-color .18s ease, transform .12s ease; }
+  .nf-links a:hover { border-color: var(--lc-teal); transform: translateY(-1px); }
+  .nf-links strong { font-weight: 600; font-size: 17px; }
+  .nf-links span { font-weight: 300; font-size: 14px; color: var(--text-muted); }
+  .nf-home { margin: 36px 0 0; }
+  .nf-home a { color: var(--lc-ink); font-weight: 500; }
+  @media (max-width: 760px) {
+    .nf { padding: 56px 20px 80px; }
+    .nf-title { font-size: 36px; }
+    .nf-links { grid-template-columns: 1fr; }
+  }
+</style>

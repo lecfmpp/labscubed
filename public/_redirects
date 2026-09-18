@@ -1,6 +1,6 @@
-# This site (Netlify) serves the homepage. The homepage and Astro's own assets
+# This site (Netlify) serves all of labscubed.com. Pages and Astro's own assets
 # (/_astro/*, /assets/*, /uploads/*, /robots.txt, /sitemap*.xml) are real files,
-# so Netlify serves them directly — the rule below never touches them.
+# so Netlify serves them directly; the rules below cover old URL shapes.
 #
 # Webinar URLs are /webinar/<topic>-<mon>-<year>/ so the path says which webinar
 # AND when it ran — next year's SPE gets its own URL rather than colliding.
@@ -46,6 +46,7 @@
 /api/webinar/replay-register  /.netlify/functions/webinar-replay-register  200
 /api/webinar/replay-session   /.netlify/functions/webinar-replay-session   200
 /api/webinar/question         /.netlify/functions/webinar-question         200
+/api/health                   /.netlify/functions/health                   200
 
 # Resources pages migrated off Webflow keep their SEO equity via a 301 to the
 # new /resources/<slug> URL, rather than the same-URL swap used for the blog —
@@ -73,7 +74,10 @@
 # file; point them at the Astro sitemap index instead of the proxied old one.
 /sitemap.xml  /sitemap-index.xml  301
 
-# Every OTHER path is invisibly proxied (status 200 = rewrite, not redirect) to
-# the Webflow site published at site.labscubed.com, so all existing
-# labscubed.com/... pages keep working at the exact same URLs.
-/*  https://site.labscubed.com/:splat  200
+# Webflow cutover (2026-09-18): the catch-all that proxied every other path
+# to the Webflow site (site.labscubed.com) is gone. Every page now lives here,
+# and an unknown path gets Netlify's 404 (dist/404.html, src/pages/404.astro).
+# Webflow's blog-era listing paths go to the Astro blog rather than a 404.
+/blog-category/*   /blog   301
+/blog-categories/*  /blog  301
+/category/*        /blog   301

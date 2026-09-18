@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "astro dev",
     "prebuild": "node scripts/fetch-yt-thumbs.mjs",
-    "build": "astro build",
+    "build": "astro build && node scripts/build-agent-files.mjs",
     "optimize:images": "node scripts/optimize-images.mjs",
     "preview": "astro preview",
     "astro": "astro"
@@ -13,11 +13,16 @@
   "dependencies": {
     "@astrojs/react": "^4.4.2",
     "@astrojs/sitemap": "^3.7.3",
+    "@netlify/blobs": "^10.7.13",
     "@types/react": "^18.3.31",
     "@types/react-dom": "^18.3.7",
     "astro": "^5.18.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "sharp": "^0.34.5"
+  },
+  "devDependencies": {
+    "turndown": "^7.2.4",
+    "turndown-plugin-gfm": "^1.0.2"
   }
 }

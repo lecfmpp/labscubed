@@ -1,0 +1,46 @@
+{
+  "linkset": [
+    {
+      "anchor": "https://grozewxrymeiruhggcdy.supabase.co/functions/v1/quote-request",
+      "service-desc": [
+        {
+          "href": "https://labscubed.com/openapi.json",
+          "type": "application/vnd.oai.openapi+json"
+        }
+      ],
+      "service-doc": [
+        {
+          "href": "https://labscubed.com/developers/",
+          "type": "text/html"
+        }
+      ],
+      "status": [
+        {
+          "href": "https://labscubed.com/api/health",
+          "type": "application/json"
+        }
+      ]
+    },
+    {
+      "anchor": "https://labscubed.com/api/webinar/register",
+      "service-desc": [
+        {
+          "href": "https://labscubed.com/openapi.json",
+          "type": "application/vnd.oai.openapi+json"
+        }
+      ],
+      "service-doc": [
+        {
+          "href": "https://labscubed.com/developers/",
+          "type": "text/html"
+        }
+      ],
+      "status": [
+        {
+          "href": "https://labscubed.com/api/health",
+          "type": "application/json"
+        }
+      ]
+    }
+  ]
+}

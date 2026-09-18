@@ -1,0 +1,77 @@
+---
+/* /developers — the human-readable `service-doc` for /.well-known/api-catalog
+   (RFC 9727) and the index of everything machine-readable on the site. Kept in
+   step with public/openapi.json and the files under public/.well-known/. */
+import Base from '../layouts/Base.astro';
+import Nav from '../islands/Nav.tsx';
+import Footer from '../components/Footer.astro';
+import { SITE_URL } from '../site.mjs';
+
+const QUOTE = 'https://grozewxrymeiruhggcdy.supabase.co/functions/v1/quote-request';
+const resources = [
+  ['/openapi.json', 'OpenAPI 3.1 description of the public API'],
+  ['/.well-known/api-catalog', 'API catalog (RFC 9727, application/linkset+json)'],
+  ['/.well-known/ai-catalog.json', 'Agentic Resource Discovery manifest'],
+  ['/.well-known/agent-skills/index.json', 'Agent skills: choosing a tester, requesting a quote'],
+  ['/llms.txt', 'Site guide for language models'],
+  ['/llms-full.txt', 'Every page as one Markdown file'],
+  ['/sitemap-index.xml', 'XML sitemap'],
+  ['/rss.xml', 'Blog feed'],
+];
+---
+<Base
+  title="Developers & AI agents | LabsCubed"
+  description="How software and AI agents can read labscubed.com and act on it: the public quote and registration API, Markdown for every page, llms.txt, agent skills and WebMCP tools."
+  canonical={`${SITE_URL}/developers`}
+  preloadHero={false}
+>
+  <Nav client:load sticky />
+  <main class="lc-page dev">
+    <p class="dev-eyebrow">Developers & AI agents</p>
+    <h1>Build on labscubed.com</h1>
+    <p class="dev-lede">Everything on this site is readable by machines, and the two actions a visitor can take — asking for a quote and registering for an event — are open APIs. Both create a sales contact, so only call them with the person's explicit consent.</p>
+
+    <h2>Public API</h2>
+    <p>Described in full in <a href="/openapi.json">/openapi.json</a>. No key or authentication is needed.</p>
+    <h3>Request a quote</h3>
+    <pre><code>POST {QUOTE}
+Content-Type: application/json
+
+{`{"first":"Ada","last":"Lovelace","email":"ada@example-polymers.com","country":"CA","company":"Example Polymers","otherSample":"ASTM D638 Type I","dailyVolume":"20–50","source":"agent"}`}</code></pre>
+    <p>Required: <code>first</code>, <code>last</code>, <code>email</code>, <code>country</code> (ISO 3166-1 alpha-2). Returns <code>200 {`{"success":true}`}</code>, or <code>422</code> with an <code>error</code> message. Set <code>source</code> to <code>"agent"</code> when submitting on someone's behalf.</p>
+    <h3>Register for a webinar or trade-show demo</h3>
+    <p><code>POST /api/webinar/register</code> with <code>name</code>, <code>email</code>, <code>company</code>, <code>website</code>, <code>role</code>, <code>industry</code>, <code>volume</code>, <code>location</code> and a <code>webinar_slug</code> from <a href="/webinar/">/webinar</a> or <a href="/events/">/events</a>.</p>
+    <h3>Status</h3>
+    <p><code>GET /api/health</code> returns <code>{`{"status":"ok"}`}</code>.</p>
+
+    <h2>Reading the site</h2>
+    <p>Send <code>Accept: text/markdown</code> to any page URL to get it as Markdown (with an <code>x-markdown-tokens</code> estimate); browsers still get HTML. In the browser, pages register WebMCP tools (<code>search_blog</code>, <code>read_page</code>, <code>get_product_specs</code>, <code>open_quote_form</code>, <code>list_events</code>) when <code>navigator.modelContext</code> is available.</p>
+    <ul class="dev-list">
+      {resources.map(([href, label]) => <li><a href={href}><code>{href}</code></a> — {label}</li>)}
+    </ul>
+
+    <h2>Usage preferences</h2>
+    <p>Our <a href="/robots.txt">robots.txt</a> declares <code>Content-Signal: ai-train=yes, search=yes, ai-input=yes</code>: you're welcome to index, cite and learn from this content. Questions: <a href="mailto:info@labscubed.com">info@labscubed.com</a>.</p>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .dev { max-width: 860px; margin: 0 auto; padding: 72px 64px 110px; color: var(--lc-ink); }
+  .dev-eyebrow { font-weight: 700; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--lc-teal); margin: 0; }
+  .dev h1 { font-weight: 700; font-size: 52px; letter-spacing: -0.03em; line-height: 1.08; margin: 12px 0 0; }
+  .dev h2 { font-weight: 700; font-size: 28px; letter-spacing: -0.02em; margin: 56px 0 0; }
+  .dev h3 { font-weight: 600; font-size: 19px; margin: 32px 0 0; }
+  .dev p, .dev li { font-weight: 300; font-size: 17px; line-height: 1.65; }
+  .dev p { margin: 14px 0 0; }
+  .dev-lede { font-size: 19px; color: var(--text-muted); margin-top: 20px; }
+  .dev a { color: var(--lc-ink); text-decoration: underline; text-underline-offset: 3px; }
+  .dev code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.88em; background: rgba(0,0,0,0.05); padding: 1px 5px; border-radius: 5px; }
+  .dev pre { background: #0f1115; color: #e8e8ea; padding: 20px 22px; border-radius: 14px; overflow-x: auto; margin: 14px 0 0; }
+  .dev pre code { background: none; padding: 0; color: inherit; font-size: 13px; line-height: 1.6; white-space: pre; }
+  .dev-list { padding-left: 20px; margin: 16px 0 0; }
+  @media (max-width: 760px) {
+    .dev { padding: 48px 20px 80px; }
+    .dev h1 { font-size: 34px; }
+  }
+</style>

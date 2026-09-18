@@ -1,0 +1,312 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "LabsCubed public API",
+    "version": "1.0.0",
+    "description": "The public actions on labscubed.com: request a quote for a CubeTen/CubeOne automated tensile testing machine, and register for a LabsCubed webinar or trade-show demo. Both create a sales contact — only call them with the person's explicit consent. Read-only content is available as HTML, as Markdown (send Accept: text/markdown to any page) and via /llms.txt.",
+    "contact": {
+      "name": "LabsCubed",
+      "url": "https://labscubed.com/about-us/",
+      "email": "info@labscubed.com"
+    }
+  },
+  "externalDocs": {
+    "url": "https://labscubed.com/developers/"
+  },
+  "servers": [
+    {
+      "url": "https://labscubed.com"
+    }
+  ],
+  "paths": {
+    "/functions/v1/quote-request": {
+      "servers": [
+        {
+          "url": "https://grozewxrymeiruhggcdy.supabase.co"
+        }
+      ],
+      "post": {
+        "operationId": "requestQuote",
+        "summary": "Request a machine quote",
+        "description": "Files a quote request with LabsCubed sales (same endpoint as https://labscubed.com/get-a-quote/). Set source to \"agent\" when an AI agent submits on a user's behalf.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuoteRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Success"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Body is not valid JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "A required field is missing or invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/webinar/register": {
+      "post": {
+        "operationId": "registerForEvent",
+        "summary": "Register for a webinar or trade-show demo",
+        "description": "Registers a person for a LabsCubed webinar or trade-show demo. Current events are listed at https://labscubed.com/webinar/ and https://labscubed.com/events/.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Registration"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Registered"
+          },
+          "400": {
+            "description": "Invalid body, missing field or unknown webinar_slug",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Method not allowed"
+          }
+        }
+      }
+    },
+    "/api/health": {
+      "get": {
+        "operationId": "health",
+        "summary": "Service status",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "const": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "QuoteRequest": {
+        "type": "object",
+        "required": [
+          "first",
+          "last",
+          "email",
+          "country"
+        ],
+        "properties": {
+          "first": {
+            "type": "string",
+            "description": "First name"
+          },
+          "last": {
+            "type": "string",
+            "description": "Last name"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Work email"
+          },
+          "country": {
+            "type": "string",
+            "description": "ISO 3166-1 alpha-2 country code, e.g. CA"
+          },
+          "countryName": {
+            "type": "string"
+          },
+          "company": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string",
+            "description": "City of the lab"
+          },
+          "phoneDisplay": {
+            "type": "string",
+            "description": "Phone number incl. country code"
+          },
+          "specimens": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "standard": {
+                  "type": "string",
+                  "examples": [
+                    "ASTM D638"
+                  ]
+                },
+                "name": {
+                  "type": "string",
+                  "examples": [
+                    "Type I"
+                  ]
+                }
+              }
+            }
+          },
+          "otherSample": {
+            "type": "string",
+            "description": "Free-text description of specimens/standards tested"
+          },
+          "dailyVolume": {
+            "type": "string",
+            "enum": [
+              "Under 20",
+              "20–50",
+              "50–100",
+              "100+"
+            ],
+            "description": "Specimens tested per day"
+          },
+          "recommendedMachine": {
+            "type": "string",
+            "enum": [
+              "CubeTen",
+              "CubeOne"
+            ]
+          },
+          "heard": {
+            "type": "string",
+            "description": "How they heard about LabsCubed"
+          },
+          "message": {
+            "type": "string"
+          },
+          "subscribe": {
+            "type": "boolean",
+            "default": true,
+            "description": "Opt in to LabsCubed email updates"
+          },
+          "source": {
+            "type": "string",
+            "description": "Where the request came from; use \"agent\" for AI agents"
+          }
+        }
+      },
+      "Registration": {
+        "type": "object",
+        "required": [
+          "name",
+          "email",
+          "company",
+          "website",
+          "role",
+          "industry",
+          "volume",
+          "location",
+          "webinar_slug"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "company": {
+            "type": "string"
+          },
+          "website": {
+            "type": "string",
+            "format": "uri"
+          },
+          "role": {
+            "type": "string"
+          },
+          "industry": {
+            "type": "string"
+          },
+          "volume": {
+            "type": "string",
+            "description": "Specimens tested per day"
+          },
+          "location": {
+            "type": "string"
+          },
+          "webinar_slug": {
+            "type": "string",
+            "enum": [
+              "spe-oct-2026",
+              "automation-ai-nov-2026",
+              "gps-sep-2026",
+              "ami-nov-2026",
+              "npe-may-2027"
+            ]
+          }
+        }
+      },
+      "Success": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "const": true
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

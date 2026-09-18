@@ -1,0 +1,66 @@
+{
+  "specVersion": "1.0",
+  "host": {
+    "displayName": "LabsCubed",
+    "identifier": "did:web:labscubed.com",
+    "url": "https://labscubed.com",
+    "description": "Automated tensile testing machines for plastics (CubeTen) and rubber (CubeOne) labs."
+  },
+  "entries": [
+    {
+      "identifier": "urn:air:labscubed.com:api:public",
+      "displayName": "LabsCubed public API (quote requests, event registration)",
+      "type": "application/vnd.oai.openapi+json",
+      "url": "https://labscubed.com/openapi.json",
+      "representativeQueries": [
+        "request a quote for an automated tensile testing machine",
+        "get pricing for a CubeTen plastics tensile tester",
+        "register for a LabsCubed webinar on lab automation"
+      ]
+    },
+    {
+      "identifier": "urn:air:labscubed.com:api:catalog",
+      "displayName": "LabsCubed API catalog",
+      "type": "application/linkset+json",
+      "url": "https://labscubed.com/.well-known/api-catalog",
+      "representativeQueries": [
+        "what APIs does LabsCubed offer",
+        "LabsCubed API documentation"
+      ]
+    },
+    {
+      "identifier": "urn:air:labscubed.com:skills:index",
+      "displayName": "LabsCubed agent skills",
+      "type": "application/json",
+      "url": "https://labscubed.com/.well-known/agent-skills/index.json",
+      "representativeQueries": [
+        "which tensile tester should my plastics lab buy",
+        "automated tensile testing machine for ASTM D638 and ISO 527",
+        "automated rubber tensile testing to ASTM D412",
+        "how to request a LabsCubed quote"
+      ]
+    },
+    {
+      "identifier": "urn:air:labscubed.com:docs:llms",
+      "displayName": "LabsCubed site guide for LLMs (llms.txt)",
+      "type": "text/markdown",
+      "url": "https://labscubed.com/llms.txt",
+      "representativeQueries": [
+        "what does LabsCubed make",
+        "automated tensile testing for polymer and rubber labs",
+        "CubeOne vs CubeTen differences"
+      ]
+    },
+    {
+      "identifier": "urn:air:labscubed.com:feed:blog",
+      "displayName": "LabsCubed blog (RSS)",
+      "type": "application/rss+xml",
+      "url": "https://labscubed.com/rss.xml",
+      "representativeQueries": [
+        "guides to tensile testing standards",
+        "lab automation for plastics and rubber QA",
+        "ASTM D790 flexural testing explained"
+      ]
+    }
+  ]
+}

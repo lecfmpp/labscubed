@@ -134,3 +134,59 @@
   for = "/sitemap.xml"
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
+
+# ---- Agent discovery -------------------------------------------------------
+# RFC 8288 Link headers on the homepage point agents at the machine-readable
+# resources (RFC 9727 §3 for the api-catalog relation).
+[[headers]]
+  for = "/"
+  [headers.values]
+    Link = '</.well-known/api-catalog>; rel="api-catalog", </openapi.json>; rel="service-desc"; type="application/vnd.oai.openapi+json", </developers/>; rel="service-doc", </llms.txt>; rel="describedby"; type="text/markdown", </.well-known/ai-catalog.json>; rel="ai-catalog", </.well-known/agent-skills/index.json>; rel="agent-skills", </sitemap-index.xml>; rel="sitemap"'
+
+# RFC 9727: the catalog is served as a linkset. The file has no extension, so
+# the type must be set explicitly.
+[[headers]]
+  for = "/.well-known/api-catalog"
+  [headers.values]
+    Content-Type = "application/linkset+json"
+    Access-Control-Allow-Origin = "*"
+
+[[headers]]
+  for = "/.well-known/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Cache-Control = "public, max-age=3600"
+
+[[headers]]
+  for = "/.well-known/ai-catalog.json"
+  [headers.values]
+    Content-Type = "application/json"
+    Access-Control-Allow-Origin = "*"
+
+[[headers]]
+  for = "/.well-known/agent-skills/*/SKILL.md"
+  [headers.values]
+    Content-Type = "text/markdown; charset=utf-8"
+
+[[headers]]
+  for = "/openapi.json"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+
+[[headers]]
+  for = "/*.md"
+  [headers.values]
+    Content-Type = "text/markdown; charset=utf-8"
+    Access-Control-Allow-Origin = "*"
+
+[[headers]]
+  for = "/llms.txt"
+  [headers.values]
+    Content-Type = "text/markdown; charset=utf-8"
+    Access-Control-Allow-Origin = "*"
+
+[[headers]]
+  for = "/llms-full.txt"
+  [headers.values]
+    Content-Type = "text/markdown; charset=utf-8"
+    Access-Control-Allow-Origin = "*"
