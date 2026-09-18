@@ -19,8 +19,7 @@ export default defineConfig({
     sitemap({
       // Replay session pages are personal and gated; they have no business in
       // the sitemap (they are also noindex).
-      // Thank-you pages are post-submit confirmations (noindex, like session).
-      filter: (page) => !/\/(session|thank-you)\/?$/.test(new URL(page).pathname),
+      filter: (page) => !/\/session\/?$/.test(new URL(page).pathname),
       /* Blog/post entries are rewritten without a trailing slash so each entry
          matches the page's own canonical exactly — a sitemap that disagrees
          with the canonical is a wasted signal. BLOG_HOST equals SITE_URL now
