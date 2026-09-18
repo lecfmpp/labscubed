@@ -52,25 +52,26 @@
 /astm-d790-iso-178-explained-everything-you-need-to-know-about-plastic-flexural-testing  /post/astm-d790-iso-178-explained-everything-you-need-to-know-about-plastic-flexural-testing  301
 /astm-d790-iso-178-explained-everything-you-need-to-know-about-plastic-flexural-testing/  /post/astm-d790-iso-178-explained-everything-you-need-to-know-about-plastic-flexural-testing  301
 
-# Old Webflow pages Search Console reported as 404 (export 2026-09-18). Most
-# died on Webflow long before the migration; they redirect because links to
-# them still exist in the wild — trade-show QR codes printed on booth material,
-# and personal SPE invitation emails.
-/spe-tpo-qr-code  /events  301
-/spe-tpo-form  /events  301
-/spe-tpo-thank-you  /events  301
-/kshow-2025-qr-code  /events  301
-/kshow-2025-form  /events  301
-/rubber-tyre-expo-sharjah-2025-form  /events  301
-/rubber-tyre-expo-sharjah-2025-qr-code  /events  301
-/hannover-messe-form  /events  301
-/rapid-tct-2025  /events  301
-/rapid-tct-2025-form  /events  301
-/rapid-tct-thank-you  /events  301
-/csc-2025-thank-you  /events  301
-/casey-blabolil-spe-thermoset-labscubed-invitation  /webinar  301
-/william-loudermilk-spe-thermoset-labscubed-invitation  /webinar  301
-/marshall-starr-spe-thermoset-labscubed-invitation-copy  /webinar  301
+# Old Webflow pages Search Console reported as 404 (export 2026-09-18). The
+# one-off trade-show forms, QR pages, thank-you pages and personal invitations
+# are deliberately GONE: 410 tells search engines to drop them for good, and
+# visitors see the normal not-found page. Only the old URLs of real content
+# redirect.
+/spe-tpo-qr-code  /404.html  410
+/spe-tpo-form  /404.html  410
+/spe-tpo-thank-you  /404.html  410
+/kshow-2025-qr-code  /404.html  410
+/kshow-2025-form  /404.html  410
+/rubber-tyre-expo-sharjah-2025-form  /404.html  410
+/rubber-tyre-expo-sharjah-2025-qr-code  /404.html  410
+/hannover-messe-form  /404.html  410
+/rapid-tct-2025  /404.html  410
+/rapid-tct-2025-form  /404.html  410
+/rapid-tct-thank-you  /404.html  410
+/csc-2025-thank-you  /404.html  410
+/casey-blabolil-spe-thermoset-labscubed-invitation  /404.html  410
+/william-loudermilk-spe-thermoset-labscubed-invitation  /404.html  410
+/marshall-starr-spe-thermoset-labscubed-invitation-copy  /404.html  410
 /cubeten-homepage-v2  /plastic-testing  301
 /post/blog-post-page/*  /post/:splat  301
 /blog-post/astm-d412-explained-a-complete-guide-to-rubber-tensile-testing  /resources/astm-d412-iso-37-rubber-tensile-testing  301
