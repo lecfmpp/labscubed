@@ -58,7 +58,11 @@ const {
    baked in at build time, so the page makes no third-party requests during load
    and every one of those handshakes was pure overhead — Lighthouse was already
    flagging img.youtube.com as an unused preconnect. */
-const canonical = canonicalProp ?? new URL(Astro.url.pathname, SITE_URL).href;
+/* Pages build as flat .html files (astro.config: format 'file', trailingSlash
+   'never'), so the build-time pathname can carry `.html` / `/index`; the public
+   URL has neither and no trailing slash. */
+const pagePath = Astro.url.pathname.replace(/\.html$/, '').replace(/\/index$/, '').replace(/(.)\/$/, '$1') || '/';
+const canonical = canonicalProp ?? new URL(pagePath, SITE_URL).href;
 const ogImage =
   ogImageProp ?? new URL('/assets/img/media/hero-cubeten.webp', SITE_URL).href;
 const jsonLd = jsonLdProp ?? buildJsonLd(SITE_URL);
@@ -76,7 +80,7 @@ const jsonLd = jsonLdProp ?? buildJsonLd(SITE_URL);
     <Analytics />
     <link rel="ai-catalog" href="/.well-known/ai-catalog.json" />
     <link rel="api-catalog" href="/.well-known/api-catalog" />
-    {!noindex && <link rel="alternate" type="text/markdown" href={`${new URL(Astro.url.pathname, SITE_URL).pathname.replace(/\/?$/, '/')}index.md`} />}
+    {!noindex && <link rel="alternate" type="text/markdown" href={pagePath === '/' ? '/index.md' : `${pagePath}.md`} />}
 
     <!-- Open Graph -->
     <meta property="og:type" content={ogType} />

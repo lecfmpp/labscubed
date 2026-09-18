@@ -9,10 +9,10 @@ const HOME = 'https://www.labscubed.com/';
 // proxies, so the visitor stays on the host that has the page. www.labscubed.com
 // 301s to the apex, so an absolute www URL costs a redirect hop.
 const mainLinks: [string, string][] = [
-  ['Rubber Testing', '/rubber-testing/'],
-  ['Plastic Testing', '/plastic-testing/'],
-  ['Webinars', '/webinar/'],
-  ['Events', '/events/'],
+  ['Rubber Testing', '/rubber-testing'],
+  ['Plastic Testing', '/plastic-testing'],
+  ['Webinars', '/webinar'],
+  ['Events', '/events'],
   // Promoted out of the Resources dropdown — it was the most useful thing in
   // there and invisible behind a hover.
   ['Blog', '/blog'],
@@ -24,7 +24,7 @@ const resourceLinks: [string, string][] = [
 ];
 // The header CTA sends visitors to the Get a Quote wizard (replaced the old
 // "Download our White-Paper" button, 2026-09-14).
-const QUOTE = '/get-a-quote/';
+const QUOTE = '/get-a-quote';
 
 /* `showQuote` hides the header's primary button (Get a Quote). No page turns it off today; it exists so
    a single-purpose page can carry exactly one call to action.

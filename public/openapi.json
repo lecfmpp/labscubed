@@ -6,12 +6,12 @@
     "description": "The public actions on labscubed.com: request a quote for a CubeTen/CubeOne automated tensile testing machine, and register for a LabsCubed webinar or trade-show demo. Both create a sales contact — only call them with the person's explicit consent. Read-only content is available as HTML, as Markdown (send Accept: text/markdown to any page) and via /llms.txt.",
     "contact": {
       "name": "LabsCubed",
-      "url": "https://labscubed.com/about-us/",
+      "url": "https://labscubed.com/about-us",
       "email": "info@labscubed.com"
     }
   },
   "externalDocs": {
-    "url": "https://labscubed.com/developers/"
+    "url": "https://labscubed.com/developers"
   },
   "servers": [
     {
@@ -28,7 +28,7 @@
       "post": {
         "operationId": "requestQuote",
         "summary": "Request a machine quote",
-        "description": "Files a quote request with LabsCubed sales (same endpoint as https://labscubed.com/get-a-quote/). Set source to \"agent\" when an AI agent submits on a user's behalf.",
+        "description": "Files a quote request with LabsCubed sales (same endpoint as https://labscubed.com/get-a-quote). Set source to \"agent\" when an AI agent submits on a user's behalf.",
         "requestBody": {
           "required": true,
           "content": {
@@ -77,7 +77,7 @@
       "post": {
         "operationId": "registerForEvent",
         "summary": "Register for a webinar or trade-show demo",
-        "description": "Registers a person for a LabsCubed webinar or trade-show demo. Current events are listed at https://labscubed.com/webinar/ and https://labscubed.com/events/.",
+        "description": "Registers a person for a LabsCubed webinar or trade-show demo. Current events are listed at https://labscubed.com/webinar and https://labscubed.com/events/.",
         "requestBody": {
           "required": true,
           "content": {

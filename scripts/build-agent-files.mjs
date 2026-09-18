@@ -1,6 +1,6 @@
 /* Post-build: the machine-readable copies of the site, generated from dist/.
  *
- *   dist/<page>/index.md        Markdown of every indexable page. The edge
+ *   dist/<page>.md              Markdown of every indexable page. The edge
  *                               function netlify/edge-functions/markdown.ts
  *                               serves it for `Accept: text/markdown`.
  *   dist/llms.txt               llmstxt.org index of the site.
@@ -66,7 +66,6 @@ const pick = (html, re) => decode((html.match(re) || [])[1] || '').trim();
 const pages = [];
 for (const file of walk(DIST)) {
   const rel = relative(DIST, file);
-  if (!rel.endsWith('index.html')) continue; // 404.html and friends
   const html = readFileSync(file, 'utf8');
   if (/<meta[^>]+name="robots"[^>]+noindex/i.test(html)) continue;
 
@@ -79,30 +78,31 @@ for (const file of walk(DIST)) {
   // the markup ("Type I" + "ASTM D638" would read "Type IASTM D638").
   const spaced = main.replace(/<\/(span|strong|em|b|small|a)>\s*<(span|strong|em|b|small|a|div|p)\b/gi, '</$1> <$2');
   const body = td.turndown(spaced).replace(/\n{3,}/g, '\n\n').trim();
-  const url = canonical || `${SITE}/${dirname(rel) === '.' ? '' : dirname(rel) + '/'}`;
+  // Pages build flat (astro.config format 'file'): about-us.html -> /about-us.
+  const path = rel === 'index.html' ? '/' : '/' + rel.replace(/\.html$/, '');
+  const url = canonical || SITE + path;
   const md = `---\ntitle: ${JSON.stringify(title)}\ndescription: ${JSON.stringify(description)}\nurl: ${url}\n---\n\n${body}\n`;
-  writeFileSync(join(dirname(file), 'index.md'), md);
+  writeFileSync(file.replace(/\.html$/, '.md'), md);
 
-  const path = '/' + (dirname(rel) === '.' ? '' : dirname(rel) + '/');
   pages.push({ path, url, title, description, md });
 }
 pages.sort((a, b) => a.path.localeCompare(b.path));
 
 /* ---- llms.txt --------------------------------------------------------- */
 const groups = [
-  ['Products', (p) => /^\/(plastic|rubber)-testing\/$/.test(p.path)],
-  ['Get a quote', (p) => p.path === '/get-a-quote/'],
+  ['Products', (p) => /^\/(plastic|rubber)-testing$/.test(p.path)],
+  ['Get a quote', (p) => p.path === '/get-a-quote'],
   ['Testing standards guides', (p) => p.path.startsWith('/resources/') || p.path.startsWith('/white-paper')],
   ['Blog', (p) => p.path.startsWith('/post/')],
-  ['Webinars & events', (p) => /^\/(webinar|events)\/[^/]+\/$/.test(p.path)],
-  ['Company', (p) => ['/about-us/', '/privacy-policy/', '/developers/'].includes(p.path)],
+  ['Webinars & events', (p) => /^\/(webinar|events)\/[^/]+$/.test(p.path)],
+  ['Company', (p) => ['/about-us', '/privacy-policy', '/developers'].includes(p.path)],
 ];
-const mdUrl = (p) => `${SITE}${p.path}index.md`;
+const mdUrl = (p) => `${SITE}${p.path === '/' ? '/index' : p.path}.md`;
 let llms = `# LabsCubed
 
 > LabsCubed builds automated tensile testing machines for polymer and rubber labs: the CubeTen (plastics and adhesives, ASTM D638 / ISO 527, up to 10 kN, 15 specimens per run) and the CubeOne (rubber and elastomers, ASTM D412 / ISO 37 and ASTM D624 tear, up to 1 kN, 12 specimens per run). Both load, measure and test a full tray of specimens unattended.
 
-Every page below is also available as Markdown: send \`Accept: text/markdown\` to its URL, or use the linked \`index.md\`. The public API (quote requests, event registration) is described at ${SITE}/openapi.json and ${SITE}/developers/.
+Every page below is also available as Markdown: send \`Accept: text/markdown\` to its URL, or use the linked \`.md\` URL. The public API (quote requests, event registration) is described at ${SITE}/openapi.json and ${SITE}/developers.
 `;
 for (const [name, test] of groups) {
   const list = pages.filter(test);

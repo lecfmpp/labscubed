@@ -5,7 +5,7 @@
 // of the same event next year gets its own URL instead of colliding.
 //
 // The slug is the single identifier that ties everything together: the URL
-// (/webinar/<slug>/), the Resend segment, the Supabase webinar_slug tag, and
+// (/webinar/<slug>), the Resend segment, the Supabase webinar_slug tag, and
 // the .ics filename. Adding a webinar means adding an entry here, creating a
 // Resend segment, adding two .astro pages that pass the slug, and dropping an
 // .ics in public/ics/ — no component changes.
@@ -41,8 +41,8 @@ function build(w) {
     ...w,
     targetISO: w.startUTC,
     // Trailing slashes on purpose — without them Netlify answers a 301 first.
-    registrationUrl: `/${base}/${w.slug}/`,
-    thankYouUrl: `/${base}/${w.slug}/thank-you/`,
+    registrationUrl: `/${base}/${w.slug}`,
+    thankYouUrl: `/${base}/${w.slug}/thank-you`,
     submitEndpoint: "/api/webinar/register",
     calendarLinks: {
       google: `https://calendar.google.com/calendar/u/0/r/eventedit?text=${encodeURIComponent(w.title)}&dates=${compact(w.startUTC)}/${compact(w.endUTC)}`,

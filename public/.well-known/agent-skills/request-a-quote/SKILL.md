@@ -13,11 +13,11 @@ LabsCubed CubeTen or CubeOne machine.
 Submitting a quote shares the user's name, work email and company with
 LabsCubed, and LabsCubed will contact them. **Only submit after the user has
 explicitly confirmed the details and agreed to be contacted.** When in doubt,
-send them to the form instead: https://labscubed.com/get-a-quote/
+send them to the form instead: https://labscubed.com/get-a-quote
 
 ## Option A: the form (preferred for people)
 
-https://labscubed.com/get-a-quote/ is a 5-step wizard: specimens tested →
+https://labscubed.com/get-a-quote is a 5-step wizard: specimens tested →
 daily volume → contact details → lab (company, city) → review. It recommends a
 machine from the answers.
 

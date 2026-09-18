@@ -27,14 +27,14 @@ export interface MachineInfo {
 export const MACHINES: Record<string, MachineInfo> = {
   CubeTen: {
     name: 'CubeTen',
-    href: '/plastic-testing/',
+    href: '/plastic-testing',
     img: '/assets/img/media/cubeten-01.webp',
     blurb: 'Automated plastic tensile and flexure testing — up to 10kN on a 20-specimen carousel.',
     specs: [['Force (Omega Load Cell)', 'Up to 10kN'], ['Elongation', 'Up to 1000%'], ['Footprint', '0.8 × 1.2m']],
   },
   CubeOne: {
     name: 'CubeOne',
-    href: '/rubber-testing/',
+    href: '/rubber-testing',
     img: '/assets/img/media/cubeone-01.webp',
     blurb: 'Built for rubber and elastomers — high-elongation pulls, tear dies and unattended runs.',
     specs: [['Force (Omega Load Cell)', 'Up to 1kN'], ['Max Speed', '150 mm/s (6 in/s)'], ['Footprint', '0.8 × 1.1m']],

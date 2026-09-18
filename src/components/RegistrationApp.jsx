@@ -137,7 +137,7 @@ function Hero() {
      back out — to the hub, where the other webinars are. */
   const breadcrumb = (
     <nav aria-label="Breadcrumb" style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, marginBottom: m ? 16 : 20 }}>
-      <a href={CONFIG.kind === "tradeshow" ? "/events/" : "/webinar/"} style={{ color: "rgba(255,255,255,0.65)", textDecoration: "none", borderBottom: "1px solid rgba(255,255,255,0.25)", paddingBottom: 1 }}>{CONFIG.kind === "tradeshow" ? "All events" : "All webinars"}</a>
+      <a href={CONFIG.kind === "tradeshow" ? "/events" : "/webinar"} style={{ color: "rgba(255,255,255,0.65)", textDecoration: "none", borderBottom: "1px solid rgba(255,255,255,0.25)", paddingBottom: 1 }}>{CONFIG.kind === "tradeshow" ? "All events" : "All webinars"}</a>
       <span aria-hidden="true" style={{ color: "rgba(255,255,255,0.3)" }}>/</span>
       <span style={{ color: "rgba(255,255,255,0.45)" }}>{CONFIG.dateLabel.replace(/^\w+, /, "")}</span>
     </nav>

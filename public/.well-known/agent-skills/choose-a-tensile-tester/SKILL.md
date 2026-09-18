@@ -14,7 +14,7 @@ test standard.
 
 | | **CubeTen** — plastics & adhesives | **CubeOne** — rubber & elastomers |
 |---|---|---|
-| Page | https://labscubed.com/plastic-testing/ | https://labscubed.com/rubber-testing/ |
+| Page | https://labscubed.com/plastic-testing | https://labscubed.com/rubber-testing |
 | Tensile standards | ASTM D638 · ISO 527 · DIN · JIS | ASTM D412 · ISO 37 |
 | Other tests | Single lap shear · T-peel (adhesives) | Tear: ASTM D624 (Die B, Die C) |
 | Force | Up to 10 kN | Up to 1 kN |
@@ -40,10 +40,10 @@ test standard.
 
 ## Next step
 
-Send the user to https://labscubed.com/get-a-quote/ (or use the
+Send the user to https://labscubed.com/get-a-quote (or use the
 `request-a-quote` skill). Useful background reading:
-- https://labscubed.com/resources/astm-d638-iso-527-2-plastic-tensile-testing/
-- https://labscubed.com/resources/astm-d412-iso-37-rubber-tensile-testing/
+- https://labscubed.com/resources/astm-d638-iso-527-2-plastic-tensile-testing
+- https://labscubed.com/resources/astm-d412-iso-37-rubber-tensile-testing
 - https://labscubed.com/blog
 
 Do not quote prices; LabsCubed prices per configuration.

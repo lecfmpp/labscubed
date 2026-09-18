@@ -134,7 +134,7 @@ export default function SessionApp({ slug }) {
       <section style={{ background: "#000", color: "#fff" }}>
         <div style={{ maxWidth: 1040, margin: "0 auto", padding: narrow ? "28px 20px 40px" : "40px 32px 56px" }}>
           <nav aria-label="Breadcrumb" style={{ display: "flex", gap: 8, fontSize: 13, marginBottom: 18 }}>
-            <a href="/webinar/" style={{ color: "rgba(255,255,255,0.65)", textDecoration: "none", borderBottom: "1px solid rgba(255,255,255,0.25)" }}>All webinars</a>
+            <a href="/webinar" style={{ color: "rgba(255,255,255,0.65)", textDecoration: "none", borderBottom: "1px solid rgba(255,255,255,0.25)" }}>All webinars</a>
             <span aria-hidden="true" style={{ color: "rgba(255,255,255,0.3)" }}>/</span>
             <span style={{ color: "rgba(255,255,255,0.45)" }}>Session</span>
           </nav>
@@ -192,7 +192,7 @@ function Stage({ state, start, now, viewer, calendar, narrow }) {
     );
   }
   if (state === "expired") {
-    return (<div><h2 style={stageH}>This session has closed</h2><p style={sub}>Book another time and we'll save you a seat.</p>{cta("/webinar/#recordings", "Choose another session")}</div>);
+    return (<div><h2 style={stageH}>This session has closed</h2><p style={sub}>Book another time and we'll save you a seat.</p>{cta("/webinar#recordings", "Choose another session")}</div>);
   }
   if (state === "unavailable") {
     return (<div><h2 style={stageH}>The recording isn't available right now</h2><p style={sub}>Please check back shortly — your seat is still saved.</p></div>);
@@ -204,7 +204,7 @@ function Stage({ state, start, now, viewer, calendar, narrow }) {
     <div>
       <h2 style={stageH}>This session is for registered viewers</h2>
       <p style={sub}>Open the personal link from your booking, or choose a session to get one.</p>
-      {cta("/webinar/#recordings", "Choose a session")}
+      {cta("/webinar#recordings", "Choose a session")}
     </div>
   );
 }

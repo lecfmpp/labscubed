@@ -5,7 +5,7 @@
 // visitor lands there with the field already filled, so the lead goes through
 // the one quote pipeline that already exists.
 interface Props { heading: string; sub?: string; quoteHref?: string; }
-const { heading, sub, quoteHref = '/get-a-quote/' } = Astro.props;
+const { heading, sub, quoteHref = '/get-a-quote' } = Astro.props;
 ---
 <section class="pp-cta">
   <div class="pp-cta__in">
@@ -32,7 +32,7 @@ const { heading, sub, quoteHref = '/get-a-quote/' } = Astro.props;
       // An empty field still goes to the quote wizard; only a malformed one stops.
       if (email && !EMAIL_RE.test(email)) { if (label) label.textContent = 'Enter a valid email'; return; }
       try { if (email) sessionStorage.setItem('lc_quote_email', email); } catch { /* storage blocked — wizard just starts blank */ }
-      location.href = form.dataset.quoteHref || '/get-a-quote/';
+      location.href = form.dataset.quoteHref || '/get-a-quote';
     });
   });
 </script>

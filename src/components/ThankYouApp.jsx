@@ -100,7 +100,7 @@ function Hero() {
             ends on desktop, stacked with the badge centred on a phone. */}
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 32 }}>
           <nav aria-label="Breadcrumb" style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, marginBottom: m ? 18 : 22 }}>
-            <a href={isShow ? "/events/" : "/webinar/"} style={{ color: "rgba(255,255,255,0.65)", textDecoration: "none", borderBottom: "1px solid rgba(255,255,255,0.25)", paddingBottom: 1 }}>{isShow ? "All events" : "All webinars"}</a>
+            <a href={isShow ? "/events" : "/webinar"} style={{ color: "rgba(255,255,255,0.65)", textDecoration: "none", borderBottom: "1px solid rgba(255,255,255,0.25)", paddingBottom: 1 }}>{isShow ? "All events" : "All webinars"}</a>
             <span aria-hidden="true" style={{ color: "rgba(255,255,255,0.3)" }}>/</span>
             <span style={{ color: "rgba(255,255,255,0.45)" }}>{isShow ? "Demo booked" : "Registered"}</span>
           </nav>
