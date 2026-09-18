@@ -49,6 +49,7 @@ const { heading, body, imgSrc, imgAlt, asset = 'cubeten-brochure', formId = 'bro
   }
 </style>
 <script>
+  import { track, LI_CONVERSIONS } from '../../lib/track';
   const ENDPOINT = 'https://grozewxrymeiruhggcdy.supabase.co/functions/v1/download-request';
   // First-touch attribution — same lc_first_touch cookie the white-paper form
   // and CTABanner use, so a lead that lands via a UTM link and downloads later
@@ -105,6 +106,9 @@ const { heading, body, imgSrc, imgAlt, asset = 'cubeten-brochure', formId = 'bro
         .then(({ status, data: resp }) => {
           if (status === 200 && resp && resp.success) {
             form.hidden = true;
+            // Same GA4 event names + LinkedIn conversions the Webflow brochure forms fired.
+            track(`download_brochure_${asset.replace('-brochure', '')}`, { event_category: 'engagement', event_label: asset, form: 'brochure' }, LI_CONVERSIONS[asset]);
+            track('generate_lead', { form: 'brochure', asset });
             if (success) { success.textContent = `Check your inbox! The brochure is on its way to ${email}.`; success.hidden = false; }
           } else if (errorEl) {
             errorEl.hidden = false;

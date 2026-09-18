@@ -2,6 +2,7 @@
 import '../styles/styles.css';
 import { SITE_URL } from '../site.mjs';
 import { buildJsonLd } from '../lib/jsonld';
+import Analytics from '../components/Analytics.astro';
 
 interface Props {
   title?: string;
@@ -71,6 +72,7 @@ const jsonLd = jsonLdProp ?? buildJsonLd(SITE_URL);
     <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <Analytics />
 
     <!-- Open Graph -->
     <meta property="og:type" content={ogType} />

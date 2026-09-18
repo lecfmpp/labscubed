@@ -5,6 +5,7 @@
 // (asset: "whitepaper"), which emails the PDF, logs the lead, and tags the
 // contact into the "Downloaded - White Paper" Resend segment — unchanged.
 import React from 'react';
+import { track } from '../lib/track';
 
 const COLORS = {
   teal: '#17ddc5',
@@ -150,6 +151,7 @@ export default function WhitePaperForm() {
       if (resp.ok && data && data.success) {
         setShowModal(false);
         setDone(true);
+        track('generate_lead', { form: 'white-paper', asset: 'whitepaper' });
       } else if (resp.status === 422) {
         setError('Please use your work email.');
         setShowModal(false);

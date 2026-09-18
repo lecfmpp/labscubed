@@ -1,6 +1,9 @@
 # LabsCubed — allow all crawlers, including AI answer engines (this site wants
 # to be cited). Do NOT add Disallow rules for these agents.
 User-agent: *
+# Content Signals (contentsignals.org): LabsCubed wants to be found, cited in
+# AI answers and known to models — all three uses are allowed.
+Content-Signal: ai-train=yes, search=yes, ai-input=yes
 Allow: /
 
 User-agent: GPTBot
@@ -15,4 +18,4 @@ Allow: /
 User-agent: Google-Extended
 Allow: /
 
-Sitemap: https://lp.labscubed.com/sitemap-index.xml
+Sitemap: https://labscubed.com/sitemap-index.xml

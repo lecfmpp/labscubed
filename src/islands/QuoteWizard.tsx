@@ -9,6 +9,7 @@ import { SAMPLES, getSample, Sample } from '../lib/samples';
 import { Button } from '../lib/ui';
 import { DAILY_OPTIONS, recommendMachine } from '../lib/recommend';
 import { COUNTRIES, getCountry, flagSrc, formatPhone, type Country } from '../lib/countries';
+import { track } from '../lib/track';
 
 const ENDPOINT = 'https://grozewxrymeiruhggcdy.supabase.co/functions/v1/quote-request';
 
@@ -556,6 +557,11 @@ export default function QuoteWizard() {
       if (r.ok && resp && resp.success) {
         setSent(true);
         try { localStorage.removeItem('lc-quote-wizard-v2'); } catch (e) { /* ignore */ }
+        /* The Webflow flow ended on /get-a-quote-thank-you, and GA4 key events /
+           Ads imports may be keyed to that URL — so besides generate_lead, send
+           the same virtual page view the old thank-you page produced. */
+        track('generate_lead', { form: 'get-a-quote', recommended_machine: rec.name });
+        track('page_view', { page_location: `${location.origin}/get-a-quote-thank-you`, page_title: 'Quote Submitted Successfully | LabsCubed' });
       } else {
         setSendError(resp?.error || 'Something went wrong. Please try again.');
       }

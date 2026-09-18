@@ -54,6 +54,25 @@
 /astm-d638-iso527-tensile-testing   /resources/astm-d638-iso-527-2-plastic-tensile-testing   301
 /astm-d412-iso37-how-to-run-tensile-testing-for-rubber   /resources/astm-d412-iso-37-rubber-tensile-testing   301
 
+# The last pages that only existed on Webflow, retired at the migration
+# cutover (2026-09-18) with a 301 to their closest Astro page so any links and
+# rankings they had carry over. The old quote thank-you page is replaced by the
+# wizard's inline confirmation (which fires the same virtual page view in GA4).
+/get-a-quote-thank-you  /get-a-quote/  301
+/get-a-quote-thank-you/  /get-a-quote/  301
+/hero-lab  /  301
+/hero-lab/  /  301
+/cube-go-waitlist  /get-a-quote/  301
+/cube-go-waitlist/  /get-a-quote/  301
+/labscubed-automated-tensile-testing-for-polymer-labs  /plastic-testing/  301
+/labscubed-automated-tensile-testing-for-polymer-labs/  /plastic-testing/  301
+/astm-d790-iso-178-explained-everything-you-need-to-know-about-plastic-flexural-testing  /post/astm-d790-iso-178-explained-everything-you-need-to-know-about-plastic-flexural-testing  301
+/astm-d790-iso-178-explained-everything-you-need-to-know-about-plastic-flexural-testing/  /post/astm-d790-iso-178-explained-everything-you-need-to-know-about-plastic-flexural-testing  301
+
+# Webflow's sitemap lived at /sitemap.xml and is what search engines have on
+# file; point them at the Astro sitemap index instead of the proxied old one.
+/sitemap.xml  /sitemap-index.xml  301
+
 # Every OTHER path is invisibly proxied (status 200 = rewrite, not redirect) to
 # the Webflow site published at site.labscubed.com, so all existing
 # labscubed.com/... pages keep working at the exact same URLs.

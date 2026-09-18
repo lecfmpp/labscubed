@@ -100,3 +100,37 @@
   for = "/rubber-testing/*"
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
+
+# Retired Webflow-only pages (301s in public/_redirects) and the old sitemap
+# path: each was answered by the Webflow proxy until now, so its edge-cached
+# answer must not outlive the redirect.
+
+[[headers]]
+  for = "/get-a-quote-thank-you"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/hero-lab"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/cube-go-waitlist"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/labscubed-automated-tensile-testing-for-polymer-labs"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/astm-d790-iso-178-explained-everything-you-need-to-know-about-plastic-flexural-testing"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/sitemap.xml"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"

@@ -1,4 +1,5 @@
 import React from 'react';
+import { track } from '../lib/track';
 import LogoSlider from './LogoSlider.jsx';
 import PartnershipBadge from './PartnershipBadge.jsx';
 import { getWebinar, youTubeId, COLORS } from './webinarConfig.js';
@@ -520,6 +521,8 @@ function RegisterSection() {
       }
       const data = await response.json();
       console.log("Registration successful:", data);
+      track("sign_up", { method: CONFIG.kind || "webinar", webinar_slug: CONFIG.slug });
+      track("generate_lead", { form: "registration", webinar_slug: CONFIG.slug });
       setTimeout(() => {
         window.location.href = CONFIG.thankYouUrl;
       }, 500);

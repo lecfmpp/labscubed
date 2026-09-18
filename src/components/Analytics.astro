@@ -1,0 +1,71 @@
+---
+/* Analytics — the same tags the Webflow site carried, now on every Astro page.
+
+   Webflow shipped (site custom code): gtag.js for Google Ads AW-795502390
+   (send_page_view:false) + GA4 G-0SDTV20Z2H, LinkedIn Insight partner 2629122,
+   and brochure-form conversions. Until this component, every page that moved
+   off Webflow went untracked.
+
+   Loading: `dataLayer`/`gtag` are defined inline right away so anything that
+   fires early is queued, then gtag.js and the Insight tag are injected on idle
+   (1 s fallback). Unlike Webflow's version there is no wait for a first
+   click/scroll — that gate hid every quick bounce from GA4 — but the page still
+   makes no third-party request during initial load (see Base.astro).
+
+   Only the production hosts load tags, so the lp. staging host, Netlify
+   branch previews and localhost never pollute GA4 or the Ads audiences.
+
+   `window.lcTrack(event, params, linkedinConversionId)` is the single call site
+   for conversions (src/lib/track.ts wraps it for islands). It is safe to call
+   anywhere: on a non-production host it only logs to the console. */
+---
+<script is:inline>
+  (function () {
+    var GA4 = 'G-0SDTV20Z2H';
+    var ADS = 'AW-795502390';
+    var LI_PARTNER = '2629122';
+    var PROD = /^(www\.)?labscubed\.com$/.test(location.hostname);
+
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
+    window.lcTrack = function (event, params, linkedinId) {
+      if (!PROD) { try { console.debug('[lcTrack]', event, params || {}, linkedinId || ''); } catch (e) {} return; }
+      try { window.gtag('event', event, params || {}); } catch (e) {}
+      if (linkedinId) {
+        try {
+          if (typeof window.lintrk === 'function') window.lintrk('track', { conversion_id: linkedinId });
+          else (window._lcLiQueue = window._lcLiQueue || []).push(linkedinId);
+        } catch (e) {}
+      }
+    };
+    if (!PROD) return;
+
+    window.gtag('js', new Date());
+    window.gtag('config', ADS, { send_page_view: false });
+    window.gtag('config', GA4);
+
+    window._linkedin_partner_id = LI_PARTNER;
+    window._linkedin_data_partner_ids = window._linkedin_data_partner_ids || [];
+    window._linkedin_data_partner_ids.push(LI_PARTNER);
+
+    var loaded = false;
+    function add(src, onload) {
+      var s = document.createElement('script');
+      s.src = src; s.async = true;
+      if (onload) s.onload = onload;
+      document.head.appendChild(s);
+    }
+    function load() {
+      if (loaded) return;
+      loaded = true;
+      add('https://www.googletagmanager.com/gtag/js?id=' + GA4);
+      add('https://snap.licdn.com/li.lms-analytics/insight.min.js', function () {
+        var q = window._lcLiQueue || [];
+        window._lcLiQueue = [];
+        q.forEach(function (id) { try { window.lintrk('track', { conversion_id: id }); } catch (e) {} });
+      });
+    }
+    if ('requestIdleCallback' in window) window.requestIdleCallback(load, { timeout: 1000 });
+    setTimeout(load, 1000);
+  })();
+</script>

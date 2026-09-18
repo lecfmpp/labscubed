@@ -56,6 +56,7 @@
 </style>
 
 <script>
+  import { track } from "../lib/track";
   // Wire the white-paper form to the Supabase `download-request` edge function.
   // Emails the gated PDF via Resend + logs the lead. Mirrors the Webflow wiring.
   const ENDPOINT = "https://grozewxrymeiruhggcdy.supabase.co/functions/v1/download-request";
@@ -130,7 +131,7 @@
       })
         .then((r) => r.json().catch(() => ({})).then((d) => ({ status: r.status, data: d })))
         .then(({ status, data }) => {
-          if (status === 200 && data && data.success) { setLabel("Check your inbox!"); input.value = ""; }
+          if (status === 200 && data && data.success) { setLabel("Check your inbox!"); input.value = ""; track("generate_lead", { form: "cta-banner", asset: "whitepaper" }); }
           else if (status === 422) { setLabel("Use your work email"); }
           else { setLabel("Try again"); }
           input.disabled = false;
