@@ -10,12 +10,13 @@
  * index itself.
  */
 import type { BlogPost } from './blog';
+import { SITE_URL } from '../site.mjs';
 import { postDate, postDescription, categoryLabel } from './blog';
 
 const ORG = {
   '@type': 'Organization',
   name: 'LabsCubed',
-  url: 'https://www.labscubed.com',
+  url: SITE_URL,
 };
 
 /** Article schema for posts whose stored body carries no payload. */

@@ -307,6 +307,32 @@ export function reportUnlinked(): string[] {
   return [...unlinked].sort();
 }
 
+/**
+ * Point every link in a stored post at the URL that actually serves it.
+ *
+ * The generator (and the Webflow era before it) wrote absolute
+ * `https://www.labscubed.com/...` links, some to pages that have since moved.
+ * www 301s to the apex, so each of those links cost a redirect hop and kept
+ * voting for the old host; links to the moved ASTM pages cost two
+ * (SEO report 2026-09-22: 199 www links in 20 of 21 posts). Rewriting at build
+ * time fixes every post, including ones generated later, without touching the
+ * stored content. Runs on the raw body, so the JSON-LD payload is covered too.
+ */
+const MOVED: [RegExp, string][] = [
+  [/(?:https?:\/\/(?:www\.)?labscubed\.com)?\/astm-d638-iso527-tensile-testing\/?(?=["'#?\s)<&])/g, 'https://labscubed.com/resources/astm-d638-iso-527-2-plastic-tensile-testing'],
+  [/(?:https?:\/\/(?:www\.)?labscubed\.com)?\/astm-d412-iso37-how-to-run-tensile-testing-for-rubber\/?(?=["'#?\s)<&])/g, 'https://labscubed.com/resources/astm-d412-iso-37-rubber-tensile-testing'],
+  [/(?:https?:\/\/(?:www\.)?labscubed\.com)?\/(astm-d790-iso-178-explained-everything-you-need-to-know-about-plastic-flexural-testing)\/?(?=["'#?\s)<&])/g, 'https://labscubed.com/post/$1'],
+  [/(?:https?:\/\/(?:www\.)?labscubed\.com)?\/cube-go-waitlist\/?(?=["'#?\s)<&])/g, 'https://labscubed.com/get-a-quote'],
+];
+export function normalizeSiteLinks(html: string): string {
+  let out = html;
+  for (const [re, to] of MOVED) out = out.replace(re, to);
+  return out
+    .replace(/https?:\/\/(?:www\.)?labscubed\.com(?=[\/"'#?\s)<&]|$)/g, 'https://labscubed.com')
+    // Pages have no trailing slash (astro.config trailingSlash 'never').
+    .replace(/(https:\/\/labscubed\.com\/[^"'#?\s)<&]*[^\/"'#?\s)<&])\/(?=["'#?\s)<&])/g, '$1');
+}
+
 function prepareBody(
   html: string,
   images: Record<string, { url?: string; alt?: string }> = {},
@@ -328,12 +354,13 @@ function prepareBody(
  * removed from the body instead of being shipped to every reader.
  */
 export function extractSchemas(
-  html: string,
+  rawHtml: string,
   images: Record<string, { url?: string; alt?: string }> = {},
 ): {
   schemas: unknown[];
   body: string;
 } {
+  const html = normalizeSiteLinks(rawHtml);
   const m = html.match(SCHEMA_DIV);
   if (!m) return { schemas: [], body: prepareBody(html, images) };
 

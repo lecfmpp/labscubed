@@ -19,6 +19,7 @@ import Specimens from '../../components/resource/Specimens.astro';
 import Alignment from '../../components/resource/Alignment.astro';
 import DataReview from '../../components/resource/DataReview.astro';
 import Brochure from '../../components/resource/Brochure.astro';
+import AutomationSection from '../../components/resource/AutomationSection.astro';
 import FAQ from '../../components/resource/FAQ.astro';
 import Related from '../../components/resource/Related.astro';
 
@@ -26,9 +27,9 @@ const IMG = '/assets/img/resources/';
 
 /* ---- 1 · PAGE CONFIG ---------------------------------------------------- */
 const RESOURCE = {
-  metaTitle: 'ASTM D638 / ISO 527-2 Explained — Plastic Tensile Testing Guide | LabsCubed',
+  metaTitle: 'ASTM D638 / ISO 527-2 Tensile Testing: Guide & Automation | LabsCubed',
   metaDescription:
-    'A complete guide to ASTM D638 and ISO 527-2 plastic tensile testing: what the standard measures, specimen types, equipment and extensometer requirements, and how CubeTen automates each step.',
+    'Automated ASTM D638 testing, explained: what ASTM D638 and ISO 527-2 measure, specimen types, equipment and extensometers, and how the CubeTen automates every step of plastic tensile testing.',
   canonical: 'https://labscubed.com/resources/astm-d638-iso-527-2-plastic-tensile-testing',
   eyebrow: 'Resource · ASTM D638 / ISO 527-2',
   headlineAccent: 'ASTM D638/ISO 527-2 Explained:',
@@ -39,8 +40,8 @@ const RESOURCE = {
   readingMinutes: 12,
   author: 'LabsCubed',
   breadcrumbs: [
-    { label: 'Home', href: 'https://labscubed.com/' },
-    { label: 'Resources', href: 'https://labscubed.com/resources' },
+    { label: 'Home', href: '/' },
+    { label: 'Resources', href: '/resources' },
     { label: 'ASTM D638 / ISO 527-2' },
   ],
   primaryCta: { label: 'Request a Quote or Demo', href: 'https://labscubed.com/get-a-quote' },
@@ -57,6 +58,7 @@ const TOC = [
   { id: 'specimens', label: 'Specimen types' },
   { id: 'alignment', label: 'Measurement & alignment' },
   { id: 'data', label: 'Data & integration' },
+  { id: 'automation', label: 'Automating the test' },
   { id: 'faq', label: 'FAQ' },
 ];
 
@@ -256,6 +258,16 @@ const RELATED = [
       ]}
       bandLeft="Each of these issues contributes to test-to-test variation, even with calibrated equipment. Beyond data variability, these repetitive setup steps consume valuable operator time, time that could be redirected toward analysis or higher-value tasks."
       bandRight="CubeTen automates alignment, gripping, and measurement, eliminating these sources of human error and delivering precise, standardized inputs across every test. This not only boosts consistency but also maximizes lab efficiency through automation."
+    />
+
+    <AutomationSection
+      heading='Automating ASTM D638 testing'
+      paragraphs={[
+        "Automated ASTM D638 testing replaces the manual steps around each pull (measuring, loading, gripping and recording) with a system that runs them the same way every time. Most of the variability in D638 results doesn't come from the test frame itself; it comes from how each specimen is measured, positioned and clamped, and from results typed in by hand.",
+        'With the <a href="/plastic-testing">CubeTen automated tensile testing machine</a>, a technician loads up to 15 ASTM D638 or ISO 527-2 specimens on a tray and starts the method. CubeTen measures each specimen\'s width and thickness, grips it with a consistent force, runs the test with a physical or video extensometer, and saves the stress-strain curve, tensile strength, modulus and elongation automatically before moving on to the next specimen.',
+        "For QC labs running dozens of D638 tests a day, automation means results that don't depend on who ran them, a traceable record for every specimen, and technicians freed from repetitive setup. Mixed batches become practical too: different compounds can share the same tray.",
+      ]}
+      cta={{ label: 'See the CubeTen automated tensile tester', href: '/plastic-testing' }}
     />
 
     <Brochure

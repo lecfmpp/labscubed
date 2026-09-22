@@ -1,3 +1,44 @@
+# One-hop redirects for the old www URLs of MOVED pages (SEO report
+# 2026-09-22). Search engines still hold www.labscubed.com/<old-path>; without
+# these it went www -> apex -> new path, two 301s. Generated from the 301 rules
+# below — when adding a moved page there, add its www line here too.
+https://www.labscubed.com/webinar/registration  https://labscubed.com/webinar/spe-oct-2026  301!
+https://www.labscubed.com/webinar/registration/  https://labscubed.com/webinar/spe-oct-2026  301!
+https://www.labscubed.com/webinar/thank-you  https://labscubed.com/webinar/spe-oct-2026/thank-you  301!
+https://www.labscubed.com/webinar/thank-you/  https://labscubed.com/webinar/spe-oct-2026/thank-you  301!
+https://www.labscubed.com/webinar/spe-2026  https://labscubed.com/webinar/spe-oct-2026  301!
+https://www.labscubed.com/webinar/spe-2026/  https://labscubed.com/webinar/spe-oct-2026  301!
+https://www.labscubed.com/webinar/spe-2026/thank-you  https://labscubed.com/webinar/spe-oct-2026/thank-you  301!
+https://www.labscubed.com/webinar/spe-2026/thank-you/  https://labscubed.com/webinar/spe-oct-2026/thank-you  301!
+https://www.labscubed.com/webinar/automation-ai-2026  https://labscubed.com/webinar/automation-ai-nov-2026  301!
+https://www.labscubed.com/webinar/automation-ai-2026/  https://labscubed.com/webinar/automation-ai-nov-2026  301!
+https://www.labscubed.com/webinar/automation-ai-2026/thank-you  https://labscubed.com/webinar/automation-ai-nov-2026/thank-you  301!
+https://www.labscubed.com/webinar/automation-ai-2026/thank-you/  https://labscubed.com/webinar/automation-ai-nov-2026/thank-you  301!
+https://www.labscubed.com/astm-d638-iso527-tensile-testing  https://labscubed.com/resources/astm-d638-iso-527-2-plastic-tensile-testing  301!
+https://www.labscubed.com/astm-d412-iso37-how-to-run-tensile-testing-for-rubber  https://labscubed.com/resources/astm-d412-iso-37-rubber-tensile-testing  301!
+https://www.labscubed.com/get-a-quote-thank-you  https://labscubed.com/get-a-quote  301!
+https://www.labscubed.com/get-a-quote-thank-you/  https://labscubed.com/get-a-quote  301!
+https://www.labscubed.com/hero-lab  https://labscubed.com/  301!
+https://www.labscubed.com/hero-lab/  https://labscubed.com/  301!
+https://www.labscubed.com/cube-go-waitlist  https://labscubed.com/get-a-quote  301!
+https://www.labscubed.com/cube-go-waitlist/  https://labscubed.com/get-a-quote  301!
+https://www.labscubed.com/labscubed-automated-tensile-testing-for-polymer-labs  https://labscubed.com/plastic-testing  301!
+https://www.labscubed.com/labscubed-automated-tensile-testing-for-polymer-labs/  https://labscubed.com/plastic-testing  301!
+https://www.labscubed.com/astm-d790-iso-178-explained-everything-you-need-to-know-about-plastic-flexural-testing  https://labscubed.com/post/astm-d790-iso-178-explained-everything-you-need-to-know-about-plastic-flexural-testing  301!
+https://www.labscubed.com/astm-d790-iso-178-explained-everything-you-need-to-know-about-plastic-flexural-testing/  https://labscubed.com/post/astm-d790-iso-178-explained-everything-you-need-to-know-about-plastic-flexural-testing  301!
+https://www.labscubed.com/cubeten-homepage-v2  https://labscubed.com/plastic-testing  301!
+https://www.labscubed.com/blog-post/astm-d412-explained-a-complete-guide-to-rubber-tensile-testing  https://labscubed.com/resources/astm-d412-iso-37-rubber-tensile-testing  301!
+https://www.labscubed.com/sitemap.xml  https://labscubed.com/sitemap-index.xml  301!
+https://www.labscubed.com/post/blog-post-page/*  https://labscubed.com/post/:splat  301!
+https://www.labscubed.com/blog/category/data/  https://labscubed.com/blog/category/data  301!
+https://www.labscubed.com/blog/category/flexure-testing/  https://labscubed.com/blog/category/flexure-testing  301!
+https://www.labscubed.com/blog/category/lab-automation/  https://labscubed.com/blog/category/lab-automation  301!
+https://www.labscubed.com/blog/category/tensile-testing/  https://labscubed.com/blog/category/tensile-testing  301!
+https://www.labscubed.com/blog/category/testing-standards/  https://labscubed.com/blog/category/testing-standards  301!
+https://www.labscubed.com/blog/page/2/  https://labscubed.com/blog/page/2  301!
+https://www.labscubed.com/blog/page/3/  https://labscubed.com/blog/page/3  301!
+https://www.labscubed.com/blog/page/4/  https://labscubed.com/blog/page/4  301!
+
 # This site (Netlify) serves all of labscubed.com. Pages and Astro's own assets
 # (/_astro/*, /assets/*, /uploads/*, /robots.txt, /sitemap*.xml) are real files,
 # so Netlify serves them directly; the rules below cover old URL shapes.

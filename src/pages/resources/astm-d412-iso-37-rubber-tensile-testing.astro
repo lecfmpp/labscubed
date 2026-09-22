@@ -22,6 +22,7 @@ import CompareTable from '../../components/resource/CompareTable.astro';
 import DefRows from '../../components/resource/DefRows.astro';
 import ConcludingBand from '../../components/resource/ConcludingBand.astro';
 import Brochure from '../../components/resource/Brochure.astro';
+import AutomationSection from '../../components/resource/AutomationSection.astro';
 import FAQ from '../../components/resource/FAQ.astro';
 import Related from '../../components/resource/Related.astro';
 import Heading from '../../components/resource/Heading.astro';
@@ -43,9 +44,9 @@ const IMG = {
 
 /* ---- 1 · PAGE CONFIG ---------------------------------------------------- */
 const RESOURCE = {
-  metaTitle: 'ASTM D412 Explained: A Complete Guide to Rubber Tensile Testing | LabsCubed',
+  metaTitle: 'ASTM D412 / ISO 37 Rubber Tensile Testing: Guide & Automation | LabsCubed',
   metaDescription:
-    'ASTM D412 rubber tensile testing explained: what the standard measures, dogbone vs. ring specimens, equipment and extensometer requirements, and how CubeOne automates each step.',
+    'Automated ASTM D412 testing, explained: what ASTM D412 and ISO 37 measure, dumbbell vs. ring specimens, equipment and extensometers, and how the CubeOne automates rubber tensile testing.',
   canonical: 'https://labscubed.com/resources/astm-d412-iso-37-rubber-tensile-testing',
   eyebrow: 'Resource · ASTM D412 / ISO 37',
   headlineAccent: 'ASTM D412 Explained:',
@@ -56,8 +57,8 @@ const RESOURCE = {
   readingMinutes: 11,
   author: 'LabsCubed',
   breadcrumbs: [
-    { label: 'Home', href: 'https://labscubed.com/' },
-    { label: 'Resources', href: 'https://labscubed.com/resources' },
+    { label: 'Home', href: '/' },
+    { label: 'Resources', href: '/resources' },
     { label: 'ASTM D412 / ISO 37' },
   ],
   primaryCta: { label: 'Request a Quote or Demo', href: 'https://labscubed.com/get-a-quote' },
@@ -74,6 +75,7 @@ const TOC = [
   { id: 'workflow', label: 'Test workflow' },
   { id: 'repeatability', label: 'Repeatability' },
   { id: 'data', label: 'Data & reporting' },
+  { id: 'automation', label: 'Automating the test' },
   { id: 'faq', label: 'FAQ' },
 ];
 
@@ -342,6 +344,16 @@ const RELATED = [
         'ASTM D412 is an essential standard for evaluating the tensile behaviour of rubber and elastomers, offering detailed insights into material strength, stretchability, and durability. By following the method precisely (using the appropriate specimen type, equipment, and testing conditions), labs can collect reliable data that is critical for quality control, product development, and regulatory compliance.',
         "Automated systems like CubeOne enhance this process by eliminating variability from manual steps, improving repeatability, and accelerating testing workflows. Whether you're testing a single material or running high-throughput batches, CubeOne streamlines ASTM D412 compliance while delivering accurate, actionable results at scale.",
       ]}
+    />
+
+    <AutomationSection
+      heading='Automating ASTM D412 testing'
+      paragraphs={[
+        'Automated ASTM D412 testing takes the manual handling out of rubber tensile testing. Elastomer results are especially sensitive to how each dumbbell is measured and clamped: a small thickness error or an off-centre grip shows up directly in tensile strength and elongation at break.',
+        'With the <a href="/rubber-testing">CubeOne automated rubber tensile testing machine</a>, a technician loads up to 12 ASTM D412 or ISO 37 specimens at once. CubeOne measures each specimen\'s thickness, grips it, pulls it while a video extensometer tracks strain up to 1000% elongation, and saves the results automatically, test after test, without an operator standing by. The same machine also runs ASTM D624 tear tests (Die B and Die C).',
+        'The result is repeatable D412 data across shifts and operators, a traceable record for every specimen, and hours of technician time back every week.',
+      ]}
+      cta={{ label: 'See the CubeOne automated rubber tester', href: '/rubber-testing' }}
     />
 
     <Brochure

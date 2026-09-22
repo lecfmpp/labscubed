@@ -1,0 +1,25 @@
+---
+// AutomationSection — "Automating ASTM Dxxx testing": the section that tells
+// search engines (and readers) the guide is about AUTOMATING the standard, not
+// just explaining it. The old Webflow pages ranked for "ASTM D638 automation /
+// automated" on that wording alone; the 2026-09 port lost it (SEO report
+// 2026-09-22). `paragraphs` may contain inline HTML (links).
+import PageSection from './PageSection.astro';
+import Heading from './Heading.astro';
+import P from './P.astro';
+interface Props { id?: string; heading: string; paragraphs: string[]; cta: { label: string; href: string } }
+const { id = 'automation', heading, paragraphs, cta } = Astro.props;
+---
+<PageSection id={id} bg="subtle" pad={96}>
+  <div class="rs-auto">
+    <Heading id={id}>{heading}</Heading>
+    {paragraphs.map((p) => <P><Fragment set:html={p} /></P>)}
+    <a class="rs-auto__cta" href={cta.href}>{cta.label} →</a>
+  </div>
+</PageSection>
+<style>
+  .rs-auto { display: flex; flex-direction: column; gap: 20px; }
+  .rs-auto :global(p a) { color: var(--lc-ink); text-decoration: underline; text-underline-offset: 3px; }
+  .rs-auto__cta { align-self: flex-start; margin-top: 8px; font-weight: 600; font-size: 16px; color: var(--lc-ink); text-decoration: none; border-bottom: 2px solid var(--lc-teal); padding-bottom: 2px; }
+  .rs-auto__cta:hover { color: var(--lc-teal-deep, var(--lc-ink)); }
+</style>

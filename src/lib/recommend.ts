@@ -41,7 +41,7 @@ export const MACHINES: Record<string, MachineInfo> = {
   },
   CubeGo: {
     name: 'CubeGo',
-    href: 'https://www.labscubed.com/cubego',
+    href: '/get-a-quote', // no CubeGo page yet
     img: '/assets/img/media/machine-cubego-v3.webp',
     blurb: 'Benchtop and portable — sized for lower daily volumes and multi-standard work.',
     specs: [['Force (Load Cell)', 'Up to 5kN'], ['Weight', '35 lbs (16 kg)'], ['Footprint', 'Benchtop']],

@@ -1,10 +1,10 @@
 /* Nav island (client:load) — desktop bar + mobile hamburger drawer.
-   Links replicate the live labscubed.com Webflow header (absolute www URLs),
-   including the Resources dropdown. No ROI Calculator (matches live). */
+   Links replicate the old Webflow header, including the Resources dropdown;
+   all are root-relative (www 301s to the apex, so absolute www URLs cost a hop). No ROI Calculator (matches live). */
 import React from 'react';
 import { useIsMobile, Button } from '../lib/ui';
 
-const HOME = 'https://www.labscubed.com/';
+const HOME = '/';
 // Root-relative paths are used for anything this Netlify build serves or
 // proxies, so the visitor stays on the host that has the page. www.labscubed.com
 // 301s to the apex, so an absolute www URL costs a redirect hop.
@@ -21,6 +21,7 @@ const mainLinks: [string, string][] = [
 const resourceLinks: [string, string][] = [
   ['ASTM D638', '/resources/astm-d638-iso-527-2-plastic-tensile-testing'],
   ['ASTM D412', '/resources/astm-d412-iso-37-rubber-tensile-testing'],
+  ['All resources', '/resources'],
 ];
 // The header CTA sends visitors to the Get a Quote wizard (replaced the old
 // "Download our White-Paper" button, 2026-09-14).
