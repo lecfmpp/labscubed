@@ -22,6 +22,7 @@ import ProductFeatures from '../components/product/ProductFeatures.astro';
 import ProductSteps from '../components/product/ProductSteps.astro';
 import ProductSpecs from '../components/product/ProductSpecs.astro';
 import ProductCTA from '../components/product/ProductCTA.astro';
+import Brochure from '../components/resource/Brochure.astro';
 import Measurement from '../components/Measurement.astro';
 import FAQ from '../components/FAQ.astro';
 import SpecimenLibrary from '../islands/SpecimenLibrary.tsx';
@@ -204,6 +205,17 @@ const jsonLd = [
       specSub="Key features and performance criteria of the CubeOne."
       img={{ src: MEDIA + 'machine-cubeone.webp', alt: 'CubeOne automated rubber tensile testing machine', width: 2396, height: 900 }}
       specs={specs}
+    />
+
+    <!-- 06a — Brochure download. The Webflow page carried this form and it was
+         one of the site's main lead sources; the Sept 2026 port dropped it. -->
+    <Brochure
+      heading="Download the CubeOne brochure"
+      body="Specs, supported standards and specimen types, and how the CubeOne automates rubber tensile and tear testing, in one PDF. We'll email it to you."
+      imgSrc="/assets/img/resources/astm-d412/cube_one_download_brochure_labscubed.webp"
+      imgAlt="LabsCubed CubeOne automated rubber tensile testing machine brochure"
+      asset="cubeone-brochure"
+      formId="brochure-cubeone"
     />
 
     <!-- 06b — Strain measurement options (CubeOne: crosshead + video only) -->

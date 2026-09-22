@@ -20,6 +20,7 @@ import ProductFeatures from '../components/product/ProductFeatures.astro';
 import ProductSteps from '../components/product/ProductSteps.astro';
 import ProductSpecs from '../components/product/ProductSpecs.astro';
 import ProductCTA from '../components/product/ProductCTA.astro';
+import Brochure from '../components/resource/Brochure.astro';
 import Measurement from '../components/Measurement.astro';
 import FAQ from '../components/FAQ.astro';
 import { PLASTIC_FAQ_DATA } from '../lib/faq';
@@ -195,6 +196,17 @@ const jsonLd = [
       specSub="Key features and performance criteria of the CubeTen."
       img={{ src: MEDIA + 'machine-cubeten.webp', alt: 'CubeTen automated plastic tensile testing machine', width: 1653, height: 900 }}
       specs={specs}
+    />
+
+    <!-- 06a — Brochure download. The Webflow page carried this form and it was
+         one of the site's main lead sources; the Sept 2026 port dropped it. -->
+    <Brochure
+      heading="Download the CubeTen brochure"
+      body="Specs, supported standards and specimen types, and how the CubeTen automates plastic tensile testing, in one PDF. We'll email it to you."
+      imgSrc="/assets/img/resources/cubeten-machine.webp"
+      imgAlt="LabsCubed CubeTen automated plastic tensile testing machine brochure"
+      asset="cubeten-brochure"
+      formId="brochure-cubeten"
     />
 
     <!-- 06b — Strain measurement options (shared with the homepage) -->
