@@ -88,7 +88,16 @@
         q.forEach(function (id) { try { window.lintrk('track', { conversion_id: id }); } catch (e) {} });
       });
     }
-    if ('requestIdleCallback' in window) window.requestIdleCallback(load, { timeout: 1000 });
-    setTimeout(load, 1000);
+    /* Wait for the load event before touching the tags: requestIdleCallback on
+       its own can fire BEFORE the first paint, and gtag.js is ~175 KB to parse
+       — measured in production as ~1 s of delay between the hero image being
+       downloaded (1.0 s) and anything appearing on screen (2.25 s) on a
+       throttled phone. After load, the page is already visible. */
+    function schedule() {
+      if ('requestIdleCallback' in window) window.requestIdleCallback(load, { timeout: 2000 });
+      else setTimeout(load, 500);
+    }
+    if (document.readyState === 'complete') schedule();
+    else window.addEventListener('load', schedule, { once: true });
   })();
 </script>
