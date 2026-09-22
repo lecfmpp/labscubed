@@ -333,6 +333,47 @@ export function normalizeSiteLinks(html: string): string {
     .replace(/(https:\/\/labscubed\.com\/[^"'#?\s)<&]*[^\/"'#?\s)<&])\/(?=["'#?\s)<&])/g, '$1');
 }
 
+/**
+ * Heavy media in stored post bodies (Lighthouse 2026-09-22):
+ *  - Animated GIFs: two posts carried 3+ MB GIFs, which Supabase's image
+ *    transformation cannot shrink. They were converted to looping MP4s
+ *    (236 KB / 200 KB) hosted in public/assets/video/blog/ and are swapped in
+ *    here; the <video> only starts loading when it scrolls into view (see the
+ *    script in layouts/BlogPost.astro). A GIF with no entry below is left as is.
+ *  - YouTube iframes load ~1 MB of player JS on page load even if nobody
+ *    presses play, and the old Webflow wrapper no longer sizes them. They become
+ *    a thumbnail + play button that loads the real player on click.
+ */
+const GIF_VIDEOS: Record<string, { mp4: string; poster: string }> = {
+  'what-is-tensile-testing-and-why-it-matters/gif-cubeone-rubber-tensile-test-ezgif.com-optimize-1-.gif': {
+    mp4: '/assets/video/blog/cubeone-rubber-tensile-test.mp4',
+    poster: '/assets/video/blog/cubeone-rubber-tensile-test-poster.jpg',
+  },
+  'tensile-data-collection-and-saving-time-with-automation/labs_cubed_portal.gif': {
+    mp4: '/assets/video/blog/labscubed-portal-demo.mp4',
+    poster: '/assets/video/blog/labscubed-portal-demo-poster.jpg',
+  },
+};
+const escAttr = (v: string) => v.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+function rewriteMedia(html: string): string {
+  return html
+    // Webflow's placeholder alt text is meaningless to screen readers.
+    .replace(/\salt="__wf_reserved_inherit"/g, ' alt=""')
+    .replace(/<img\b[^>]*?\ssrc="([^"]+\.gif)"[^>]*>/gi, (tag, src: string) => {
+      const key = Object.keys(GIF_VIDEOS).find((k) => src.endsWith(k));
+      if (!key) return tag;
+      const v = GIF_VIDEOS[key];
+      const alt = (tag.match(/\salt="([^"]*)"/) || [])[1] || '';
+      return `<video class="lcb-loop" muted loop playsinline preload="none" poster="${v.poster}"${alt ? ` aria-label="${alt}"` : ''} data-inview-play><source src="${v.mp4}" type="video/mp4"></video>`;
+    })
+    .replace(/<iframe\b[^>]*?\ssrc="https:\/\/www\.youtube(?:-nocookie)?\.com\/embed\/([\w-]{11})[^"]*"[^>]*>\s*<\/iframe>/gi, (tag, id: string) => {
+      const title = (tag.match(/\stitle="([^"]*)"/) || [])[1] || 'YouTube video';
+      return `<button type="button" class="lcb-yt" data-yt="${id}" data-title="${escAttr(title)}" aria-label="Play video: ${escAttr(title)}">` +
+        `<img src="https://i.ytimg.com/vi/${id}/hqdefault.jpg" alt="" loading="lazy" decoding="async">` +
+        `<span class="lcb-yt__play" aria-hidden="true"></span></button>`;
+    });
+}
+
 /** Resize every Supabase-hosted image inside a post body (see sbImage). */
 function resizeBodyImages(html: string): string {
   return html.replace(/<img\b[^>]*?\ssrc="([^"]+)"[^>]*>/gi, (tag, src: string) => {
@@ -348,7 +389,7 @@ function prepareBody(
 ): string {
   return wrapTables(
     unlinkUnbuiltPosts(
-      resizeBodyImages(fillImageSlots(unwrapArticle(stripBoilerplateStyle(html)), images)),
+      resizeBodyImages(rewriteMedia(fillImageSlots(unwrapArticle(stripBoilerplateStyle(html)), images))),
     ),
   ).trim();
 }

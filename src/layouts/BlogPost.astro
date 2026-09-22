@@ -126,3 +126,32 @@ const published = postDate(post);
     <Footer />
   </main>
 </Base>
+
+<script>
+  // Post media (see rewriteMedia in src/lib/blog.ts).
+  // Looping clips that replaced GIFs load and play only once visible.
+  const loops = document.querySelectorAll<HTMLVideoElement>('video[data-inview-play]');
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        const v = e.target as HTMLVideoElement;
+        if (e.isIntersecting) v.play().catch(() => {}); else v.pause();
+      }
+    }, { rootMargin: '200px' });
+    loops.forEach((v) => io.observe(v));
+  } else {
+    loops.forEach((v) => { v.preload = 'auto'; v.autoplay = true; v.play().catch(() => {}); });
+  }
+  // YouTube: swap the thumbnail for the real player on click.
+  document.querySelectorAll<HTMLButtonElement>('button.lcb-yt[data-yt]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const f = document.createElement('iframe');
+      f.className = 'lcb-yt__frame';
+      f.src = `https://www.youtube-nocookie.com/embed/${btn.dataset.yt}?autoplay=1&rel=0`;
+      f.title = btn.dataset.title || 'YouTube video';
+      f.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+      f.allowFullscreen = true;
+      btn.replaceWith(f);
+    }, { once: true });
+  });
+</script>
