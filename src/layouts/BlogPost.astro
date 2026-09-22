@@ -23,6 +23,8 @@ import {
   heroImage,
   heroAlt,
   thumbImage,
+  sbImage,
+  sbSrcset,
 } from '../lib/blog';
 
 interface Props {
@@ -46,7 +48,7 @@ const published = postDate(post);
   title={title}
   description={description}
   canonical={url}
-  ogImage={thumbImage(post) ?? heroImage(post) ?? undefined}
+  ogImage={sbImage(thumbImage(post) ?? heroImage(post), 1200) ?? undefined}
   ogType="article"
   jsonLd={schemas}
   preloadHero={false}
@@ -71,7 +73,9 @@ const published = postDate(post);
       {heroImage(post) && (
         <img
           class="bp-hero__bg"
-          src={heroImage(post)}
+          src={sbImage(heroImage(post), 1280)}
+          srcset={sbSrcset(heroImage(post), [640, 960, 1280, 1920])}
+          sizes="100vw"
           alt={heroAlt(post)}
           loading="eager"
           fetchpriority="high"

@@ -333,13 +333,22 @@ export function normalizeSiteLinks(html: string): string {
     .replace(/(https:\/\/labscubed\.com\/[^"'#?\s)<&]*[^\/"'#?\s)<&])\/(?=["'#?\s)<&])/g, '$1');
 }
 
+/** Resize every Supabase-hosted image inside a post body (see sbImage). */
+function resizeBodyImages(html: string): string {
+  return html.replace(/<img\b[^>]*?\ssrc="([^"]+)"[^>]*>/gi, (tag, src: string) => {
+    if (!src.includes(SB_OBJECT) || /\ssrcset=/i.test(tag)) return tag;
+    return tag.replace(`src="${src}"`,
+      `src="${sbImage(src, 1200)}" srcset="${sbSrcset(src, [600, 900, 1200, 1600])}" sizes="(max-width: 860px) 100vw, 820px"`);
+  });
+}
+
 function prepareBody(
   html: string,
   images: Record<string, { url?: string; alt?: string }> = {},
 ): string {
   return wrapTables(
     unlinkUnbuiltPosts(
-      fillImageSlots(unwrapArticle(stripBoilerplateStyle(html)), images),
+      resizeBodyImages(fillImageSlots(unwrapArticle(stripBoilerplateStyle(html)), images)),
     ),
   ).trim();
 }
@@ -386,6 +395,26 @@ export function readTime(post: BlogPost): number {
 }
 
 /** Hero and card images, preferring the slot map over the legacy columns. */
+/**
+ * Blog images live in Supabase Storage at full original size (a header was a
+ * 1.6 MB PNG screenshot; Lighthouse 2026-09-22 put that post's mobile LCP at
+ * 12 s). Supabase's image transformation endpoint resizes on the fly and serves
+ * WebP to browsers that accept it (the original format to those that don't, e.g.
+ * social-card crawlers) — same object, `/render/image/` instead of `/object/`.
+ * Non-Supabase URLs pass through untouched.
+ */
+const SB_OBJECT = '/storage/v1/object/public/';
+export function sbImage(url: string | null | undefined, width: number): string | null {
+  if (!url) return null;
+  if (!url.includes(SB_OBJECT)) return url;
+  const base = url.replace(SB_OBJECT, '/storage/v1/render/image/public/').split('?')[0];
+  return `${base}?width=${width}&quality=75`;
+}
+export function sbSrcset(url: string | null | undefined, widths: number[]): string | undefined {
+  if (!url || !url.includes(SB_OBJECT)) return undefined;
+  return widths.map((w) => `${sbImage(url, w)} ${w}w`).join(', ');
+}
+
 export const heroImage = (p: BlogPost) =>
   p.images?.main?.url ?? p.hero_image_url ?? null;
 export const heroAlt = (p: BlogPost) =>

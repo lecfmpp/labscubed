@@ -17,6 +17,7 @@ import {
   postDate,
   readTime,
   thumbImage,
+  sbImage,
   thumbAlt,
 } from '../../lib/blog';
 import { blogListingSchema } from '../../lib/blog-schema';
@@ -90,7 +91,7 @@ const categories = [...new Set(all.flatMap((p) => p.categories))].sort();
             {thumbImage(p) ? (
               <img
                 class="bl-card__img"
-                src={thumbImage(p)}
+                src={sbImage(thumbImage(p), 800)}
                 alt={thumbAlt(p)}
                 loading="lazy"
                 decoding="async"

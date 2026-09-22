@@ -243,3 +243,13 @@ a:hover { color: inherit; }
   .lc-lt-conditions { grid-template-columns: 1fr; }
   .lc-lt-table th, .lc-lt-table td { padding: 10px 12px; font-size: 13px; }
 }
+
+/* ---- Reserve space for browser-only islands (CLS) ------------------------
+   Webinar/event pages render their content with client:only React islands, so
+   the server HTML has an empty <main> and the footer paints at the top — then
+   jumps ~4000px down when the island mounts (Lighthouse CLS 0.88 on desktop,
+   2026-09-22). Holding main at a full viewport keeps the footer below the fold
+   until the content arrives, and the countdown bar keeps its own height. */
+main.lc-page:has(> astro-island[client="only"]) { min-height: 100vh; }
+.lc-sticky-top { min-height: 67px; }
+@media (max-width: 760px) { .lc-sticky-top { min-height: 55px; } }

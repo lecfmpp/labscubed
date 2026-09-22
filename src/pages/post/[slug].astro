@@ -10,6 +10,7 @@ import { BLOG_HOST, POST_BASE, postUrl } from '../../site.mjs';
 import {
   getPosts,
   thumbImage,
+  sbImage,
   thumbAlt,
   extractSchemas,
   relatedPosts,
@@ -48,7 +49,7 @@ const isDraft = post.status !== 'published';
             {thumbImage(p) ? (
               <img
                 class="bl-card__img"
-                src={thumbImage(p)}
+                src={sbImage(thumbImage(p), 800)}
                 alt={thumbAlt(p)}
                 loading="lazy"
                 decoding="async"

@@ -19,6 +19,3 @@ User-agent: Google-Extended
 Allow: /
 
 Sitemap: https://labscubed.com/sitemap-index.xml
-
-# Agentic Resource Discovery manifest (capabilities for AI agents).
-Agentmap: https://labscubed.com/.well-known/ai-catalog.json
