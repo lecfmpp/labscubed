@@ -30,6 +30,8 @@
     window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
     window.lcTrack = function (event, params, linkedinId) {
       if (!PROD) { try { console.debug('[lcTrack]', event, params || {}, linkedinId || ''); } catch (e) {} return; }
+      // A conversion must reach Google Ads even if the tag has not loaded yet.
+      try { if (window._lcLoadAds) window._lcLoadAds(); } catch (e) {}
       try { window.gtag('event', event, params || {}); } catch (e) {}
       if (linkedinId) {
         try {
@@ -41,8 +43,29 @@
     if (!PROD) return;
 
     window.gtag('js', new Date());
-    window.gtag('config', ADS, { send_page_view: false });
     window.gtag('config', GA4);
+
+    /* The Google Ads tag is the single most expensive thing on the page: its
+       own ~150 KB of gtag.js and a ~270 ms blocking task (Lighthouse
+       2026-09-22), and it exists for remarketing and conversions rather than
+       for reporting. So GA4 configures on idle (every pageview counts, bounces
+       included) while Ads waits for the first real interaction, or 5 s — and
+       lcTrack() pulls it in immediately when a conversion happens, so a fast
+       form submit is never missed. */
+    var adsReady = false;
+    function loadAds() {
+      if (adsReady) return;
+      adsReady = true;
+      window.gtag('config', ADS, { send_page_view: false });
+    }
+    window._lcLoadAds = loadAds;
+    var adsEvents = ['pointerdown', 'keydown', 'scroll', 'touchstart'];
+    function onFirstInteraction() {
+      loadAds();
+      adsEvents.forEach(function (e) { document.removeEventListener(e, onFirstInteraction, true); });
+    }
+    adsEvents.forEach(function (e) { document.addEventListener(e, onFirstInteraction, { once: true, passive: true, capture: true }); });
+    setTimeout(loadAds, 5000);
 
     window._linkedin_partner_id = LI_PARTNER;
     window._linkedin_data_partner_ids = window._linkedin_data_partner_ids || [];
