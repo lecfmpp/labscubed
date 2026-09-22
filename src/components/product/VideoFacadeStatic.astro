@@ -1,0 +1,59 @@
+---
+/* VideoFacadeStatic — the same click-to-load YouTube facade as
+   islands/VideoFacade.tsx, but rendered as plain HTML with a tiny script
+   instead of a React island.
+
+   Why: on the product pages the facade's thumbnail is the LCP element, and
+   inside an island it cannot paint until React hydrates — Lighthouse measured
+   an element render delay of 1.1-2.1 s on mobile with no third-party scripts
+   involved (2026-09-22). The markup and class names are identical to the
+   island, so the styling in styles.css (.lc-vf*) and the appearance are
+   unchanged; only the mechanism differs.
+
+   The React island stays in use where a facade is not the LCP element
+   (About page), and keeps the same behaviour. */
+interface Props { id: string; title: string; priority?: boolean }
+const { id, title, priority = false } = Astro.props;
+---
+<div class="lc-vf" data-vf={id} data-vf-title={title}>
+  <button type="button" aria-label={`Play: ${title}`} class="lc-vf-btn">
+    <img
+      src={`/assets/img/yt/${id}.webp`}
+      alt=""
+      width="640"
+      height="360"
+      loading={priority ? 'eager' : 'lazy'}
+      {...(priority ? { fetchpriority: 'high' } : {})}
+      class="lc-vf-thumb"
+      data-vf-fallback={`https://img.youtube.com/vi/${id}/hqdefault.jpg`}
+    />
+    <span class="lc-vf-play">
+      <span class="lc-vf-disc">
+        <svg width="26" height="30" viewBox="0 0 26 30" fill="#000" aria-hidden="true"><path d="M25 13.27a2 2 0 0 1 0 3.46L3 29.46A2 2 0 0 1 0 27.73V2.27A2 2 0 0 1 3 .54l22 12.73Z" /></svg>
+      </span>
+    </span>
+  </button>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('.lc-vf[data-vf]').forEach((wrap) => {
+    const id = wrap.dataset.vf!;
+    const img = wrap.querySelector<HTMLImageElement>('img[data-vf-fallback]');
+    // Same fallback the island has: use YouTube's copy if the baked-in
+    // thumbnail is missing (prebuild fetch skipped).
+    img?.addEventListener('error', () => {
+      if (img.dataset.fb) return;
+      img.dataset.fb = '1';
+      img.src = img.dataset.vfFallback!;
+    }, { once: true });
+    wrap.querySelector('button.lc-vf-btn')?.addEventListener('click', () => {
+      const f = document.createElement('iframe');
+      f.src = `https://www.youtube.com/embed/${id}?rel=0&controls=1&autoplay=1`;
+      f.title = wrap.dataset.vfTitle || 'Video';
+      f.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+      f.allowFullscreen = true;
+      f.className = 'lc-vf-frame';
+      wrap.replaceChildren(f);
+    }, { once: true });
+  });
+</script>

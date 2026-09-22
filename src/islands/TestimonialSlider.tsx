@@ -35,7 +35,7 @@ export default function TestimonialSlider({ items }: { items: Item[] }) {
     <div className="lc-ts" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
       <div className="lc-ts-copy">
         <div key={i} className="lc-ts-quote-wrap">
-          <div className="lc-ts-stars" aria-label="5 out of 5">
+          <div className="lc-ts-stars" role="img" aria-label="5 out of 5">
             {[0, 1, 2, 3, 4].map((s) => (
               <svg key={s} width="18" height="18" viewBox="0 0 24 24" fill="var(--lc-teal)" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.7-5.1 4.6 1.4 6.8L12 17.8 5.9 20.4l1.4-6.8L2.2 9l6.9-.7L12 2z" /></svg>
             ))}

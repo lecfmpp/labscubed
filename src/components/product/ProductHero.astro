@@ -3,7 +3,7 @@
 // two CTAs and the product video (click-to-load YouTube facade, so the
 // player is never fetched until someone presses play).
 import Button from '../Button.astro';
-import VideoFacade from '../../islands/VideoFacade.tsx';
+import VideoFacadeStatic from './VideoFacadeStatic.astro';
 
 interface Props {
   eyebrow: string;
@@ -27,8 +27,9 @@ const { eyebrow, heading, sub, videoId, videoTitle, primary, secondary } = Astro
       {secondary && <Button variant="ghost" arrow={false} href={secondary.href}>{secondary.label}</Button>}
     </div>
     <div class="pp-hero__video">
-      {/* Above the fold and the LCP candidate — hydrate on load, eager thumb. */}
-      <VideoFacade client:load id={videoId} title={videoTitle} priority />
+      {/* Above the fold and the LCP candidate: plain HTML, so the thumbnail
+          paints without waiting for React (see VideoFacadeStatic). */}
+      <VideoFacadeStatic id={videoId} title={videoTitle} priority />
     </div>
   </div>
 </section>

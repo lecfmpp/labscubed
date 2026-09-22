@@ -20,6 +20,9 @@ interface Props {
   /** The hero preload only helps the homepage; every other page would be
    *  preloading an image it never renders, which Lighthouse flags as waste. */
   preloadHero?: boolean;
+  /** Preload this page's LCP image (product-page hero thumbnails). The hero
+   *  lives inside an island, so the browser only discovers it late. */
+  preloadImage?: string;
   /** Extra <head> markup (e.g. prev/next rel links on paginated listings). */
   headExtra?: string;
   /** Keep the page out of the index — used for the staging blog host. */
@@ -37,6 +40,7 @@ const {
   canonical: canonicalProp,
   jsonLd: jsonLdProp,
   preloadHero = true,
+  preloadImage,
   headExtra,
   noindex = false,
   preloadFont = 'inter',
@@ -104,6 +108,9 @@ const jsonLd = jsonLdProp ?? buildJsonLd(SITE_URL);
       type="font/woff2"
       crossorigin
     />
+    {preloadImage && (
+      <link rel="preload" href={preloadImage} as="image" type="image/webp" fetchpriority="high" />
+    )}
     {preloadHero && (
       <link
         rel="preload"

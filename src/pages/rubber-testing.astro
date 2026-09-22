@@ -125,6 +125,7 @@ const jsonLd = [
   ogImage={`${SITE_URL}/assets/img/media/cubeone-01.webp`}
   jsonLd={jsonLd}
   preloadHero={false}
+  preloadImage="/assets/img/yt/5nS3gFm5W-I.webp"
 >
   <Nav client:load />
   <main class="lc-page">
@@ -155,7 +156,7 @@ const jsonLd = [
     <!-- 03 — Samples it can test -->
     <ProductSection bg="var(--lc-gray-100)">
       <SpecimenLibrary
-        client:idle
+        client:visible={{ rootMargin: '400px' }}
         ids={RUBBER_IDS}
         defaultId="astm-d412-c"
         eyebrow="Specimen library"
@@ -167,7 +168,7 @@ const jsonLd = [
     <!-- 04 — Testimonials -->
     <ProductSection bg="#fff">
       <ProductHeading heading="Trusted by quality teams worldwide." sub="Real words from rubber and elastomer labs running the CubeOne every day." />
-      <TestimonialSlider client:idle items={testimonials} />
+      <TestimonialSlider client:visible items={testimonials} />
     </ProductSection>
 
     <!-- 04b — A real test, synced: live speed readout + test video + results table -->
@@ -214,6 +215,8 @@ const jsonLd = [
       body="Specs, supported standards and specimen types, and how the CubeOne automates rubber tensile and tear testing, in one PDF. We'll email it to you."
       imgSrc="/assets/img/resources/astm-d412/cube_one_download_brochure_labscubed.webp"
       imgAlt="LabsCubed CubeOne automated rubber tensile testing machine brochure"
+      imgWidth={1500}
+      imgHeight={1500}
       asset="cubeone-brochure"
       formId="brochure-cubeone"
     />

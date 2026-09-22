@@ -11,8 +11,8 @@ import Heading from './Heading.astro';
 import P from './P.astro';
 import Button from '../Button.astro';
 
-interface Props { heading: string; body: string; imgSrc: string; imgAlt: string; asset?: string; formId?: string }
-const { heading, body, imgSrc, imgAlt, asset = 'cubeten-brochure', formId = 'brochure-cubeten' } = Astro.props;
+interface Props { heading: string; body: string; imgSrc: string; imgAlt: string; asset?: string; formId?: string; imgWidth?: number; imgHeight?: number }
+const { heading, body, imgSrc, imgAlt, asset = 'cubeten-brochure', formId = 'brochure-cubeten', imgWidth = 1500, imgHeight = 1500 } = Astro.props;
 ---
 <PageSection bg="subtle" pad={104}>
   <div id="brochure" class="rs-brochure__anchor"></div>
@@ -29,7 +29,7 @@ const { heading, body, imgSrc, imgAlt, asset = 'cubeten-brochure', formId = 'bro
         <div class="rs-brochure__error" hidden></div>
       </form>
     </div>
-    <img src={imgSrc} alt={imgAlt} class="rs-brochure__img" />
+    <img src={imgSrc} alt={imgAlt} class="rs-brochure__img" width={imgWidth} height={imgHeight} loading="lazy" decoding="async" />
   </div>
 </PageSection>
 <style>

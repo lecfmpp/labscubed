@@ -116,6 +116,7 @@ const jsonLd = [
   ogImage={`${SITE_URL}/assets/img/media/cubeten-01.webp`}
   jsonLd={jsonLd}
   preloadHero={false}
+  preloadImage="/assets/img/yt/dQooWFtCbBs.webp"
 >
   <Nav client:load />
   <main class="lc-page">
@@ -146,7 +147,7 @@ const jsonLd = [
     <!-- 03 — Samples it can test -->
     <ProductSection bg="var(--lc-gray-100)">
       <SpecimenLibrary
-        client:idle
+        client:visible={{ rootMargin: '400px' }}
         ids={LIBRARY_IDS}
         defaultId="astm-d638-i"
         eyebrow="Specimen library"
@@ -158,7 +159,7 @@ const jsonLd = [
     <!-- 04 — Testimonials -->
     <ProductSection bg="#fff">
       <ProductHeading heading="Trusted by quality teams worldwide." sub="Real words from polymer and elastomer labs running LabsCubed automation every day." />
-      <TestimonialSlider client:idle items={testimonials} />
+      <TestimonialSlider client:visible items={testimonials} />
     </ProductSection>
 
     <!-- 04b — A real test, synced: live speed readout + test video + results table -->
@@ -205,6 +206,8 @@ const jsonLd = [
       body="Specs, supported standards and specimen types, and how the CubeTen automates plastic tensile testing, in one PDF. We'll email it to you."
       imgSrc="/assets/img/resources/cubeten-machine.webp"
       imgAlt="LabsCubed CubeTen automated plastic tensile testing machine brochure"
+      imgWidth={1600}
+      imgHeight={900}
       asset="cubeten-brochure"
       formId="brochure-cubeten"
     />
