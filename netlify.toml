@@ -178,6 +178,10 @@
   [headers.values]
     Content-Type = "text/markdown; charset=utf-8"
     Access-Control-Allow-Origin = "*"
+    # The .md files are machine copies of HTML pages. Search Console found
+    # /index.md via the page's <link rel="alternate"> and tried to index it as
+    # a duplicate of the homepage. Keep them readable, keep them out of search.
+    X-Robots-Tag = "noindex"
 
 [[headers]]
   for = "/llms.txt"

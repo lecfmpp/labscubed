@@ -71,10 +71,13 @@
 /csc-2025-thank-you  /404.html  410
 /csc-2025-form  /404.html  410
 /rubber-tyre-expo-sharjah-2025-thank-you  /404.html  410
+/kshow-2025-thank-you  /404.html  410
+/untitled  /404.html  410
 /casey-blabolil-spe-thermoset-labscubed-invitation  /404.html  410
 /william-loudermilk-spe-thermoset-labscubed-invitation  /404.html  410
 /marshall-starr-spe-thermoset-labscubed-invitation-copy  /404.html  410
 /cubeten-homepage-v2  /plastic-testing  301
+/cubeten-homepage-new  /plastic-testing  301
 /post/blog-post-page/*  /post/:splat  301
 /blog-post/astm-d412-explained-a-complete-guide-to-rubber-tensile-testing  /resources/astm-d412-iso-37-rubber-tensile-testing  301
 /blog-post/*  /blog  301
