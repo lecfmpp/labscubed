@@ -145,7 +145,11 @@ async function addToResend(data, apiKey, segmentId) {
         // Optional on the form, so it can legitimately be empty.
         materials_tested: data.materials || '',
         // Optional on the form; empty is a real answer, not a failure.
-        phone: data.phone || '',
+        // The key is phone_number because that property already exists on the
+        // audience (from the HubSpot import) — inventing a `phone` key makes
+        // Resend reject the whole contact with 422 "properties do not exist",
+        // which also costs the segment membership.
+        phone_number: data.phone || '',
         added_to_list_on: new Date().toISOString().slice(0, 10),
       },
     }),
