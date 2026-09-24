@@ -246,6 +246,17 @@ export const WEBINARS = {
     ctaLabel: "Book my demo",
     registerHeading: "Book your custom demo",
     registerSubmitLabel: "Book my demo",
+    /* Google Calendar appointment schedule. Set this and the register section
+       grows one quiet line under the submit button that opens the calendar in
+       place; leave it out and nothing changes. The iframe is only created once
+       a visitor opens it, so the page never pays for it otherwise, and the form
+       itself stays the three fields it was. */
+    scheduler: {
+      url: "https://calendar.google.com/calendar/appointments/schedules/AcZssZ0ZZtL5fFqMY886Kp_U6xs3yl2jDHLQ_5KVyzvdIfgNXreMtjPR6s10Wi31X6l3gqXnmAXFYTK7?gv=true",
+      label: "Prefer to pick your own slot? See the booth calendar",
+      title: "Book a CubeOne demo slot at Booth #815",
+      note: "Booking here confirms the slot straight into our calendar. The form above still gets you a demo — it just lets us prepare around your materials first.",
+    },
     /* Replaces "What we'll cover" on a tradeshow: what the show is, and why we
        exhibit at it. Every tradeshow entry should carry one. Facts are from the
        organiser's own event page — deliberately no attendance figure, since the
