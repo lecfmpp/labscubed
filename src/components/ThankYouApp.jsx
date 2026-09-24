@@ -1,6 +1,7 @@
 import React from 'react';
 import { getWebinar, youTubeId, COLORS } from './webinarConfig.js';
 import PartnershipBadge from './PartnershipBadge.jsx';
+import CallbackRequest from './CallbackRequest.jsx';
 
 const WebinarContext = React.createContext(null);
 const useWebinar = () => React.useContext(WebinarContext);
@@ -87,12 +88,6 @@ function Hero() {
   const CONFIG = useWebinar();
   const isShow = CONFIG.kind === "tradeshow";
   const m = useM();
-  // Whether the registration form got a phone number. A flag only — the number
-  // itself never leaves the form.
-  const [gavePhone, setGavePhone] = React.useState(false);
-  React.useEffect(() => {
-    try { setGavePhone(sessionStorage.getItem(`lc-phone-${CONFIG.slug}`) === "1"); } catch { /* private mode */ }
-  }, [CONFIG.slug]);
   const calendarButtons = [
     { name: "Google", href: CONFIG.calendarLinks.google, icon: "/assets/img/calendar/google-calendar.svg", letter: "G", color: "#4285F4" },
     { name: "Outlook", href: CONFIG.calendarLinks.outlook, icon: "/assets/img/calendar/outlook.svg", letter: "O", color: "#0078D4" },
@@ -137,16 +132,12 @@ function Hero() {
                 style={{ border: 0, width: "100%", height: m ? 640 : 620, display: "block" }}
               />
             </div>
-            {/* The way out for anyone who cannot commit to a slot yet. The flag
-                is set by the registration form when a phone number was given,
-                so the promise matches what we can actually act on. */}
-            <div style={{ marginTop: m ? 18 : 22, padding: m ? "16px 18px" : "18px 22px", borderRadius: 14, background: "rgba(23,221,197,0.08)", border: "1px solid rgba(23,221,197,0.22)" }}>
-              <p style={{ margin: 0, fontSize: m ? 14 : 15, lineHeight: 1.6, fontWeight: 300, color: "rgba(255,255,255,0.75)" }}>
-                <strong style={{ fontWeight: 600, color: "#fff" }}>Don't know your schedule yet?</strong>{" "}
-                {gavePhone
-                  ? "That's fine — leave the calendar. We have your number and one of our team will contact you to arrange the best time."
-                  : `That's fine — leave the calendar. Your registration is already in, and we'll follow up by email to arrange a time${CONFIG.boothLabel ? `, or just walk up to ${CONFIG.boothLabel} on the day` : ""}.`}
-              </p>
+            {/* The other way to land a slot, for anyone who cannot commit to a
+                time on the spot. Same weight as the calendar rather than a
+                footnote, because it is the difference between a lead the team
+                can chase and a visitor who just leaves. */}
+            <div style={{ marginTop: m ? 20 : 26 }}>
+              <CallbackRequest slug={CONFIG.slug} kind={CONFIG.kind} title={CONFIG.title} boothLabel={CONFIG.boothLabel} />
             </div>
             <div style={{ marginTop: m ? 24 : 32, display: "flex", flexWrap: "wrap", alignItems: "center", gap: m ? 16 : 24 }}>
               <div style={{ flex: m ? "1 1 100%" : "1 1 340px", minWidth: 0, flexDirection: "column", gap: 6, padding: "18px 22px", borderRadius: 14, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", display: "flex" }}>

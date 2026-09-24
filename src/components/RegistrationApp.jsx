@@ -442,9 +442,9 @@ function Field({ label, children }) {
   return <div><label style={fieldLabel}>{label}</label>{children}</div>;
 }
 
-function DetailsModal({ onClose, onComplete, askPhone }) {
+function DetailsModal({ onClose, onComplete }) {
   const m = useM();
-  const [d, setD] = React.useState({ website: "", role: "", industry: "", materials: "", volume: "", location: "", phone: "" });
+  const [d, setD] = React.useState({ website: "", role: "", industry: "", materials: "", volume: "", location: "" });
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [error, setError] = React.useState("");
 
@@ -485,15 +485,6 @@ function DetailsModal({ onClose, onComplete, askPhone }) {
             <Field label="Daily Test Volume"><select required style={fieldInput} value={d.volume} onChange={set("volume")}><option value="" disabled>Select range</option><option>1–10 samples/day</option><option>11–50 samples/day</option><option>51–150 samples/day</option><option>150+ samples/day</option></select></Field>
             <Field label="Laboratory Location"><input type="text" required placeholder="City, Country" style={fieldInput} value={d.location} onChange={set("location")} /></Field>
           </div>
-          {/* Optional on purpose. Someone who cannot commit to a slot yet can
-              leave a number instead of abandoning the form, and we still have
-              the lead either way. */}
-          {askPhone && (
-            <Field label="Phone (optional)">
-              <input type="tel" placeholder="+1 555 000 0000" style={fieldInput} value={d.phone} onChange={set("phone")} autoComplete="tel" />
-              <p style={{ margin: "7px 0 0", fontSize: 12.5, lineHeight: 1.5, fontWeight: 300, color: COLORS.muted }}>Not sure how your schedule looks yet? Leave a number and our team will contact you to arrange the best time.</p>
-            </Field>
-          )}
           <div style={{ display: "flex", gap: 12, marginTop: 8 }}>
             <button type="button" onClick={onClose} style={{ flex: "none", padding: "13px 20px", borderRadius: 999, border: `1px solid ${COLORS.line}`, background: "#fff", fontWeight: 600, fontSize: 14, cursor: "pointer", color: COLORS.ink }}>Back</button>
             <button type="submit" disabled={isSubmitting} style={{ flex: 1, padding: "13px 20px", borderRadius: 999, border: "none", background: isSubmitting ? "#ccc" : COLORS.teal, fontWeight: 600, fontSize: 14, cursor: isSubmitting ? "not-allowed" : "pointer", color: "#000" }}>{isSubmitting ? "Registering..." : "Complete Registration"}</button>
@@ -531,12 +522,11 @@ function RegisterSection() {
       const data = await response.json();
       console.log("Registration successful:", data);
       track("sign_up", { method: CONFIG.kind || "webinar", webinar_slug: CONFIG.slug });
-      // A flag, never the number itself: the confirmation page uses it to say
-      // "we'll call you" instead of "pick a slot or nothing happens".
+      // The confirmation page files a "call me instead" request against this
+      // address, so it does not have to ask for the email a second time.
       try {
-        if (details.phone && details.phone.trim()) sessionStorage.setItem(`lc-phone-${CONFIG.slug}`, "1");
-        else sessionStorage.removeItem(`lc-phone-${CONFIG.slug}`);
-      } catch { /* private mode — the page just shows the generic line */ }
+        sessionStorage.setItem(`lc-reg-email-${CONFIG.slug}`, basic.email.trim());
+      } catch { /* private mode — that form asks for the email itself */ }
       track("generate_lead", { form: "registration", webinar_slug: CONFIG.slug });
       setTimeout(() => {
         window.location.href = CONFIG.thankYouUrl;
@@ -594,7 +584,7 @@ function RegisterSection() {
           <button type="submit" disabled={isSubmitting} style={{ marginTop: 4, padding: "14px 20px", borderRadius: 999, border: "none", background: isSubmitting ? "#ccc" : COLORS.teal, fontWeight: 600, fontSize: 15, cursor: isSubmitting ? "not-allowed" : "pointer", color: "#000" }}>{isSubmitting ? "Loading..." : (CONFIG.registerSubmitLabel || "Register for Webinar")}</button>
         </form>
       </div>
-      {showModal && <DetailsModal onClose={() => setShowModal(false)} onComplete={complete} askPhone={!!CONFIG.scheduler} />}
+      {showModal && <DetailsModal onClose={() => setShowModal(false)} onComplete={complete} />}
     </Wrap>
   );
 }
