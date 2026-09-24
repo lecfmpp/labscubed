@@ -498,9 +498,6 @@ function DetailsModal({ onClose, onComplete }) {
 function RegisterSection() {
   const CONFIG = useWebinar();
   const m = useM();
-  // The scheduler stays shut until asked for, which is what keeps a 600px
-  // third-party iframe off the page for everyone who just fills the form.
-  const [schedulerOpen, setSchedulerOpen] = React.useState(false);
   const [basic, setBasic] = React.useState({ name: "", email: "", company: "" });
   const [showModal, setShowModal] = React.useState(false);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
@@ -580,50 +577,8 @@ function RegisterSection() {
           <Field label="Work Email"><input type="email" required placeholder="jane@company.com" style={fieldInput} value={basic.email} onChange={set("email")} /></Field>
           <Field label="Company Name"><input type="text" required placeholder="Company Inc." style={fieldInput} value={basic.company} onChange={set("company")} /></Field>
           <button type="submit" disabled={isSubmitting} style={{ marginTop: 4, padding: "14px 20px", borderRadius: 999, border: "none", background: isSubmitting ? "#ccc" : COLORS.teal, fontWeight: 600, fontSize: 15, cursor: isSubmitting ? "not-allowed" : "pointer", color: "#000" }}>{isSubmitting ? "Loading..." : (CONFIG.registerSubmitLabel || "Register for Webinar")}</button>
-          {CONFIG.scheduler && (
-            <div style={{ borderTop: "1px solid rgba(0,0,0,0.08)", paddingTop: 16, marginTop: 2 }}>
-              <button
-                type="button"
-                onClick={() => {
-                  setSchedulerOpen((o) => {
-                    if (!o) {
-                      track("select_content", { content_type: "scheduler", webinar_slug: CONFIG.slug });
-                      // The calendar opens below the two columns, where it has the
-                      // width Google's widget needs, so bring it into view.
-                      setTimeout(() => document.getElementById("booth-calendar")?.scrollIntoView({ behavior: "smooth", block: "start" }), 60);
-                    }
-                    return !o;
-                  });
-                }}
-                aria-expanded={schedulerOpen}
-                style={{ all: "unset", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 7, fontSize: 13.5, fontWeight: 600, color: COLORS.tealDeep }}
-              >
-                {schedulerOpen ? "Hide the calendar" : (CONFIG.scheduler.label || "Prefer to pick your own slot?")}
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true" style={{ transform: schedulerOpen ? "rotate(180deg)" : "none", transition: "transform .2s ease" }}>
-                  <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </button>
-            </div>
-          )}
         </form>
       </div>
-      {CONFIG.scheduler && schedulerOpen && (
-        /* Full width, below both columns: the Google widget needs more room than
-           the form column gives it, and at half width its own text is clipped. */
-        <div id="booth-calendar" style={{ marginTop: m ? 28 : 40, scrollMarginTop: 90 }}>
-          {CONFIG.scheduler.note && (
-            <p style={{ margin: "0 0 14px", maxWidth: 720, fontSize: 13.5, lineHeight: 1.6, fontWeight: 300, color: COLORS.muted }}>{CONFIG.scheduler.note}</p>
-          )}
-          <div style={{ borderRadius: 20, overflow: "hidden", border: "1px solid rgba(0,0,0,0.08)", background: "#fff", boxShadow: "0 1px 0 rgba(0,0,0,0.05), 0 20px 40px rgba(0,0,0,0.08)" }}>
-            <iframe
-              src={CONFIG.scheduler.url}
-              title={CONFIG.scheduler.title || "Book a time"}
-              loading="lazy"
-              style={{ border: 0, width: "100%", height: m ? 640 : 620, display: "block" }}
-            />
-          </div>
-        </div>
-      )}
       {showModal && <DetailsModal onClose={() => setShowModal(false)} onComplete={complete} />}
     </Wrap>
   );

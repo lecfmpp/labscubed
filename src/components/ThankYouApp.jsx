@@ -142,6 +142,33 @@ function Hero() {
   );
 }
 
+/* The booking calendar, shown once registration is in. By this point the lead is
+   already captured, so picking a slot is a bonus rather than a gate — which is
+   why it lives here and not on the landing page's form. Driven by `scheduler`
+   in the registry, so an event without one renders nothing. */
+function BookASlot() {
+  const CONFIG = useWebinar();
+  const m = useM();
+  if (!CONFIG.scheduler) return null;
+
+  return (
+    <Wrap bg={COLORS.gray100}>
+      <H2>{CONFIG.scheduler.heading || "Pick your exact slot"}</H2>
+      {CONFIG.scheduler.note && (
+        <p style={{ margin: m ? "14px 0 0" : "18px 0 0", maxWidth: 720, fontSize: m ? 15 : 17, lineHeight: 1.6, fontWeight: 300, color: COLORS.muted }}>{CONFIG.scheduler.note}</p>
+      )}
+      <div style={{ marginTop: m ? 24 : 32, borderRadius: 20, overflow: "hidden", border: "1px solid rgba(0,0,0,0.08)", background: "#fff", boxShadow: "0 1px 0 rgba(0,0,0,0.05), 0 20px 40px rgba(0,0,0,0.08)" }}>
+        <iframe
+          src={CONFIG.scheduler.url}
+          title={CONFIG.scheduler.title || "Book a time"}
+          loading="lazy"
+          style={{ border: 0, width: "100%", height: m ? 640 : 620, display: "block" }}
+        />
+      </div>
+    </Wrap>
+  );
+}
+
 function NextSteps() {
   const CONFIG = useWebinar();
   const isShow = CONFIG.kind === "tradeshow";
@@ -243,7 +270,7 @@ export default function App({ slug }) {
   const webinar = React.useMemo(() => getWebinar(slug), [slug]);
   return (
     <WebinarContext.Provider value={webinar}>
-      <Hero /><NextSteps /><WatchWhileYouWait /><UpcomingWebinar />
+      <Hero /><BookASlot /><NextSteps /><WatchWhileYouWait /><UpcomingWebinar />
     </WebinarContext.Provider>
   );
 }
