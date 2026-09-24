@@ -144,6 +144,8 @@ async function addToResend(data, apiKey, segmentId) {
         lab_location: data.location,
         // Optional on the form, so it can legitimately be empty.
         materials_tested: data.materials || '',
+        // Optional on the form; empty is a real answer, not a failure.
+        phone: data.phone || '',
         added_to_list_on: new Date().toISOString().slice(0, 10),
       },
     }),
@@ -218,6 +220,7 @@ async function recordInSupabase(data, slug, kind, resendSynced, syncError) {
         materials: data.materials || '',
         test_volume: data.volume,
         location: data.location,
+        phone: data.phone || null,
         resend_synced: resendSynced,
         sync_error: syncError,
         submitted_at: data.timestamp || new Date().toISOString(),
