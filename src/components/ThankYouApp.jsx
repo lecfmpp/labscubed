@@ -102,7 +102,7 @@ function Hero() {
           <nav aria-label="Breadcrumb" style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, marginBottom: m ? 18 : 22 }}>
             <a href={isShow ? "/events" : "/webinar"} style={{ color: "rgba(255,255,255,0.65)", textDecoration: "none", borderBottom: "1px solid rgba(255,255,255,0.25)", paddingBottom: 1 }}>{isShow ? "All events" : "All webinars"}</a>
             <span aria-hidden="true" style={{ color: "rgba(255,255,255,0.3)" }}>/</span>
-            <span style={{ color: "rgba(255,255,255,0.45)" }}>{isShow ? "Demo booked" : "Registered"}</span>
+            <span style={{ color: "rgba(255,255,255,0.45)" }}>{CONFIG.scheduler ? (CONFIG.scheduler.crumb || "Pick your time") : (isShow ? "Demo booked" : "Registered")}</span>
           </nav>
           {!m && CONFIG.partner && <PartnershipBadge partner={CONFIG.partner} />}
         </div>
@@ -111,6 +111,45 @@ function Hero() {
             <PartnershipBadge partner={CONFIG.partner} />
           </div>
         )}
+        {/* An event with a scheduler has not actually booked anything yet — the
+            visitor still has to choose a slot — so the calendar opens the page
+            and the copy is about who will be waiting for them, not a booking
+            that is already done. Everything else keeps the old confirmation
+            hero, video and all. */}
+        {CONFIG.scheduler ? (
+          <>
+            <div style={{ maxWidth: 780 }}>
+              <h1 style={{ fontWeight: 700, fontSize: m ? 32 : 48, letterSpacing: "-0.02em", lineHeight: 1.1, margin: 0 }}>{CONFIG.scheduler.heading || "Now pick your time"}</h1>
+              {CONFIG.scheduler.note && (
+                <p style={{ margin: "18px 0 0", fontWeight: 300, fontSize: m ? 15 : 18, lineHeight: 1.55, color: "rgba(255,255,255,0.55)" }}>{CONFIG.scheduler.note}</p>
+              )}
+            </div>
+            <div style={{ marginTop: m ? 26 : 34, borderRadius: 20, overflow: "hidden", background: "#fff", boxShadow: "0 24px 48px rgba(0,0,0,0.35)" }}>
+              <iframe
+                src={CONFIG.scheduler.url}
+                title={CONFIG.scheduler.title || "Book a time"}
+                style={{ border: 0, width: "100%", height: m ? 640 : 620, display: "block" }}
+              />
+            </div>
+            <div style={{ marginTop: m ? 24 : 32, display: "flex", flexWrap: "wrap", alignItems: "center", gap: m ? 16 : 24 }}>
+              <div style={{ flex: m ? "1 1 100%" : "1 1 340px", minWidth: 0, flexDirection: "column", gap: 6, padding: "18px 22px", borderRadius: 14, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", display: "flex" }}>
+                <span style={{ fontWeight: 600, fontSize: 15 }}>{CONFIG.title}</span>
+                <span style={{ fontSize: 13, color: "rgba(255,255,255,0.5)" }}>{CONFIG.dateLabel} · {CONFIG.timeLabel}</span>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                <span style={{ fontSize: 12.5, color: "rgba(255,255,255,0.45)" }}>Or add the show dates to your calendar</span>
+                <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+                  {calendarButtons.map((btn) => (
+                    <a key={btn.name} href={btn.href} target="_blank" rel="noopener noreferrer" style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 500, color: "#fff", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 999, padding: "10px 16px", textDecoration: "none" }}>
+                      <CalendarIcon icon={btn.icon} letter={btn.letter} color={btn.color} name={btn.name} />
+                      <span>{btn.name}</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </>
+        ) : (
         <div style={{ display: "grid", gridTemplateColumns: m ? "1fr" : "1fr 1fr", gap: m ? 32 : 56, alignItems: "center" }}>
         <div>
           <span style={{ width: 56, height: 56, borderRadius: "50%", background: COLORS.teal, display: "inline-flex", alignItems: "center", justifyContent: "center", marginBottom: 24 }}>
@@ -137,35 +176,9 @@ function Hero() {
           <HeroVideo label={isShow ? "CubeOne in action" : "Event preview"} video={CONFIG.thankYouVideoUrl || CONFIG.heroVideoUrl} image={CONFIG.heroImageUrl} imageAlt={CONFIG.heroImageAlt} />
         </div>
         </div>
+        )}
       </div>
     </section>
-  );
-}
-
-/* The booking calendar, shown once registration is in. By this point the lead is
-   already captured, so picking a slot is a bonus rather than a gate — which is
-   why it lives here and not on the landing page's form. Driven by `scheduler`
-   in the registry, so an event without one renders nothing. */
-function BookASlot() {
-  const CONFIG = useWebinar();
-  const m = useM();
-  if (!CONFIG.scheduler) return null;
-
-  return (
-    <Wrap bg={COLORS.gray100}>
-      <H2>{CONFIG.scheduler.heading || "Pick your exact slot"}</H2>
-      {CONFIG.scheduler.note && (
-        <p style={{ margin: m ? "14px 0 0" : "18px 0 0", maxWidth: 720, fontSize: m ? 15 : 17, lineHeight: 1.6, fontWeight: 300, color: COLORS.muted }}>{CONFIG.scheduler.note}</p>
-      )}
-      <div style={{ marginTop: m ? 24 : 32, borderRadius: 20, overflow: "hidden", border: "1px solid rgba(0,0,0,0.08)", background: "#fff", boxShadow: "0 1px 0 rgba(0,0,0,0.05), 0 20px 40px rgba(0,0,0,0.08)" }}>
-        <iframe
-          src={CONFIG.scheduler.url}
-          title={CONFIG.scheduler.title || "Book a time"}
-          loading="lazy"
-          style={{ border: 0, width: "100%", height: m ? 640 : 620, display: "block" }}
-        />
-      </div>
-    </Wrap>
   );
 }
 
@@ -270,7 +283,7 @@ export default function App({ slug }) {
   const webinar = React.useMemo(() => getWebinar(slug), [slug]);
   return (
     <WebinarContext.Provider value={webinar}>
-      <Hero /><BookASlot /><NextSteps /><WatchWhileYouWait /><UpcomingWebinar />
+      <Hero /><NextSteps /><WatchWhileYouWait /><UpcomingWebinar />
     </WebinarContext.Provider>
   );
 }

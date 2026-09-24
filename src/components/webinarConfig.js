@@ -252,9 +252,10 @@ export const WEBINARS = {
        Leave this out on another event and that page simply has no calendar. */
     scheduler: {
       url: "https://calendar.google.com/calendar/appointments/schedules/AcZssZ0ZZtL5fFqMY886Kp_U6xs3yl2jDHLQ_5KVyzvdIfgNXreMtjPR6s10Wi31X6l3gqXnmAXFYTK7?gv=true",
-      heading: "Pick your exact slot at Booth #815",
+      heading: "Now pick your time at Booth #815",
       title: "Book a CubeOne demo slot at Booth #815",
-      note: "Optional, but it means the machine and the time are set aside for you. Pick any 30-minute slot across the three show days — you'll get a calendar invite straight away.",
+      crumb: "Pick your time",
+      note: "Choose a 30-minute slot below and it is yours — one of our team will be waiting at Booth #815 at that time to run CubeOne live on the kind of materials you test. Your confirmation email is already on its way.",
     },
     /* Replaces "What we'll cover" on a tradeshow: what the show is, and why we
        exhibit at it. Every tradeshow entry should carry one. Facts are from the
