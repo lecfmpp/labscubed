@@ -63,6 +63,8 @@ const JOBS = [
   { from: 'partners/chevron-phillips.png', to: 'partners/chevron-phillips.webp', height: 150, mode: 'art' },
   // Webinar partnership badge — ships at its native 231x73, drawn 30px tall.
   { from: 'partners/spe.png', to: 'partners/spe.webp', height: 73, mode: 'art' },
+  // Show lockup on the booth page — ships at its native 249x118, drawn ~30px tall.
+  { from: 'events/gps-logo.png', to: 'events/gps-logo.webp', height: 118, mode: 'art' },
 
   // --- Standards marks. Largest display is 26px tall in the hero rail.
   { from: 'standards/astm-logo.png', to: 'standards/astm-logo.webp', height: 84, mode: 'art' },

@@ -251,8 +251,20 @@ export const WEBINARS = {
        white paper, because it is what most people at a show ask for. The ids
        must match the download-request edge function's own asset ids. */
     booth: {
-      heading: "Great to meet you.",
-      lede: "Tell us where to send it and tick what you'd like — it lands in your inbox before you leave the stand.",
+      heading: "Thanks for stopping by our booth.",
+      lede: "If you'd like to see how we automate materials testing labs, fill this in and our team will get in touch. Tick anything you want sent over and it lands in your inbox before you leave the stand.",
+      // Shown next to the LabsCubed mark at the top of the booth page. The show
+      // logo is dark artwork on white, so the pair sits on a white card rather
+      // than straight on the black page.
+      showLogo: {
+        src: "/assets/img/events/gps-logo.webp",
+        alt: "Global Polymer Summit 2026, presented by IEC & ITEC",
+        // Taller than a plain wordmark on purpose: the artwork carries three
+        // lines of type, which turn to mush much below this.
+        height: 46,
+        width: 249,
+        nativeHeight: 118,
+      },
       submitLabel: "Send it to me",
       // The CubeOne film, because GPS is a rubber and elastomer show and CubeOne
       // is the machine on the stand. Falls back to onDemandVideoUrl (the CubeTen

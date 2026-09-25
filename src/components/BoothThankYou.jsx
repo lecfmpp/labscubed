@@ -51,7 +51,7 @@ export default function BoothThankYou({ slug }) {
   const boothUrl = `/events/${CONFIG.slug}/booth/`;
 
   return (
-    <section style={{ background: '#000', color: '#fff', minHeight: '100vh' }}>
+    <section style={{ background: '#000', color: '#fff' }}>
       <div style={{ maxWidth: 940, margin: '0 auto', padding: m ? '32px 18px 56px' : '64px 32px 80px', textAlign: 'center' }}>
         <span style={{ width: m ? 52 : 60, height: m ? 52 : 60, borderRadius: '50%', background: COLORS.teal, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
           <svg width={m ? 24 : 28} height={m ? 24 : 28} viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4 10-11" stroke="#000" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" /></svg>

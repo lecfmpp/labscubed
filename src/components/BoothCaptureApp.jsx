@@ -145,18 +145,42 @@ export default function BoothCaptureApp({ slug }) {
   };
 
   return (
-    <section style={{ background: '#000', color: '#fff', minHeight: '100vh' }}>
+    <section style={{ background: '#000', color: '#fff' }}>
       <div style={{ maxWidth: 940, margin: '0 auto', padding: m ? '28px 18px 56px' : '56px 32px 80px' }}>
         <div style={{ textAlign: 'center' }}>
-          <img
-            src="/assets/img/logo.webp"
-            alt="LabsCubed"
-            width={419}
-            height={104}
-            style={{ height: m ? 26 : 30, width: 'auto', display: 'block', margin: '0 auto' }}
-          />
+          {/* Us and the show, one lockup. The white card is not decoration: the
+              show's logo is dark artwork on white, so on the black page it needs
+              a light surface to sit on — the same treatment the webinar
+              partnership badge uses. */}
+          {booth.showLogo ? (
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: m ? 14 : 20, padding: m ? '12px 18px' : '14px 24px', borderRadius: 16, background: '#fff', boxShadow: '0 18px 36px rgba(0,0,0,0.3)' }}>
+              <img
+                src="/assets/img/logo-dark.webp"
+                alt="LabsCubed"
+                width={Math.round((266 / 60) * (m ? 20 : 24))}
+                height={m ? 20 : 24}
+                style={{ height: m ? 20 : 24, width: 'auto', display: 'block' }}
+              />
+              <span aria-hidden="true" style={{ width: 1, alignSelf: 'stretch', background: 'rgba(0,0,0,0.14)', flex: 'none' }} />
+              <img
+                src={booth.showLogo.src}
+                alt={booth.showLogo.alt || ''}
+                width={Math.round(((booth.showLogo.width || 249) / (booth.showLogo.nativeHeight || 118)) * ((booth.showLogo.height || 34) * (m ? 0.82 : 1)))}
+                height={Math.round((booth.showLogo.height || 34) * (m ? 0.82 : 1))}
+                style={{ height: Math.round((booth.showLogo.height || 34) * (m ? 0.82 : 1)), width: 'auto', display: 'block' }}
+              />
+            </div>
+          ) : (
+            <img
+              src="/assets/img/logo.webp"
+              alt="LabsCubed"
+              width={419}
+              height={104}
+              style={{ height: m ? 26 : 30, width: 'auto', display: 'block', margin: '0 auto' }}
+            />
+          )}
           <h1 style={{ fontWeight: 700, fontSize: m ? 28 : 40, letterSpacing: '-0.02em', lineHeight: 1.12, margin: m ? '22px 0 0' : '28px 0 0' }}>
-            {booth.heading || 'Great to meet you.'}
+            {booth.heading || 'Thanks for stopping by our booth.'}
           </h1>
           <p style={{ margin: m ? '12px auto 0' : '16px auto 0', maxWidth: 560, fontWeight: 300, fontSize: m ? 15 : 17.5, lineHeight: 1.55, color: 'rgba(255,255,255,0.6)' }}>
             {booth.lede || 'Tell us where to send it and tick what you would like — it lands in your inbox before you leave the stand.'}

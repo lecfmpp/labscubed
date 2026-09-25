@@ -4,7 +4,9 @@
    carries no site header or footer: on a show floor every link is a way for the
    visitor to wander off mid-capture. */
 import Base from '../../../../layouts/Base.astro';
+import Nav from '../../../../islands/Nav.tsx';
 import BoothCaptureApp from '../../../../components/BoothCaptureApp.jsx';
+import Footer from '../../../../components/Footer.astro';
 import ScrollTopOnLoad from '../../../../components/ScrollTopOnLoad.astro';
 ---
 
@@ -15,7 +17,20 @@ import ScrollTopOnLoad from '../../../../components/ScrollTopOnLoad.astro';
   noindex
 >
   <ScrollTopOnLoad />
+  <div class="lc-sticky-top">
+    <Nav client:load inFlow />
+  </div>
   <main class="lc-page">
     <BoothCaptureApp slug="gps-sep-2026" client:only="react" />
   </main>
+  <Footer showCta={false} />
 </Base>
+
+<style is:global>
+  .lc-sticky-top {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: #000;
+  }
+</style>
