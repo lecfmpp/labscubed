@@ -37,13 +37,14 @@ const STEPS = [
 ];
 
 type Data = {
-  /** '' = unanswered, 'yes' = picks specimens below, 'no' = will confirm later. */
-  knowsSamples: '' | 'yes' | 'no';
+  /** Defaults to 'yes' so the picker is open on arrival; 'no' ("I don't know")
+   *  hides it and the request goes in without specimens. */
+  knowsSamples: 'yes' | 'no';
   selected: string[]; otherSample: string; dailyIdx: number | null;
   first: string; last: string; email: string; country: string; phone: string;
   company: string; city: string; heard: string; message: string; subscribe: boolean;
 };
-const BLANK: Data = { knowsSamples: '', selected: [], otherSample: '', dailyIdx: null, first: '', last: '', email: '', country: '', phone: '', company: '', city: '', heard: '', message: '', subscribe: true };
+const BLANK: Data = { knowsSamples: 'yes', selected: [], otherSample: '', dailyIdx: null, first: '', last: '', email: '', country: '', phone: '', company: '', city: '', heard: '', message: '', subscribe: true };
 
 const emailOk = (v: string) => /^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i.test(v.trim());
 
@@ -67,8 +68,8 @@ function stepValid(i: number, d: Data): boolean {
   if (i === 0) return !!d.first.trim() && !!d.last.trim() && emailOk(d.email) && !!d.country;
   if (i === 1) return !!d.company.trim() && !!d.city.trim();
   if (i === 2) return d.dailyIdx !== null;
-  // Specimens: answering "no" is a complete answer — only "yes" needs a pick.
-  if (i === 3) return d.knowsSamples === 'no' || (d.knowsSamples === 'yes' && (d.selected.length > 0 || !!d.otherSample.trim()));
+  // Specimens is optional: no answer ever blocks the request.
+  if (i === 3) return true;
   return true;
 }
 
@@ -380,9 +381,9 @@ function QPanel({ step, data, set, toggleSample, go, rec, m }: any) {
   );
   if (step === 3) return (
     <div>
-      <QHead n="04" title="Do you know which specimens you test?" sub="Optional — if you need to check with your team, say so and send the request anyway. We'll go through it together on the call." m={m} />
+      <QHead n="04" title="Which specimens do you test?" sub="Optional — pick the ones you run. Not sure? Choose “I don't know” and we'll work it out together on the call." m={m} />
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 28 }}>
-        {[['yes', 'Yes, I can select them'], ['no', "No, I need to check"]].map(([v, label]) => {
+        {[['yes', 'I know them'], ['no', "I don't know"]].map(([v, label]) => {
           const active = data.knowsSamples === v;
           return (
             <button key={v} className="qw-vchip" onClick={() => set('knowsSamples', v)}
@@ -392,7 +393,7 @@ function QPanel({ step, data, set, toggleSample, go, rec, m }: any) {
       </div>
       {data.knowsSamples === 'no' && (
         <p style={{ margin: '26px 0 0', maxWidth: 600, fontWeight: 300, fontSize: 16, lineHeight: 1.6, color: 'var(--text-muted)' }}>
-          No problem — send the request and a specialist will work through the standards and specimen types with you. Nothing else is needed from you now.
+          No problem — that's what the call is for. A specialist will work through the standards and specimen types with you. Nothing else is needed from you now.
         </p>
       )}
       {data.knowsSamples === 'yes' && (
@@ -432,7 +433,7 @@ function QPanel({ step, data, set, toggleSample, go, rec, m }: any) {
     ['Lab city', data.city || '—', 1],
     ['Heard about us', data.heard || '—', 1],
     ['Daily volume', data.dailyIdx !== null ? (DAILY_OPTIONS[data.dailyIdx] || {}).label : '—', 2],
-    ['Specimens', data.knowsSamples === 'no' ? 'To confirm with our team' : specimens || '—', 3],
+    ['Specimens', specimens || (data.otherSample.trim() ? '—' : 'To confirm with our team'), 3],
     ['Custom spec', data.otherSample.trim() || '—', 3],
   ];
   return (
@@ -582,7 +583,8 @@ export default function QuoteWizard() {
           heard: data.heard, message: data.message, subscribe: data.subscribe,
           specimens: rec.samples.map((s: any) => ({ id: s.id, standard: s.standard, name: s.name })),
           otherSample: data.otherSample,
-          specimenKnowledge: data.knowsSamples === 'no' ? 'to_confirm' : data.knowsSamples === 'yes' ? 'provided' : '',
+          // Nothing picked (either option) still means the team confirms it.
+          specimenKnowledge: rec.samples.length || data.otherSample.trim() ? 'provided' : 'to_confirm',
           dailyVolume: data.dailyIdx !== null ? (DAILY_OPTIONS[data.dailyIdx] || {}).label : '',
           recommendedMachine: rec.name,
           source: location.pathname, landing_page: location.pathname, referrer: document.referrer || '', origin: 'astro-site',
