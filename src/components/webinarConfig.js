@@ -278,7 +278,7 @@ export const WEBINARS = {
     showSpeaker: true,
     speakerHeading: "Who you'll meet",
     speakerName: "Guyth Abouyouniss",
-    speakerTitle: "Account Executive, LabsCubed",
+    speakerTitle: "Technical Applications - Account Manager, LabsCubed",
     speakerInitials: "GA",
     speakerPhoto: "/assets/img/team/guyth.webp",
     speakerBio:
@@ -356,7 +356,8 @@ export const WEBINARS = {
       "Anyone sizing up the ROI of automated testing",
     ],
     exploreCtaLabel: "Explore CubeOne",
-    exploreCtaHref: "https://labscubed.com/plastic-testing",
+    // CubeOne's page is /rubber-testing; /plastic-testing is CubeTen's.
+    exploreCtaHref: "https://labscubed.com/rubber-testing",
     // The banner from the first GPS email broadcast, re-encoded for the web and
     // served from this site rather than the Supabase bucket: the original is a
     // 2.9 MB webp sized for email, which is far too heavy for the largest
@@ -397,7 +398,7 @@ export const WEBINARS = {
     showSpeaker: true,
     speakerHeading: "Who you'll meet",
     speakerName: "Guyth Abouyouniss",
-    speakerTitle: "Account Executive, LabsCubed",
+    speakerTitle: "Technical Applications - Account Manager, LabsCubed",
     speakerInitials: "GA",
     speakerPhoto: "/assets/img/team/guyth.webp",
     speakerBio:
@@ -447,7 +448,8 @@ export const WEBINARS = {
       assets: [BOOTH_ASSETS.whitepaper, BOOTH_ASSETS.cubeone, BOOTH_ASSETS.cubeten],
     },
     exploreCtaLabel: "Explore CubeOne",
-    exploreCtaHref: "https://labscubed.com/plastic-testing",
+    // CubeOne's page is /rubber-testing; /plastic-testing is CubeTen's.
+    exploreCtaHref: "https://labscubed.com/rubber-testing",
     heroImageUrl: "/assets/img/events/ami-booth.webp",
     heroImageAlt: "The LabsCubed booth at an AMI plastics show",
     heroVideoUrl: null,
@@ -478,7 +480,7 @@ export const WEBINARS = {
     showSpeaker: true,
     speakerHeading: "Who you'll meet",
     speakerName: "Guyth Abouyouniss",
-    speakerTitle: "Account Executive, LabsCubed",
+    speakerTitle: "Technical Applications - Account Manager, LabsCubed",
     speakerInitials: "GA",
     speakerPhoto: "/assets/img/team/guyth.webp",
     speakerBio:
@@ -528,7 +530,8 @@ export const WEBINARS = {
       assets: [BOOTH_ASSETS.whitepaper, BOOTH_ASSETS.cubeten, BOOTH_ASSETS.cubeone],
     },
     exploreCtaLabel: "Explore CubeOne",
-    exploreCtaHref: "https://labscubed.com/plastic-testing",
+    // CubeOne's page is /rubber-testing; /plastic-testing is CubeTen's.
+    exploreCtaHref: "https://labscubed.com/rubber-testing",
     heroImageUrl: "/assets/img/events/npe-show-floor.webp",
     heroImageAlt: "The NPE show floor in Orlando",
     heroVideoUrl: null,
