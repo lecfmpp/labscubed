@@ -1,0 +1,34 @@
+---
+/* Booth capture confirmation — names what was sent, plays the CubeOne film, and
+   offers "add another visitor" for the next person in the queue. */
+import Base from '../../../../layouts/Base.astro';
+import Nav from '../../../../islands/Nav.tsx';
+import BoothThankYou from '../../../../components/BoothThankYou.jsx';
+import Footer from '../../../../components/Footer.astro';
+import ScrollTopOnLoad from '../../../../components/ScrollTopOnLoad.astro';
+---
+
+<Base
+  title="On its way — LabsCubed at the AMI Compounding World Expo"
+  description="Your material is on its way from the LabsCubed booth at the AMI Compounding World Expo, Cleveland, Ohio."
+  preloadHero={false}
+  noindex
+>
+  <ScrollTopOnLoad />
+  <div class="lc-sticky-top">
+    <Nav client:load inFlow />
+  </div>
+  <main class="lc-page">
+    <BoothThankYou slug="ami-nov-2026" client:only="react" />
+  </main>
+  <Footer showCta={false} />
+</Base>
+
+<style is:global>
+  .lc-sticky-top {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: #000;
+  }
+</style>

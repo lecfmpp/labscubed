@@ -52,6 +52,46 @@ function build(w) {
   };
 }
 
+/* The tablet at a stand (/events/<slug>/booth/). Shared by every show so the
+   three cannot drift apart; a show overrides only what is genuinely its own —
+   its logo, and which film plays on the confirmation. A show with no `booth`
+   block simply has no booth page.
+
+   The asset ids must match the download-request edge function's own ids, and
+   `defaultOn` is what arrives pre-ticked: the white paper, because it is what
+   most people at a show ask for. */
+const BOOTH_ASSETS = {
+  whitepaper: {
+    id: "whitepaper",
+    name: "The white paper",
+    line: "Beyond the Bottleneck — the data-backed business case for automating tensile testing.",
+    defaultOn: true,
+  },
+  cubeten: {
+    id: "cubeten-brochure",
+    name: "CubeTen brochure",
+    line: "Automated tensile testing for plastics and adhesives — ASTM D638 / ISO 527.",
+  },
+  cubeone: {
+    id: "cubeone-brochure",
+    name: "CubeOne brochure",
+    line: "Automated tensile testing for rubber and elastomers — ASTM D412 / ISO 37.",
+  },
+};
+
+// The CubeOne film. Every show whose stand carries CubeOne plays this on the
+// confirmation; without it the page falls back to onDemandVideoUrl.
+const CUBEONE_FILM = "https://www.youtube.com/embed/5nS3gFm5W-I";
+
+const BOOTH = {
+  heading: "Thanks for stopping by our booth.",
+  lede: "If you'd like to see how we automate materials testing labs, fill this in and our team will get in touch. Tick anything you want sent over and it lands in your inbox before you leave the stand.",
+  submitLabel: "Send it to me",
+  videoUrl: CUBEONE_FILM,
+  videoLabel: "CubeOne, the machine on our stand",
+  assets: [BOOTH_ASSETS.whitepaper, BOOTH_ASSETS.cubeten, BOOTH_ASSETS.cubeone],
+};
+
 const KHALED = {
   speakerName: "Khaled Boqaileh",
   speakerTitle: "Co-founder & CEO, LabsCubed",
@@ -246,16 +286,10 @@ export const WEBINARS = {
     ctaLabel: "Book my demo",
     registerHeading: "Book your custom demo",
     registerSubmitLabel: "Book my demo",
-    /* The tablet at the stand (/events/<slug>/booth/). A show without this
-       block simply has no booth page. `defaultOn` is what is pre-ticked — the
-       white paper, because it is what most people at a show ask for. The ids
-       must match the download-request edge function's own asset ids. */
     booth: {
-      heading: "Thanks for stopping by our booth.",
-      lede: "If you'd like to see how we automate materials testing labs, fill this in and our team will get in touch. Tick anything you want sent over and it lands in your inbox before you leave the stand.",
-      // Shown next to the LabsCubed mark at the top of the booth page. The show
-      // logo is dark artwork on white, so the pair sits on a white card rather
-      // than straight on the black page.
+      ...BOOTH,
+      // The show's own mark, shown at the top of the page. Ours is not repeated
+      // there — the site header already carries it.
       showLogo: {
         src: "/assets/img/events/gps-logo.webp",
         alt: "Global Polymer Summit 2026, presented by IEC & ITEC",
@@ -265,30 +299,6 @@ export const WEBINARS = {
         width: 249,
         nativeHeight: 118,
       },
-      submitLabel: "Send it to me",
-      // The CubeOne film, because GPS is a rubber and elastomer show and CubeOne
-      // is the machine on the stand. Falls back to onDemandVideoUrl (the CubeTen
-      // tray run the other confirmation pages use) when a show has no own video.
-      videoUrl: "https://www.youtube.com/embed/5nS3gFm5W-I",
-      videoLabel: "CubeOne, the machine on our stand",
-      assets: [
-        {
-          id: "whitepaper",
-          name: "The white paper",
-          line: "Beyond the Bottleneck — the data-backed business case for automating tensile testing.",
-          defaultOn: true,
-        },
-        {
-          id: "cubeten-brochure",
-          name: "CubeTen brochure",
-          line: "Automated tensile testing for plastics and adhesives — ASTM D638 / ISO 527.",
-        },
-        {
-          id: "cubeone-brochure",
-          name: "CubeOne brochure",
-          line: "Automated tensile testing for rubber and elastomers — ASTM D412 / ISO 37.",
-        },
-      ],
     },
     /* Google Calendar appointment schedule, shown on the confirmation page once
        the form is in — never on the landing page, so the form stays the only
@@ -430,6 +440,12 @@ export const WEBINARS = {
       "Technical & engineering managers",
       "Anyone evaluating automation for their lab",
     ],
+    booth: {
+      ...BOOTH,
+      // Compounding covers rubber and plastics, and the stand carries CubeOne,
+      // so the CubeOne brochure sits ahead of CubeTen.
+      assets: [BOOTH_ASSETS.whitepaper, BOOTH_ASSETS.cubeone, BOOTH_ASSETS.cubeten],
+    },
     exploreCtaLabel: "Explore CubeOne",
     exploreCtaHref: "https://labscubed.com/plastic-testing",
     heroImageUrl: "/assets/img/events/ami-booth.webp",
@@ -505,6 +521,12 @@ export const WEBINARS = {
       "Technical & engineering managers",
       "Anyone evaluating automation for their lab",
     ],
+    booth: {
+      ...BOOTH,
+      // NPE is a plastics show, so CubeTen leads — CubeOne stays on the list
+      // because compounders on that floor test rubber too.
+      assets: [BOOTH_ASSETS.whitepaper, BOOTH_ASSETS.cubeten, BOOTH_ASSETS.cubeone],
+    },
     exploreCtaLabel: "Explore CubeOne",
     exploreCtaHref: "https://labscubed.com/plastic-testing",
     heroImageUrl: "/assets/img/events/npe-show-floor.webp",

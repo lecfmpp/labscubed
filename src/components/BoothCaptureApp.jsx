@@ -148,11 +148,11 @@ export default function BoothCaptureApp({ slug }) {
     <section style={{ background: '#000', color: '#fff' }}>
       <div style={{ maxWidth: 940, margin: '0 auto', padding: m ? '28px 18px 56px' : '56px 32px 80px' }}>
         <div style={{ textAlign: 'center' }}>
-          {/* Only the show's mark here — ours is already in the header. The
-              white card stays because the logo is dark artwork on white and
-              would disappear straight on the black page. */}
+          {/* The show's own mark, when it has one. Ours is not repeated here —
+              the site header already carries it. The white card stays because
+              these logos are dark artwork and would vanish on the black page. */}
           {booth.showLogo && (
-            <div style={{ display: 'inline-flex', alignItems: 'center', padding: m ? '11px 18px' : '13px 22px', borderRadius: 14, background: '#fff', boxShadow: '0 18px 36px rgba(0,0,0,0.3)' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', marginBottom: m ? 4 : 6, padding: m ? '11px 18px' : '13px 22px', borderRadius: 14, background: '#fff', boxShadow: '0 18px 36px rgba(0,0,0,0.3)' }}>
               <img
                 src={booth.showLogo.src}
                 alt={booth.showLogo.alt || ''}
