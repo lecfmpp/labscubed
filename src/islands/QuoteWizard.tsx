@@ -1,9 +1,13 @@
 /* QuoteWizard — horizontal 5-step "Get a Quote" wizard (client:load).
-   Steps 01-02 reuse the same specimen catalogue + recommendation logic as
-   the homepage configurator (see lib/recommend.ts, kept in sync there);
-   steps 03-05 collect contact/company details and submit to the
-   `quote-request` Supabase edge function, which logs the lead and tags the
-   Resend "Quote Requested" segment with the full answer set as properties. */
+   Steps 01-03 collect contact, lab and daily volume; step 04 is the optional
+   specimen picker, which reuses the catalogue + recommendation logic shared
+   with the homepage configurator (see lib/recommend.ts, kept in sync there);
+   step 05 reviews and submits to the `quote-request` Supabase edge function,
+   which logs the lead and tags the Resend "Quote Requested" segment with the
+   full answer set as properties.
+
+   The wizard never promises a quote by return: the team needs to understand
+   the lab's testing first, so every screen says a specialist follows up. */
 import React from 'react';
 import { SAMPLES, getSample, Sample } from '../lib/samples';
 import { Button } from '../lib/ui';
@@ -18,20 +22,28 @@ const qGrad: any = {
   WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
 };
 
+/* Step order (2026-09-25). The wizard used to open with "What do you test?",
+   a specimen picker that asks for ASTM/ISO knowledge before anything else —
+   friction for a visitor who does not know their geometries or has to check
+   with a colleague. Contact details come first now, and specimens moved to an
+   optional step gated behind a plain yes/no, so "I need to check" still ends
+   in a submitted request. */
 const STEPS = [
-  { id: 'samples', label: 'What you test' },
-  { id: 'volume', label: 'Daily volume' },
   { id: 'you', label: 'Your details' },
   { id: 'lab', label: 'Your lab' },
+  { id: 'volume', label: 'Daily volume' },
+  { id: 'samples', label: 'Specimens', optional: true },
   { id: 'review', label: 'Review' },
 ];
 
 type Data = {
+  /** '' = unanswered, 'yes' = picks specimens below, 'no' = will confirm later. */
+  knowsSamples: '' | 'yes' | 'no';
   selected: string[]; otherSample: string; dailyIdx: number | null;
   first: string; last: string; email: string; country: string; phone: string;
   company: string; city: string; heard: string; message: string; subscribe: boolean;
 };
-const BLANK: Data = { selected: [], otherSample: '', dailyIdx: null, first: '', last: '', email: '', country: '', phone: '', company: '', city: '', heard: '', message: '', subscribe: true };
+const BLANK: Data = { knowsSamples: '', selected: [], otherSample: '', dailyIdx: null, first: '', last: '', email: '', country: '', phone: '', company: '', city: '', heard: '', message: '', subscribe: true };
 
 const emailOk = (v: string) => /^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i.test(v.trim());
 
@@ -52,10 +64,11 @@ function useBP(bp: number) {
 }
 
 function stepValid(i: number, d: Data): boolean {
-  if (i === 0) return d.selected.length > 0 || !!d.otherSample.trim();
-  if (i === 1) return d.dailyIdx !== null;
-  if (i === 2) return !!d.first.trim() && !!d.last.trim() && emailOk(d.email) && !!d.country;
-  if (i === 3) return !!d.company.trim() && !!d.city.trim();
+  if (i === 0) return !!d.first.trim() && !!d.last.trim() && emailOk(d.email) && !!d.country;
+  if (i === 1) return !!d.company.trim() && !!d.city.trim();
+  if (i === 2) return d.dailyIdx !== null;
+  // Specimens: answering "no" is a complete answer — only "yes" needs a pick.
+  if (i === 3) return d.knowsSamples === 'no' || (d.knowsSamples === 'yes' && (d.selected.length > 0 || !!d.otherSample.trim()));
   return true;
 }
 
@@ -263,22 +276,26 @@ function QRail({ step, go, data, m, sm }: any) {
 function QSummary({ data, rec, go, m }: any) {
   const ctry = getCountry(data.country);
   const rows: [string, string, number][] = [
-    ['Daily volume', data.dailyIdx !== null ? (DAILY_OPTIONS[data.dailyIdx] || {}).label + ' / day' : '', 1],
-    ['Contact', [data.first, data.last].filter(Boolean).join(' '), 2],
-    ['Email', data.email, 2],
-    ['Phone', data.phone && ctry ? ctry.d + ' ' + formatPhone(data.phone, ctry) : '', 2],
-    ['Company', data.company, 3],
-    ['Lab site', [data.city, ctry ? ctry.n : ''].filter(Boolean).join(', '), 3],
+    ['Contact', [data.first, data.last].filter(Boolean).join(' '), 0],
+    ['Email', data.email, 0],
+    ['Phone', data.phone && ctry ? ctry.d + ' ' + formatPhone(data.phone, ctry) : '', 0],
+    ['Company', data.company, 1],
+    ['Lab site', [data.city, ctry ? ctry.n : ''].filter(Boolean).join(', '), 1],
+    ['Daily volume', data.dailyIdx !== null ? (DAILY_OPTIONS[data.dailyIdx] || {}).label + ' / day' : '', 2],
   ];
   return (
     <aside style={{ background: '#fff', color: 'var(--lc-ink)', borderRadius: 24, padding: m ? 28 : 34, position: m ? 'static' : 'sticky', top: 32, boxShadow: 'var(--shadow-edge), 0 12px 30px rgba(0,0,0,0.05)' }}>
-      <div style={{ fontWeight: 700, fontSize: 11, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Your match</div>
+      <div style={{ fontWeight: 700, fontSize: 11, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Likely fit</div>
       <div style={{ marginTop: 18, display: 'flex', alignItems: 'center', gap: 12 }}>
         <span style={{ width: 9, height: 9, borderRadius: '50%', background: rec.name ? '#17DDC5' : 'rgba(0,0,0,0.15)', flex: 'none' }} />
-        <span style={{ fontWeight: 600, fontSize: 30, letterSpacing: '-0.03em', lineHeight: 1.05 }}>{rec.name || 'Not set yet'}</span>
+        <span style={{ fontWeight: 600, fontSize: 30, letterSpacing: '-0.03em', lineHeight: 1.05 }}>{rec.name || 'We\u2019ll confirm together'}</span>
       </div>
       <div style={{ marginTop: 10, fontSize: 14, lineHeight: 1.55, fontWeight: 300, color: 'var(--text-muted)' }}>
-        {rec.name ? rec.standard + ' · matched to ' + (rec.samples.length || 'your') + ' specimen' + (rec.samples.length === 1 ? '' : 's') + (data.otherSample.trim() ? ' + your custom spec' : '') : 'Pick your specimens and daily volume — your recommended machine appears here.'}
+        {rec.name
+          ? rec.standard + ' · matched to ' + (rec.samples.length || 'your') + ' specimen' + (rec.samples.length === 1 ? '' : 's') + (data.otherSample.trim() ? ' + your custom spec' : '')
+          : data.knowsSamples === 'no'
+            ? 'A specialist will go through the standards and specimen types with you, then recommend the right machine.'
+            : 'Tell us your daily volume — and your specimens, if you know them — and the likely machine appears here.'}
       </div>
       {rec.samples && rec.samples.length > 0 && (
         <div style={{ marginTop: 20, display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -332,8 +349,54 @@ function QPanel({ step, data, set, toggleSample, go, rec, m }: any) {
   const head = (k: string) => () => setOpenGroup((o) => (o === k ? null : k));
   if (step === 0) return (
     <div>
-      <QHead n="01" title="What do you test?" sub="Open a material and select every specimen geometry and standard you run — you can choose more than one." m={m} />
-      <div style={{ marginTop: 18 }}>
+      <QHead n="01" title="Who should we get in touch with?" sub="A LabsCubed specialist gets back to you within one business day to understand your testing and build your quote from there. Pick your country first so we get the phone format and the local service team right." m={m} />
+      <div style={grid}>
+        <QField label="First name" required value={data.first} onChange={(v: string) => set('first', v)} placeholder="Jordan" />
+        <QField label="Last name" required value={data.last} onChange={(v: string) => set('last', v)} placeholder="Alvarez" />
+        <QField label="Business email" required type="email" value={data.email} onChange={(v: string) => set('email', v)} placeholder="jordan@company.com" wide />
+        <CountrySelect required value={data.country} onChange={(v: string) => set('country', v)} />
+        <PhoneField country={data.country} value={data.phone} onChange={(v: string) => set('phone', v)} />
+      </div>
+    </div>
+  );
+  if (step === 1) return (
+    <div>
+      <QHead n="02" title="Where is the lab?" sub="The testing site sets install scheduling, lead time and which service team covers you." m={m} />
+      <div style={grid}>
+        <QField label="Company" required value={data.company} onChange={(v: string) => set('company', v)} placeholder="Company name" />
+        <QField label="Lab city" required value={data.city} onChange={(v: string) => set('city', v)} placeholder="City where testing is done" />
+      </div>
+      <div style={{ marginTop: 34, maxWidth: 720 }}>
+        <span style={{ display: 'block', fontWeight: 700, fontSize: 11, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>How did you hear about us?</span>
+        <QChips options={['Google Search', 'LinkedIn', 'Referral', 'Tradeshow', 'Magazine', 'YouTube', 'Social media', 'Other']} value={data.heard} onChange={(v: string) => set('heard', v)} />
+      </div>
+    </div>
+  );
+  if (step === 2) return (
+    <div>
+      <QHead n="03" title="How many samples do you test daily?" sub="An approximate daily volume is enough — it sizes the right level of automation and the ROI case we build for you." m={m} />
+      <VolumeChips value={data.dailyIdx} onChange={(v: number) => { set('dailyIdx', v); go(3); }} />
+    </div>
+  );
+  if (step === 3) return (
+    <div>
+      <QHead n="04" title="Do you know which specimens you test?" sub="Optional — if you need to check with your team, say so and send the request anyway. We'll go through it together on the call." m={m} />
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 28 }}>
+        {[['yes', 'Yes, I can select them'], ['no', "No, I need to check"]].map(([v, label]) => {
+          const active = data.knowsSamples === v;
+          return (
+            <button key={v} className="qw-vchip" onClick={() => set('knowsSamples', v)}
+              style={{ all: 'unset', cursor: 'pointer', boxSizing: 'border-box', padding: '15px 22px', borderRadius: 12, minWidth: 180, background: active ? 'rgba(23,221,197,0.08)' : 'var(--lc-gray-100)', boxShadow: active ? 'inset 0 0 0 1.5px var(--lc-teal)' : 'inset 0 0 0 1px rgba(0,0,0,0.06)', fontWeight: 600, fontSize: 16, color: 'var(--lc-ink)', transition: 'box-shadow .18s ease, background .18s ease' }}>{label}</button>
+          );
+        })}
+      </div>
+      {data.knowsSamples === 'no' && (
+        <p style={{ margin: '26px 0 0', maxWidth: 600, fontWeight: 300, fontSize: 16, lineHeight: 1.6, color: 'var(--text-muted)' }}>
+          No problem — send the request and a specialist will work through the standards and specimen types with you. Nothing else is needed from you now.
+        </p>
+      )}
+      {data.knowsSamples === 'yes' && (
+      <div style={{ marginTop: 26 }}>
         <SampleGroup label="Plastic" machine="CubeTen / CubeFlex" items={list.filter((s: any) => s.material === 'plastic')} selected={data.selected} onToggle={toggleSample} m={m} open={openGroup === 'plastic'} onHead={head('plastic')} />
         <SampleGroup label="Rubber" machine="CubeOne" items={list.filter((s: any) => s.material === 'rubber')} selected={data.selected} onToggle={toggleSample} m={m} open={openGroup === 'rubber'} onHead={head('rubber')} />
         <div style={{ marginTop: 16, borderRadius: 16, background: '#fff', boxShadow: data.otherSample.trim() ? 'inset 0 0 0 1.5px var(--lc-teal)' : 'var(--shadow-edge)', overflow: 'hidden', transition: 'box-shadow .2s ease' }}>
@@ -355,53 +418,22 @@ function QPanel({ step, data, set, toggleSample, go, rec, m }: any) {
           </div>
         </div>
       </div>
-    </div>
-  );
-  if (step === 1) return (
-    <div>
-      <QHead n="02" title="How many samples do you test daily?" sub="An approximate daily volume is enough — it sizes the right level of automation and the ROI case we build for you." m={m} />
-      <VolumeChips value={data.dailyIdx} onChange={(v: number) => { set('dailyIdx', v); go(2); }} />
-    </div>
-  );
-  if (step === 2) return (
-    <div>
-      <QHead n="03" title="Who should we send the quote to?" sub="A LabsCubed specialist replies within one business day. Pick your country first so we get the phone format and the local service team right." m={m} />
-      <div style={grid}>
-        <QField label="First name" required value={data.first} onChange={(v: string) => set('first', v)} placeholder="Jordan" />
-        <QField label="Last name" required value={data.last} onChange={(v: string) => set('last', v)} placeholder="Alvarez" />
-        <QField label="Business email" required type="email" value={data.email} onChange={(v: string) => set('email', v)} placeholder="jordan@company.com" wide />
-        <CountrySelect required value={data.country} onChange={(v: string) => set('country', v)} />
-        <PhoneField country={data.country} value={data.phone} onChange={(v: string) => set('phone', v)} />
-      </div>
-    </div>
-  );
-  if (step === 3) return (
-    <div>
-      <QHead n="04" title="Where is the lab?" sub="The testing site sets install scheduling, lead time and which service team covers you." m={m} />
-      <div style={grid}>
-        <QField label="Company" required value={data.company} onChange={(v: string) => set('company', v)} placeholder="Company name" />
-        <QField label="Lab city" required value={data.city} onChange={(v: string) => set('city', v)} placeholder="City where testing is done" />
-      </div>
-      <div style={{ marginTop: 34, maxWidth: 720 }}>
-        <span style={{ display: 'block', fontWeight: 700, fontSize: 11, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>How did you hear about us?</span>
-        <QChips options={['Google Search', 'LinkedIn', 'Referral', 'Tradeshow', 'Magazine', 'YouTube', 'Social media', 'Other']} value={data.heard} onChange={(v: string) => set('heard', v)} />
-      </div>
+      )}
     </div>
   );
   const specimens = rec.samples.map((s: any) => s.standard + ' ' + s.name).join(', ');
   const ctry = getCountry(data.country);
   const lines: [string, string, number][] = [
-    ['Specimens', specimens || '—', 0],
-    ['Custom spec', data.otherSample.trim() || '—', 0],
-    ['Daily volume', data.dailyIdx !== null ? (DAILY_OPTIONS[data.dailyIdx] || {}).label : '—', 1],
-    ['Recommended machine', rec.name || '—', 1],
-    ['Name', (data.first + ' ' + data.last).trim() || '—', 2],
-    ['Business email', data.email || '—', 2],
-    ['Country', ctry ? ctry.n : '—', 2],
-    ['Phone', data.phone ? (ctry ? ctry.d : '') + ' ' + formatPhone(data.phone, ctry) : '—', 2],
-    ['Company', data.company || '—', 3],
-    ['Lab city', data.city || '—', 3],
-    ['Heard about us', data.heard || '—', 3],
+    ['Name', (data.first + ' ' + data.last).trim() || '—', 0],
+    ['Business email', data.email || '—', 0],
+    ['Country', ctry ? ctry.n : '—', 0],
+    ['Phone', data.phone ? (ctry ? ctry.d : '') + ' ' + formatPhone(data.phone, ctry) : '—', 0],
+    ['Company', data.company || '—', 1],
+    ['Lab city', data.city || '—', 1],
+    ['Heard about us', data.heard || '—', 1],
+    ['Daily volume', data.dailyIdx !== null ? (DAILY_OPTIONS[data.dailyIdx] || {}).label : '—', 2],
+    ['Specimens', data.knowsSamples === 'no' ? 'To confirm with our team' : specimens || '—', 3],
+    ['Custom spec', data.otherSample.trim() || '—', 3],
   ];
   return (
     <div>
@@ -410,10 +442,10 @@ function QPanel({ step, data, set, toggleSample, go, rec, m }: any) {
         <div style={{ marginTop: 30, maxWidth: 760, borderRadius: 20, background: '#000', color: '#fff', overflow: 'hidden', position: 'relative', display: 'grid', gridTemplateColumns: m ? '1fr' : 'minmax(0,1fr) 40%', alignItems: 'stretch' }}>
           <span style={{ position: 'absolute', width: 240, height: 60, top: -14, left: '38%', borderRadius: 60, background: '#17DDC5', opacity: 0.28, filter: 'blur(60px)', pointerEvents: 'none' }} />
           <div style={{ position: 'relative', padding: m ? '26px 22px 4px' : '32px 34px' }}>
-            <div style={{ fontWeight: 700, fontSize: 11, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--lc-teal)' }}>Your match</div>
-            <div style={{ marginTop: 12, fontWeight: 600, fontSize: m ? 26 : 32, letterSpacing: '-0.02em', lineHeight: 1.1 }}>{rec.name} looks like your perfect match.</div>
+            <div style={{ fontWeight: 700, fontSize: 11, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--lc-teal)' }}>Likely fit</div>
+            <div style={{ marginTop: 12, fontWeight: 600, fontSize: m ? 26 : 32, letterSpacing: '-0.02em', lineHeight: 1.1 }}>{rec.name} looks like the right fit for your lab.</div>
             <p style={{ margin: '14px 0 0', fontSize: 14.5, lineHeight: 1.6, fontWeight: 300, color: 'rgba(255,255,255,0.62)' }}>
-              {rec.blurb} Our team will call to evaluate your workflow in more detail, confirm the best possible match and send everything you need — pricing, lead time and the full specification.
+              {rec.blurb} A specialist will go through your workflow with you to confirm the right configuration, and prepare your pricing and lead time from there.
             </p>
           </div>
           <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: m ? '0 22px 26px' : '32px 24px', minHeight: m ? 190 : 0 }}>
@@ -452,7 +484,7 @@ function QDone({ data, rec, reset }: any) {
       </span>
       <h2 style={{ fontWeight: 600, fontSize: m ? 30 : 44, letterSpacing: '-0.03em', lineHeight: 1.1, margin: '26px 0 0', color: 'var(--lc-ink)' }}>Request received, {data.first || 'there'}.</h2>
       <p style={{ margin: '16px auto 0', maxWidth: 540, fontWeight: 300, fontSize: 17, lineHeight: 1.6, color: 'var(--text-muted)' }}>
-        Your {rec.name || 'system'} quote is being prepared for {data.company || 'your lab'}. A specialist replies to {data.email || 'your inbox'} within one business day. In the meantime, watch the video below to see just how simple the steps to automate your tensile testing really are.
+        A LabsCubed specialist will reach out to {data.email || 'your inbox'} within one business day to understand how {data.company || 'your lab'} tests today, confirm the right system and prepare your quote from there. In the meantime, watch the video below to see just how simple the steps to automate your tensile testing really are.
       </p>
       <div style={{ position: 'relative', width: '100%', maxWidth: 640, margin: '32px auto 0', aspectRatio: '16 / 9', borderRadius: 16, overflow: 'hidden', boxShadow: 'var(--shadow-edge), 0 20px 50px rgba(0,0,0,0.07)' }}>
         <iframe
@@ -493,7 +525,9 @@ export default function QuoteWizard() {
 
   React.useEffect(() => {
     try {
-      const raw = localStorage.getItem('lc-quote-wizard-v2');
+      // v3: the step order changed (contact first, specimens optional), so a
+      // v2 draft would restore someone onto the wrong step — let it expire.
+      const raw = localStorage.getItem('lc-quote-wizard-v3');
       if (raw) {
         const s = JSON.parse(raw);
         if (s.data) setData({ ...BLANK, ...s.data });
@@ -504,7 +538,7 @@ export default function QuoteWizard() {
   }, []);
   React.useEffect(() => {
     if (first.current) return;
-    try { localStorage.setItem('lc-quote-wizard-v2', JSON.stringify({ step, data })); } catch (e) { /* ignore */ }
+    try { localStorage.setItem('lc-quote-wizard-v3', JSON.stringify({ step, data })); } catch (e) { /* ignore */ }
   }, [step, data]);
 
   const set = (k: keyof Data, v: any) => setData((d) => ({ ...d, [k]: v }));
@@ -548,6 +582,7 @@ export default function QuoteWizard() {
           heard: data.heard, message: data.message, subscribe: data.subscribe,
           specimens: rec.samples.map((s: any) => ({ id: s.id, standard: s.standard, name: s.name })),
           otherSample: data.otherSample,
+          specimenKnowledge: data.knowsSamples === 'no' ? 'to_confirm' : data.knowsSamples === 'yes' ? 'provided' : '',
           dailyVolume: data.dailyIdx !== null ? (DAILY_OPTIONS[data.dailyIdx] || {}).label : '',
           recommendedMachine: rec.name,
           source: location.pathname, landing_page: location.pathname, referrer: document.referrer || '', origin: 'astro-site',
@@ -556,7 +591,7 @@ export default function QuoteWizard() {
       const resp = await r.json().catch(() => ({}));
       if (r.ok && resp && resp.success) {
         setSent(true);
-        try { localStorage.removeItem('lc-quote-wizard-v2'); } catch (e) { /* ignore */ }
+        try { localStorage.removeItem('lc-quote-wizard-v3'); } catch (e) { /* ignore */ }
         /* The Webflow flow ended on /get-a-quote-thank-you, and GA4 key events /
            Ads imports may be keyed to that URL — so besides generate_lead, send
            the same virtual page view the old thank-you page produced. */
