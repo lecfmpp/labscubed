@@ -1,0 +1,21 @@
+---
+/* Booth capture page — the tablet at Booth #815, not a page anyone should reach
+   from search. It is noindex, excluded from the sitemap (astro.config.mjs), and
+   carries no site header or footer: on a show floor every link is a way for the
+   visitor to wander off mid-capture. */
+import Base from '../../../../layouts/Base.astro';
+import BoothCaptureApp from '../../../../components/BoothCaptureApp.jsx';
+import ScrollTopOnLoad from '../../../../components/ScrollTopOnLoad.astro';
+---
+
+<Base
+  title="Booth #815 — LabsCubed at the Global Polymer Summit"
+  description="Leave your details at the LabsCubed booth and we'll email the material you pick."
+  preloadHero={false}
+  noindex
+>
+  <ScrollTopOnLoad />
+  <main class="lc-page">
+    <BoothCaptureApp slug="gps-sep-2026" client:only="react" />
+  </main>
+</Base>

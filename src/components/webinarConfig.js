@@ -246,6 +246,38 @@ export const WEBINARS = {
     ctaLabel: "Book my demo",
     registerHeading: "Book your custom demo",
     registerSubmitLabel: "Book my demo",
+    /* The tablet at the stand (/events/<slug>/booth/). A show without this
+       block simply has no booth page. `defaultOn` is what is pre-ticked — the
+       white paper, because it is what most people at a show ask for. The ids
+       must match the download-request edge function's own asset ids. */
+    booth: {
+      heading: "Great to meet you.",
+      lede: "Tell us where to send it and tick what you'd like — it lands in your inbox before you leave the stand.",
+      submitLabel: "Send it to me",
+      // The CubeOne film, because GPS is a rubber and elastomer show and CubeOne
+      // is the machine on the stand. Falls back to onDemandVideoUrl (the CubeTen
+      // tray run the other confirmation pages use) when a show has no own video.
+      videoUrl: "https://www.youtube.com/embed/5nS3gFm5W-I",
+      videoLabel: "CubeOne, the machine on our stand",
+      assets: [
+        {
+          id: "whitepaper",
+          name: "The white paper",
+          line: "Beyond the Bottleneck — the data-backed business case for automating tensile testing.",
+          defaultOn: true,
+        },
+        {
+          id: "cubeten-brochure",
+          name: "CubeTen brochure",
+          line: "Automated tensile testing for plastics and adhesives — ASTM D638 / ISO 527.",
+        },
+        {
+          id: "cubeone-brochure",
+          name: "CubeOne brochure",
+          line: "Automated tensile testing for rubber and elastomers — ASTM D412 / ISO 37.",
+        },
+      ],
+    },
     /* Google Calendar appointment schedule, shown on the confirmation page once
        the form is in — never on the landing page, so the form stays the only
        thing asked of a visitor and the lead is captured before anyone books.

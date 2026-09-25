@@ -1,0 +1,20 @@
+---
+/* Booth capture confirmation. Same no-header treatment as the capture screen —
+   the only control on it is "add another visitor", which is what the staff need
+   between one handshake and the next. */
+import Base from '../../../../layouts/Base.astro';
+import BoothThankYou from '../../../../components/BoothThankYou.jsx';
+import ScrollTopOnLoad from '../../../../components/ScrollTopOnLoad.astro';
+---
+
+<Base
+  title="On its way — LabsCubed at Booth #815"
+  description="Your material is on its way from the LabsCubed booth at the Global Polymer Summit."
+  preloadHero={false}
+  noindex
+>
+  <ScrollTopOnLoad />
+  <main class="lc-page">
+    <BoothThankYou slug="gps-sep-2026" client:only="react" />
+  </main>
+</Base>
