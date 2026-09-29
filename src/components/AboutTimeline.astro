@@ -1,41 +1,54 @@
 ---
-// Our Story — eight milestones, 2016 → 2026, alternating image/text rows.
-// Copy is verbatim from the Webflow /about-us page.
+// Our Story — nine milestones, 2016 → 2026, alternating image/text rows.
+// Copy from Mo'min's About Page doc (Trello "update the about page", 2026-09);
+// photos from the Drive links in that doc.
+//
+// A milestone with no `img` renders as a text-only row. Three have no photo
+// yet (2017–2018, 2021, 2026): add `img`/`w`/`h`/`ratio`/`alt` when one
+// arrives and the row picks up the alternating layout on its own.
 //
 // The alternation is CSS `order` on odd rows rather than a branch in the
 // markup, so the DOM order stays image-then-text everywhere — which is also
 // the mobile order, and means the phone layout needs no JS at all.
 //
-// `ratio` is each image's native aspect ratio (the collages are 2486x988, the
-// two portrait-ish milestones 700x524); it is set on the frame so a wide
-// collage is never cropped. The 2486px originals are served through the 1280w
+// `ratio` is each frame's aspect ratio — the image's native one, except the
+// portrait 2019 photo, which is framed 4:5 so it doesn't tower over its text.
+// Originals (2400px, EXIF rotation baked in) are served through the capped
 // copies written by scripts/optimize-images.mjs — see the jobs there.
 import Section from './Section.astro';
 import Button from './Button.astro';
 
-const MILESTONES = [
-  { year: '2016', title: 'The Journey Begins', body: "Our startup journey commenced with a profound realization of the transformative power of materials in engineering. Fuelled by this insight and driven by the founders' frustration with manual sample testing, LabsCubed was born.", ratio: '700 / 524', img: '/assets/img/about/2016-the-journey-begins.webp', w: 700, h: 524, alt: "Engineer's desk setup with laptop, monitor, and LabsCubed branded water bottles." },
-  { year: '2017—2018', title: 'Industry Insight', body: 'Engaging with over 100 professionals in the rubber industry revealed a pressing need for faster and more efficient sample testing methods. Over the ensuing two years, we dedicated ourselves to crafting innovative solutions to address these pervasive industry challenges.', ratio: '2486 / 988', img: '/assets/img/about/2017-2018-industry-insight-1280.webp', w: 1280, h: 509, alt: 'LabsCubed engineers collaborating on CAD design for tensile testing equipment development.' },
-  { year: '2019', title: 'Competition Triumph', body: 'LabsCubed emerged victorious, clinching the top prize at the prestigious PLAST-EX and Advanced Design & Manufacturing Expo competition, validating our commitment to innovation and excellence.', ratio: '2486 / 988', img: '/assets/img/about/2019-competition-triumph-1280.webp', w: 1280, h: 509, alt: 'LabsCubed team members shaking hands and networking at an industry event.' },
-  { year: '2019', title: 'Introducing CubeOne', body: 'Following six rigorous prototype iterations and extensive testing of over 10,000 samples, coupled with significant venture capital investment, we proudly unveiled CubeOne. This cutting-edge tensile testing machine boasted unparalleled accuracy and consistency, setting a new standard in the industry.', ratio: '2486 / 988', img: '/assets/img/about/2019-introducing-cubeone-1280.webp', w: 1280, h: 509, alt: 'LabsCubed CubeOne and CubeTen automated tensile testing machines in a modern material testing laboratory.' },
-  { year: '2020', title: 'Expansion and Advancement', body: 'Our relocation to a state-of-the-art manufacturing and office facility in 2020 marked a pivotal moment in our growth trajectory. This strategic move empowered LabsCubed to scale up production and accommodate our burgeoning team, laying the foundation for future success.', ratio: '2486 / 988', img: '/assets/img/about/2020-expansion-and-advancement-1280.webp', w: 1280, h: 509, alt: 'LabsCubed CubeOne automated rubber tensile testing machine in its shipping packaging, ready for delivery.' },
-  { year: '2021', title: 'Milestone Achievement', body: 'The culmination of years of unwavering dedication and relentless pursuit of excellence culminated in the delivery of our first full-production machines to customers in 2021. This significant milestone underscored our commitment to pushing the boundaries of innovation and delivering superior solutions to our valued clients.', ratio: '2486 / 988', img: '/assets/img/about/2021-milestone-achievement-1280.webp', w: 1280, h: 509, alt: 'Collage showcasing LabsCubed automated tensile testing technology, including robotic sample handling and production.' },
-  { year: '2022—2023', title: 'Momentum Builds', body: 'Buoyed by our achievements, we intensified our efforts to enhance our machines, focusing on optimizing user-friendliness, calibration, and serviceability. Simultaneously, we embarked on ambitious projects, including the development of a groundbreaking plastics and adhesives machine, driven by customer demand and market trends.', ratio: '2486 / 988', img: '/assets/img/about/2022-2023-momentum-builds-1280.webp', w: 1280, h: 509, alt: 'Collage of LabsCubed machines and production line.' },
-  { year: '2026', title: 'Expanding Horizons', body: 'With a robust presence established in production facilities in North America, LabsCubed now sets its sights on broader horizons. Our strategic roadmap includes diversifying our product lines and venturing into the European market, poised to revolutionize the industry with our innovative solutions.', ratio: '700 / 524', img: '/assets/img/about/2026-expanding-horizons.webp', w: 700, h: 524, alt: 'LabsCubed automated tensile testing machine and team.' },
+interface Milestone {
+  year: string; title: string; body: string;
+  img?: string; w?: number; h?: number; ratio?: string; pos?: string; alt?: string;
+}
+
+const MILESTONES: Milestone[] = [
+  { year: '2016', title: 'The Journey Begins', body: "LabsCubed began with a firsthand experience: years of repetitive, manual material testing revealed how much time laboratories could lose to the process. We saw an opportunity to change that, to make testing simpler and more automated, so the people developing tomorrow's materials could spend more time innovating.", ratio: '4 / 3', img: '/assets/img/about/story-2016-1280.webp', w: 1280, h: 960, alt: 'The LabsCubed founding team with an early automated tensile testing prototype at the University of Waterloo.' },
+  { year: '2017—2018', title: 'We Listened Before We Built', body: "We didn't start by building a machine. We started by listening. Across laboratories and conversations with industry professionals, we saw the same frustration: valuable time spent repeating manual testing. It became clear that the future wasn't about asking laboratories to work harder, but about building smarter ways to work." },
+  { year: '2018', title: 'CubeOne: Automated Rubber Tensile Testing Made Simple', body: "CubeOne marked our first major step toward automated materials testing—and a new way of approaching rubber tensile testing. Designed around the people who use it, CubeOne takes repetitive work off the technician's hands, automating everything from smart gripping and sample measurement to testing and data collection. The result is a simpler, more consistent testing process that gives laboratories more time to focus on the work that matters.", ratio: '2400 / 1167', img: '/assets/img/about/story-2018-1280.webp', w: 1280, h: 622, alt: 'The first LabsCubed CubeOne automated rubber tensile testing machine on display at a trade show booth.' },
+  { year: '2019', title: 'Innovation Earns Recognition', body: 'Our work on CubeOne earned top recognition at the PLAST-EX and Advanced Design & Manufacturing Expo competition. More than an award, it was an early validation of what we were building: a simpler, more automated approach to material testing, designed around the people who use it.', ratio: '4 / 5', pos: '50% 30%', img: '/assets/img/about/story-2019-1000.webp', w: 1000, h: 1333, alt: 'LabsCubed co-founders shaking hands on the CentreStage at the PLAST-EX and Advanced Design & Manufacturing Expo.' },
+  { year: '2020', title: 'CubeOne Makes Its Mark', body: 'Our first full-production CubeOne machines reached customers in North America, and the response was a major success. Many of the professionals who helped shape our understanding of the industry in the early days became our first customers, bringing CubeOne into their laboratories and turning our vision for automated rubber tensile testing into reality.', ratio: '16 / 9', img: '/assets/img/about/story-2020-1280.webp', w: 1280, h: 720, alt: 'Crated full-production CubeOne machines on pallets, ready to ship to customers.' },
+  { year: '2021', title: 'Making Room to Grow', body: "CubeOne's growing success gave LabsCubed a reason to grow with it. We moved into a larger facility to expand our production, strengthen our capabilities, and make room for everything we were building next." },
+  { year: '2022', title: 'CubeOne Gets Even Better', body: "We didn't stop at building CubeOne—we kept improving it. Major updates in 2022 increased its capacity to up to 12 specimens while helping laboratories recover up to 85% of lab time and improve data consistency by 40%. With a proven 12–24 month ROI, CubeOne continued to turn automation into measurable value for the laboratory.", ratio: '1170 / 527', img: '/assets/img/about/story-2022.webp', w: 1170, h: 527, alt: 'The updated LabsCubed CubeOne automated rubber tensile testing machine.' },
+  { year: '2024', title: 'Building on Success: Introducing CubeTen', body: 'After years of refining CubeOne and earning the trust of leading rubber manufacturers, we were ready to take the next step. In 2024, we introduced CubeTen and expanded our automated testing capabilities into plastics, bringing the same focus on simplicity, efficiency, and intelligent automation to a much broader materials market. It was more than a new product—it was the next chapter in our vision for smarter testing laboratories.', ratio: '16 / 9', img: '/assets/img/about/story-2024-1280.webp', w: 1280, h: 720, alt: 'LabsCubed CubeTen automated plastic tensile testing machine at a trade show booth.' },
+  { year: '2026', title: 'Taking LabsCubed Global', body: "LabsCubed is entering a new chapter: taking automated materials testing beyond North America and into laboratories around the world. With CubeOne and CubeTen reaching customers across Europe and East Asia, including Germany, Italy, and Japan, we're seeing our vision travel further than ever before. As more laboratories turn to automation, LabsCubed is building the technology to help them move forward." },
 ];
 ---
 <Section bg="#fff">
   <div class="ab-tl">
     <div class="ab-tl__eyebrow">Our Story</div>
-    <h2 class="ab-tl__h2">Discover our story.</h2>
+    <h2 class="ab-tl__h2">How LabsCubed Began</h2>
     <div class="ab-tl__rows">
       {MILESTONES.map((s) => (
-        <div class="ab-tl__row">
-          <div class="ab-tl__media">
-            <div class="ab-tl__frame" style={`aspect-ratio:${s.ratio}`}>
-              <img src={s.img} alt={s.alt} width={s.w} height={s.h} loading="lazy" decoding="async" />
+        <div class:list={['ab-tl__row', { 'ab-tl__row--text': !s.img }]}>
+          {s.img && (
+            <div class="ab-tl__media">
+              <div class="ab-tl__frame" style={`aspect-ratio:${s.ratio}`}>
+                <img src={s.img} alt={s.alt} width={s.w} height={s.h} loading="lazy" decoding="async" style={s.pos ? `object-position:${s.pos}` : undefined} />
+              </div>
             </div>
-          </div>
+          )}
           <div class="ab-tl__text">
             <div class="ab-tl__year"><span class="ab-tl__dot"></span><span>{s.year}</span></div>
             <h3 class="ab-tl__h3">{s.title}</h3>
@@ -44,7 +57,7 @@ const MILESTONES = [
         </div>
       ))}
     </div>
-    <div class="ab-tl__cta"><Button variant="dark" href="/get-a-quote">Book a Demo</Button></div>
+    <div class="ab-tl__cta"><Button variant="dark" href="/get-a-quote">Get a Quote Now</Button></div>
   </div>
 </Section>
 
@@ -71,6 +84,12 @@ const MILESTONES = [
   .ab-tl__h3 { font-weight: 700; font-size: 37px; line-height: 1.1; letter-spacing: -0.02em; margin: 16px 0 0; color: var(--lc-ink); }
   .ab-tl__body { font-weight: 300; font-size: 18px; line-height: 1.6; color: var(--text-muted); margin: 16px 0 0; max-width: 520px; text-wrap: pretty; }
 
+  /* Text-only milestone (no photo yet): one centred column, so it reads as a
+     beat in the story rather than a row with a hole where the image goes. */
+  .ab-tl__row--text { justify-content: center; }
+  .ab-tl__row--text .ab-tl__text { flex: 0 1 720px; align-items: center; text-align: center; }
+  .ab-tl__row--text .ab-tl__body { max-width: 640px; }
+
   .ab-tl__cta { display: flex; justify-content: center; padding: 80px 0 140px; }
 
   @media (max-width: 760px) {
@@ -83,6 +102,7 @@ const MILESTONES = [
     .ab-tl__row:nth-child(odd) .ab-tl__text { order: 0; }
     .ab-tl__frame { border-radius: 16px; }
     .ab-tl__text { padding: 0; }
+    .ab-tl__row--text .ab-tl__text { flex: none; align-items: flex-start; text-align: left; }
     .ab-tl__h3 { font-size: 26px; }
     .ab-tl__body { font-size: 15px; }
     .ab-tl__cta { padding: 48px 0 72px; }

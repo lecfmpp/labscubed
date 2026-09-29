@@ -1,18 +1,23 @@
 ---
-// About hero — black band, eyebrow, H1 and the "Discover Our Story" video.
-// Ported from the about_handoff kit; the JS useIsMobile branches are CSS
-// media queries here so the server HTML is already correct on a phone.
+// About hero — black band, eyebrow, H1, the "Discover Our Story" video, then
+// the why-we-started paragraph and the demo CTA. Copy from Mo'min's About Page
+// doc (Trello "update the about page", 2026-09). The JS useIsMobile branches of
+// the original kit are CSS media queries here, so the server HTML is already
+// correct on a phone.
 import VideoFacade from '../islands/VideoFacade.tsx';
+import Button from './Button.astro';
 ---
 <section class="ab-hero">
   <span class="ab-hero__glow" aria-hidden="true"></span>
   <div class="ab-hero__inner">
     <div class="ab-hero__eyebrow">About LabsCubed</div>
-    <h1 class="ab-hero__h1">At LabsCubed, we believe in the power of materials to change our world</h1>
+    <h1 class="ab-hero__h1">LabsCubed Began with a Simple Belief: Materials Can Change the World</h1>
     <div class="ab-hero__video">
       {/* Above the fold, and the only thing to click here — hydrate on load. */}
       <VideoFacade client:load id="8IuGJsjw2AE" title="Discover Our Story" priority />
     </div>
+    <p class="ab-hero__lede">We started LabsCubed because we saw something worth changing: the people developing tomorrow's materials were spending too much of today testing them by hand. We believe lab automation can give laboratories back that time, so they can focus on learning, improving, and creating. Because when materials move forward, the world moves with them.</p>
+    <div class="ab-hero__cta"><Button href="/get-a-quote">Book a Demo Now</Button></div>
   </div>
 </section>
 
@@ -27,10 +32,14 @@ import VideoFacade from '../islands/VideoFacade.tsx';
   .ab-hero__eyebrow { font-weight: 700; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.5); }
   .ab-hero__h1 { font-weight: 700; font-size: 80px; line-height: 1.05; letter-spacing: -0.03em; margin: 24px auto 0; max-width: 1080px; text-wrap: balance; }
   .ab-hero__video { margin-top: 64px; }
+  .ab-hero__lede { font-weight: 300; font-size: 20px; line-height: 1.6; color: rgba(255,255,255,0.72); margin: 56px auto 0; max-width: 760px; text-wrap: pretty; }
+  .ab-hero__cta { margin-top: 36px; display: flex; justify-content: center; }
 
   @media (max-width: 760px) {
     .ab-hero__inner { padding: 110px 20px 72px; }
     .ab-hero__h1 { font-size: 40px; }
     .ab-hero__video { margin-top: 40px; }
+    .ab-hero__lede { font-size: 16px; margin-top: 32px; }
+    .ab-hero__cta { margin-top: 28px; }
   }
 </style>

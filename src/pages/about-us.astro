@@ -5,9 +5,9 @@
    this path from Webflow, and the netlify.toml header stops an already-cached
    Webflow answer from outliving this page at the edge).
 
-   Copy, images and both video ids come verbatim from the live Webflow page.
-   The one deliberate change: the final milestone reads 2026 on every
-   breakpoint — Webflow showed 2026 on desktop and 2024 on mobile. */
+   2026-09 rewrite: copy and timeline photos from Mo'min's About Page doc
+   (Trello "update the about page"). Both video ids are unchanged from the
+   original Webflow page. */
 import Base from '../layouts/Base.astro';
 import Nav from '../islands/Nav.tsx';
 import Footer from '../components/Footer.astro';
@@ -18,9 +18,9 @@ import AboutContact from '../components/AboutContact.astro';
 import { SITE_URL } from '../site.mjs';
 
 const canonical = `${SITE_URL}/about-us`;
-const title = 'About LabsCubed | Automated Tensile Testing Solutions';
+const title = 'About LabsCubed | Lab Automation for Tensile Testing';
 const description =
-  "Learn about LabsCubed's mission to revolutionize material testing with innovative automated tensile testing machines for rubber and plastics. Our vision, team, and commitment to quality.";
+  "LabsCubed builds lab automation for materials testing. See how CubeOne (rubber) and CubeTen (plastics) automated tensile testing machines give laboratories their time back.";
 
 const jsonLd = [
   {
