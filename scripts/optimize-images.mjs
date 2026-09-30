@@ -92,6 +92,11 @@ const JOBS = [
   { from: 'about/story-2019.webp', to: 'about/story-2019-1000.webp', width: 1000, mode: 'photo' },
   { from: 'about/story-2020.webp', to: 'about/story-2020-1280.webp', width: 1280, mode: 'photo' },
   { from: 'about/story-2024.webp', to: 'about/story-2024-1280.webp', width: 1280, mode: 'photo' },
+  // Added 2026-09-30. story-2017 is the Webflow-era 2017-2018 photo (the same
+  // shot Mo'min put back in the doc, recovered here at its full 2486px).
+  { from: 'about/story-2017.webp', to: 'about/story-2017-1280.webp', width: 1280, mode: 'photo' },
+  { from: 'about/story-2021.webp', to: 'about/story-2021-1280.webp', width: 1280, mode: 'photo' },
+  { from: 'about/story-2026.webp', to: 'about/story-2026-1280.webp', width: 1280, mode: 'photo' },
 
   // --- /plastic-testing. Testimonial photo is drawn ~560px wide (half card).
   { from: 'plastic-testing/stats-bg.png', to: 'plastic-testing/stats-bg.webp', width: 1200, mode: 'photo' },
