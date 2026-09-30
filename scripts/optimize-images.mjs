@@ -85,16 +85,17 @@ const JOBS = [
   // with their EXIF rotation baked in (this script does not auto-rotate).
   // Frames are drawn at half of the 1312px shell (~620px) on desktop and
   // full-bleed at 350px on a phone, so 1280w covers DPR-2 desktop and DPR-3
-  // mobile. The 2019 photo is portrait, framed 4:5, so 1000w is plenty.
+  // mobile. All frames are 16:9 now, so the portrait 2019 photo needs the full
+  // 1280w (its crop is a 1280x720 band) and the wide 2017 one 1760w (≈700px tall).
   // story-2022.webp (a 1170px render) is already at display size: no job.
   { from: 'about/story-2016.webp', to: 'about/story-2016-1280.webp', width: 1280, mode: 'photo' },
   { from: 'about/story-2018.webp', to: 'about/story-2018-1280.webp', width: 1280, mode: 'photo' },
-  { from: 'about/story-2019.webp', to: 'about/story-2019-1000.webp', width: 1000, mode: 'photo' },
+  { from: 'about/story-2019.webp', to: 'about/story-2019-1280.webp', width: 1280, mode: 'photo' },
   { from: 'about/story-2020.webp', to: 'about/story-2020-1280.webp', width: 1280, mode: 'photo' },
   { from: 'about/story-2024.webp', to: 'about/story-2024-1280.webp', width: 1280, mode: 'photo' },
   // Added 2026-09-30. story-2017 is the Webflow-era 2017-2018 photo (the same
   // shot Mo'min put back in the doc, recovered here at its full 2486px).
-  { from: 'about/story-2017.webp', to: 'about/story-2017-1280.webp', width: 1280, mode: 'photo' },
+  { from: 'about/story-2017.webp', to: 'about/story-2017-1760.webp', width: 1760, mode: 'photo' },
   { from: 'about/story-2021.webp', to: 'about/story-2021-1280.webp', width: 1280, mode: 'photo' },
   { from: 'about/story-2026.webp', to: 'about/story-2026-1280.webp', width: 1280, mode: 'photo' },
 
