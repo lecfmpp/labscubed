@@ -8,8 +8,8 @@ X-WR-TIMEZONE:America/New_York
 BEGIN:VEVENT
 UID:webinar-gis-spe-feb-2027@labscubed.com
 DTSTAMP:20261008T000000Z
-DTSTART:20270210T010000Z
-DTEND:20270210T015000Z
+DTSTART:20261020T150000Z
+DTEND:20261020T155000Z
 SUMMARY:The Hidden Cost of Manual Plastics Testing - LabsCubed Webinar
 DESCRIPTION:With Khaled Boqaileh, co-founder and CEO of LabsCubed. Where the hidden costs and sources of variability sit in manual plastics tensile testing, and what an automation-first workflow changes. Includes real CubeTen data on HIPS and polypropylene, and a short live demonstration.
 LOCATION:Online
