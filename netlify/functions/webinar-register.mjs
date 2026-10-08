@@ -212,6 +212,10 @@ async function recordInSupabase(data, slug, kind, resendSynced, syncError) {
     body: JSON.stringify({
       payload: {
         webinar_slug: slug,
+        // The RPC (migration webinar_registrations_source_from_payload) reads
+        // this from the payload and the column is NOT NULL, so without it every
+        // insert is rejected. Same value the table used to default to.
+        source: 'webinar_registration',
         // 'webinar' unless the WEBINARS entry says otherwise.
         kind,
         webinar_title: data.webinar || null,
