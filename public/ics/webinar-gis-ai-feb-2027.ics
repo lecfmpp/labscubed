@@ -8,8 +8,8 @@ X-WR-TIMEZONE:America/New_York
 BEGIN:VEVENT
 UID:webinar-gis-ai-feb-2027@labscubed.com
 DTSTAMP:20261008T000000Z
-DTSTART:20270217T010000Z
-DTEND:20270217T015000Z
+DTSTART:20261118T160000Z
+DTEND:20261118T165000Z
 SUMMARY:Automation, AI and Industry 4.0 in the Testing Lab - LabsCubed Webinar
 DESCRIPTION:With Khaled Boqaileh, co-founder and CEO of LabsCubed. What it takes to make a testing lab smart: automating the repetitive work, producing data clean enough to be worth analysing, and connecting the two.
 LOCATION:Online

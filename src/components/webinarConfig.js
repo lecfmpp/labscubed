@@ -569,12 +569,9 @@ export const WEBINARS = {
    welcomeEvent in webinar-register.mjs (so our own automations never email GIS
    registrants).
 
-   Content tracks the original it clones; only the fields below differ.
-   gis-spe-feb-2027 is the SAME event as spe-oct-2026 and inherits its date.
-   gis-ai-feb-2027 has TBD PLACEHOLDER dates — Tuesday Feb 16 2027 at 8:00 PM
-   EST (EST = UTC-5, so the UTC instant is 01:00Z the next day). Change
-   dateLabel, startUTC and endUTC there, plus DTSTART/DTEND in its public/ics
-   file and the date in its two pages' <Base description>. */
+   Content tracks the original it clones; only the fields below differ. Both
+   clones are the SAME events as their originals and inherit their date and
+   time; they exist only so GIS-sourced leads are tagged and counted apart. */
 function gisClone(sourceSlug, overrides) {
   return build({
     ...WEBINARS[sourceSlug],
@@ -593,12 +590,9 @@ WEBINARS["gis-spe-feb-2027"] = gisClone("spe-oct-2026", {
   slug: "gis-spe-feb-2027",
 });
 
+// The same event as automation-ai-nov-2026 (date and time inherited from it).
 WEBINARS["gis-ai-feb-2027"] = gisClone("automation-ai-nov-2026", {
   slug: "gis-ai-feb-2027",
-  dateLabel: "Tuesday, February 16, 2027", // TBD placeholder
-  timeLabel: "8:00 PM EST · 50 minutes, including Q&A", // TBD placeholder
-  startUTC: "2027-02-17T01:00:00Z", // TBD placeholder
-  endUTC: "2027-02-17T01:50:00Z", // TBD placeholder
 });
 
 export function getWebinar(slug) {
