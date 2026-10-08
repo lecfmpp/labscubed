@@ -17,6 +17,7 @@
 // visitor gets a 200 as long as their input was valid.
 
 const REQUIRED = ['name', 'email', 'company', 'website', 'role', 'industry', 'volume', 'location'];
+const LEAD_ONLY_REQUIRED = ['name', 'email', 'company'];
 
 // Per-webinar routing. The client posts webinar_slug; this map decides which
 // Resend segment the registrant joins. Adding a webinar means creating a Resend
@@ -30,7 +31,11 @@ const REQUIRED = ['name', 'email', 'company', 'website', 'role', 'industry', 'vo
 // It starts the Resend automation that emails the registration confirmation;
 // the name must match that automation's trigger step.
 const WEBINARS = {
-  'spe-oct-2026': { segmentId: 'd7b053f5-67b3-4747-807e-1e8db27c45a1', welcomeEvent: 'spe2026_registered' },
+  // leadOnly: SPE hosts the real registration, so we only collect name, email
+  // and company here and the visitor is sent on to SPE's page. No welcomeEvent
+  // any more (it was 'spe2026_registered'): a "you're registered" email would be
+  // untrue until they finish on SPE's site.
+  'spe-oct-2026': { segmentId: 'd7b053f5-67b3-4747-807e-1e8db27c45a1', leadOnly: true },
   'automation-ai-nov-2026': { segmentId: 'ca2a167f-e3c6-483b-90f0-8590d69ad2a1' },
   // Tradeshow demo bookings, not a webinar — same funnel, its own list.
   'gps-sep-2026': { segmentId: '316f18d8-86ba-459f-817a-67cd921e4e2d', kind: 'tradeshow' },
@@ -39,7 +44,7 @@ const WEBINARS = {
   // Partner funnels (Global Instrumentation Services): clones of the two
   // webinars above, in their own segments. Deliberately no welcomeEvent, so our
   // own confirmation automation never emails a partner's registrants.
-  'gis-spe-feb-2027': { segmentId: '44e1c35e-5bda-4852-b1aa-db484fe5d097' },
+  'gis-spe-feb-2027': { segmentId: '44e1c35e-5bda-4852-b1aa-db484fe5d097', leadOnly: true },
   'gis-ai-feb-2027': { segmentId: 'bb2e4741-c7b9-437c-a7a5-aa25638206b0' },
 };
 
@@ -63,17 +68,17 @@ export default async (request) => {
     return json(400, { error: 'Invalid JSON body' });
   }
 
-  for (const field of REQUIRED) {
-    if (!data[field]) {
-      return json(400, { error: `Missing required field: ${field}` });
-    }
-  }
-
   const slug = data.webinar_slug || DEFAULT_SLUG;
   const webinar = WEBINARS[slug];
   if (!webinar) {
     console.error('Unknown webinar slug:', slug);
     return json(400, { error: `Unknown webinar: ${slug}` });
+  }
+
+  for (const field of webinar.leadOnly ? LEAD_ONLY_REQUIRED : REQUIRED) {
+    if (!data[field]) {
+      return json(400, { error: `Missing required field: ${field}` });
+    }
   }
 
   console.log('Webinar registration:', {
@@ -88,7 +93,7 @@ export default async (request) => {
   const resendKey = process.env.RESEND_API_KEY;
   if (resendKey) {
     try {
-      await addToResend(data, resendKey, webinar.segmentId);
+      await addToResend(data, resendKey, webinar.segmentId, webinar.leadOnly);
       resendSynced = true;
       // After the contact exists, so the automation can resolve it by email.
       // A failure here lands in sync_error with resend_synced still true, which
@@ -123,7 +128,7 @@ export default async (request) => {
   return json(200, { success: true, synced: resendSynced, stored });
 };
 
-async function addToResend(data, apiKey, segmentId) {
+async function addToResend(data, apiKey, segmentId, leadOnly) {
   const [firstName, ...rest] = data.name.trim().split(/\s+/);
   const headers = {
     Authorization: `Bearer ${apiKey}`,
@@ -132,15 +137,11 @@ async function addToResend(data, apiKey, segmentId) {
 
   // POST /contacts upserts on email — a repeat registrant returns the same
   // contact id rather than erroring, so this is safe to call every time.
-  const contact = await fetch('https://api.resend.com/contacts', {
-    method: 'POST',
-    headers,
-    body: JSON.stringify({
-      email: data.email,
-      first_name: firstName,
-      last_name: rest.join(' '),
-      unsubscribed: false,
-      properties: {
+  // A lead-only form has no details to send. The upsert would overwrite an
+  // existing contact's properties with blanks, so only send what we have.
+  const properties = leadOnly
+    ? { company_name: data.company, added_to_list_on: new Date().toISOString().slice(0, 10) }
+    : {
         company_name: data.company,
         company_website: data.website,
         job_title: data.role,
@@ -156,7 +157,17 @@ async function addToResend(data, apiKey, segmentId) {
         // which also costs the segment membership.
         phone_number: data.phone || '',
         added_to_list_on: new Date().toISOString().slice(0, 10),
-      },
+      };
+
+  const contact = await fetch('https://api.resend.com/contacts', {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({
+      email: data.email,
+      first_name: firstName,
+      last_name: rest.join(' '),
+      unsubscribed: false,
+      properties,
     }),
   });
 

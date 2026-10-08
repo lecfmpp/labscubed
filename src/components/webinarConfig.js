@@ -146,6 +146,15 @@ export const WEBINARS = {
     ],
     exploreCtaLabel: "Explore CubeTen",
     exploreCtaHref: "https://labscubed.com/plastic-testing",
+    // SPE hosts the real registration and emails the join link, so our form
+    // only captures the lead (name, email, company) and then sends the visitor
+    // on. The details modal and the thank-you page are skipped. The matching
+    // `leadOnly` flag in netlify/functions/webinar-register.mjs relaxes the
+    // server-side required fields for this slug.
+    externalRegistrationUrl: "https://www.4spe.org/spe-webinar-the-hidden-cost-of-manual-plastic-testing/",
+    registerSubmitLabel: "Continue to SPE registration",
+    registerNote:
+      "This webinar is run with SPE. After this step you'll finish registering on SPE's site, where your link to join is sent to you.",
     // Co-branding. Set this and the registration + confirmation pages show the
     // partnership badge (PartnershipBadge.jsx); leave it out and they show
     // nothing. logoHeight is the drawn height in px, which the badge scales

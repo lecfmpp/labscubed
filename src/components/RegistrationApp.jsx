@@ -508,11 +508,11 @@ function RegisterSection() {
   async function complete(details) {
     setIsSubmitting(true);
     setError("");
-    const website = details.website.startsWith('http') ? details.website : `https://${details.website}`;
+    const website = details.website ? (details.website.startsWith('http') ? details.website : `https://${details.website}`) : undefined;
     const payload = { ...basic, ...details, website, webinar: CONFIG.title, webinar_slug: CONFIG.slug, kind: CONFIG.kind, timestamp: new Date().toISOString() };
     try {
       console.log("Submitting to:", CONFIG.submitEndpoint);
-      const response = await fetch(CONFIG.submitEndpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+      const response = await fetch(CONFIG.submitEndpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload), signal: CONFIG.externalRegistrationUrl ? AbortSignal.timeout(6000) : undefined });
       console.log("Response status:", response.status);
       if (!response.ok) {
         const errorText = await response.text();
@@ -529,10 +529,17 @@ function RegisterSection() {
       } catch { /* private mode — that form asks for the email itself */ }
       track("generate_lead", { form: "registration", webinar_slug: CONFIG.slug });
       setTimeout(() => {
-        window.location.href = CONFIG.thankYouUrl;
+        window.location.href = CONFIG.externalRegistrationUrl || CONFIG.thankYouUrl;
       }, 500);
     } catch (err) {
       console.error("Registration submit failed:", err);
+      // SPE's page is the real registration. A hiccup saving our copy of the
+      // lead must not strand the visitor on our form, so they are sent on
+      // regardless; the failure stays in the console and the function logs.
+      if (CONFIG.externalRegistrationUrl) {
+        window.location.href = CONFIG.externalRegistrationUrl;
+        return;
+      }
       setError("Registration failed. Please try again.");
       setIsSubmitting(false);
       setShowModal(false);
@@ -576,12 +583,13 @@ function RegisterSection() {
           </div>
         </div>
 
-        <form onSubmit={(e) => { e.preventDefault(); setShowModal(true); }} style={{ background: "#fff", borderRadius: 20, boxShadow: "0 1px 0 rgba(0,0,0,0.05), 0 20px 40px rgba(0,0,0,0.08)", padding: 32, display: "flex", flexDirection: "column", gap: 18 }}>
+        <form onSubmit={(e) => { e.preventDefault(); if (CONFIG.externalRegistrationUrl) { complete({}); } else { setShowModal(true); } }} style={{ background: "#fff", borderRadius: 20, boxShadow: "0 1px 0 rgba(0,0,0,0.05), 0 20px 40px rgba(0,0,0,0.08)", padding: 32, display: "flex", flexDirection: "column", gap: 18 }}>
           {error && <div style={{ padding: "12px 14px", borderRadius: 10, background: "#fee", color: "#c33", fontSize: 14 }}>{error}</div>}
           <Field label="Full Name"><input type="text" required placeholder="Jane Doe" style={fieldInput} value={basic.name} onChange={set("name")} /></Field>
           <Field label="Work Email"><input type="email" required placeholder="jane@company.com" style={fieldInput} value={basic.email} onChange={set("email")} /></Field>
           <Field label="Company Name"><input type="text" required placeholder="Company Inc." style={fieldInput} value={basic.company} onChange={set("company")} /></Field>
           <button type="submit" disabled={isSubmitting} style={{ marginTop: 4, padding: "14px 20px", borderRadius: 999, border: "none", background: isSubmitting ? "#ccc" : COLORS.teal, fontWeight: 600, fontSize: 15, cursor: isSubmitting ? "not-allowed" : "pointer", color: "#000" }}>{isSubmitting ? "Loading..." : (CONFIG.registerSubmitLabel || "Register for Webinar")}</button>
+          {CONFIG.registerNote && <p style={{ margin: 0, fontSize: 13, lineHeight: 1.5, color: COLORS.muted }}>{CONFIG.registerNote}</p>}
         </form>
       </div>
       {showModal && <DetailsModal onClose={() => setShowModal(false)} onComplete={complete} />}
