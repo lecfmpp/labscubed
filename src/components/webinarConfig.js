@@ -586,8 +586,8 @@ function gisClone(sourceSlug, overrides) {
 
 // The same event as spe-oct-2026 (same date and time, inherited from it), just
 // a separate funnel so GIS-sourced leads are tagged and counted on their own.
-WEBINARS["gis-spe-feb-2027"] = gisClone("spe-oct-2026", {
-  slug: "gis-spe-feb-2027",
+WEBINARS["gis-spe-oct-2026"] = gisClone("spe-oct-2026", {
+  slug: "gis-spe-oct-2026",
 });
 
 // The same event as automation-ai-nov-2026 (date and time inherited from it).
