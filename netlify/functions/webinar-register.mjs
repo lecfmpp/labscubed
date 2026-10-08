@@ -45,7 +45,7 @@ const WEBINARS = {
   // webinars above, in their own segments. Deliberately no welcomeEvent, so our
   // own confirmation automation never emails a partner's registrants.
   'gis-spe-feb-2027': { segmentId: '44e1c35e-5bda-4852-b1aa-db484fe5d097', leadOnly: true },
-  'gis-ai-feb-2027': { segmentId: 'bb2e4741-c7b9-437c-a7a5-aa25638206b0' },
+  'gis-ai-nov-2026': { segmentId: 'bb2e4741-c7b9-437c-a7a5-aa25638206b0' },
 };
 
 const DEFAULT_SLUG = 'spe-oct-2026';

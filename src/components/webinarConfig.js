@@ -591,8 +591,8 @@ WEBINARS["gis-spe-feb-2027"] = gisClone("spe-oct-2026", {
 });
 
 // The same event as automation-ai-nov-2026 (date and time inherited from it).
-WEBINARS["gis-ai-feb-2027"] = gisClone("automation-ai-nov-2026", {
-  slug: "gis-ai-feb-2027",
+WEBINARS["gis-ai-nov-2026"] = gisClone("automation-ai-nov-2026", {
+  slug: "gis-ai-nov-2026",
 });
 
 export function getWebinar(slug) {
