@@ -550,6 +550,49 @@ export const WEBINARS = {
   }),
 };
 
+/* Partner funnels — Global Instrumentation Services (GIS).
+
+   Clones of our own funnels, hosted under a "gis-" slug so every registration
+   is tagged with its own webinar_slug in Supabase and lands in its own Resend
+   segment, separate from our campaigns. They are `unlisted`: noindex, out of
+   the sitemap, out of llms.txt and off the /webinar/ hub, reachable only by
+   direct link. No nextWebinarSlug in either direction, no seat counter, and no
+   welcomeEvent in webinar-register.mjs (so our own automations never email GIS
+   registrants).
+
+   Content tracks the original it clones; only the fields below differ. The
+   dates are TBD PLACEHOLDERS — Tuesdays in February 2027 at 8:00 PM EST
+   (EST = UTC-5, so the UTC instant is 01:00Z the next day). Change dateLabel,
+   startUTC and endUTC here, plus DTSTART/DTEND in the matching public/ics file
+   and the date in the two pages' <Base description>. */
+function gisClone(sourceSlug, overrides) {
+  return build({
+    ...WEBINARS[sourceSlug],
+    ...overrides,
+    unlisted: true,
+    showSeats: false,
+    seatsTotal: null,
+    seatsLeft: null,
+    nextWebinarSlug: null,
+  });
+}
+
+WEBINARS["gis-spe-feb-2027"] = gisClone("spe-oct-2026", {
+  slug: "gis-spe-feb-2027",
+  dateLabel: "Tuesday, February 9, 2027", // TBD placeholder
+  timeLabel: "8:00 PM EST · 50 minutes, including Q&A", // TBD placeholder
+  startUTC: "2027-02-10T01:00:00Z", // TBD placeholder
+  endUTC: "2027-02-10T01:50:00Z", // TBD placeholder
+});
+
+WEBINARS["gis-ai-feb-2027"] = gisClone("automation-ai-nov-2026", {
+  slug: "gis-ai-feb-2027",
+  dateLabel: "Tuesday, February 16, 2027", // TBD placeholder
+  timeLabel: "8:00 PM EST · 50 minutes, including Q&A", // TBD placeholder
+  startUTC: "2027-02-17T01:00:00Z", // TBD placeholder
+  endUTC: "2027-02-17T01:50:00Z", // TBD placeholder
+});
+
 export function getWebinar(slug) {
   const webinar = WEBINARS[slug];
   if (!webinar) throw new Error(`Unknown webinar slug: ${slug}`);

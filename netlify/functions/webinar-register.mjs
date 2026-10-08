@@ -36,6 +36,11 @@ const WEBINARS = {
   'gps-sep-2026': { segmentId: '316f18d8-86ba-459f-817a-67cd921e4e2d', kind: 'tradeshow' },
   'ami-nov-2026': { segmentId: '2328d784-cde6-4473-b394-bb9b2ed27088', kind: 'tradeshow' },
   'npe-may-2027': { segmentId: 'db1f36b0-627e-4db7-98d5-92bc8367c853', kind: 'tradeshow' },
+  // Partner funnels (Global Instrumentation Services): clones of the two
+  // webinars above, in their own segments. Deliberately no welcomeEvent, so our
+  // own confirmation automation never emails a partner's registrants.
+  'gis-spe-feb-2027': { segmentId: '44e1c35e-5bda-4852-b1aa-db484fe5d097' },
+  'gis-ai-feb-2027': { segmentId: 'bb2e4741-c7b9-437c-a7a5-aa25638206b0' },
 };
 
 const DEFAULT_SLUG = 'spe-oct-2026';

@@ -19,7 +19,11 @@ export default defineConfig({
     sitemap({
       // Replay session pages are personal and gated; they have no business in
       // the sitemap (they are also noindex).
-      filter: (page) => !/\/(session|booth)(\/thank-you)?\/?$/.test(new URL(page).pathname),
+      // Partner funnels (/webinar/gis-*) are unlisted: direct link only.
+      filter: (page) => {
+        const path = new URL(page).pathname;
+        return !/\/(session|booth)(\/thank-you)?\/?$/.test(path) && !/^\/webinar\/gis-/.test(path);
+      },
       /* Blog/post entries are rewritten without a trailing slash so each entry
          matches the page's own canonical exactly — a sitemap that disagrees
          with the canonical is a wasted signal. BLOG_HOST equals SITE_URL now
