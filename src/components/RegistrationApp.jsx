@@ -132,6 +132,11 @@ function Hero() {
   const CONFIG = useWebinar();
   const m = useM();
   const scrollToForm = scrollToRegister;
+  /* A video or an image fills the right-hand column. With neither, the hero is
+     a single centred column instead of a two-column grid with a fake player in
+     it, and goes back to two columns the moment heroVideoUrl (or an image) is
+     set in webinarConfig. */
+  const hasMedia = !!(youTubeId(CONFIG.heroVideoUrl) || CONFIG.heroImageUrl);
 
   /* These pages carry no site header on purpose, so this is the only route
      back out — to the hub, where the other webinars are. */
@@ -163,20 +168,22 @@ function Hero() {
   const headline = (
     <h1 style={{ fontWeight: 700, fontSize: m ? 30 : 56, lineHeight: 1.1, letterSpacing: "-0.02em", margin: m ? "16px 0 0" : "20px 0 0" }}>{CONFIG.title}</h1>
   );
-  const media = (
+  const media = hasMedia ? (
     <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
       <HeroVideo label={CONFIG.kind === "tradeshow" ? "CubeOne in action" : "Webinar preview"} video={CONFIG.heroVideoUrl} image={CONFIG.heroImageUrl} imageAlt={CONFIG.heroImageAlt} />
       <LogoSlider />
     </div>
+  ) : (
+    <LogoSlider />
   );
   const cta = (
     <button onClick={scrollToForm} style={{ background: COLORS.teal, color: "#000", border: "none", borderRadius: 999, padding: m ? "15px 28px" : "14px 28px", fontWeight: 600, fontSize: m ? 16 : 15, cursor: "pointer", width: m ? "100%" : "auto" }}>{CONFIG.ctaLabel || "Save My Seat"}</button>
   );
   const copy = (
-    <p style={{ margin: 0, maxWidth: 480, fontWeight: 300, fontSize: m ? 15 : 18, lineHeight: 1.55, color: "rgba(255,255,255,0.55)" }}>{CONFIG.heroCopy}</p>
+    <p style={{ margin: 0, maxWidth: hasMedia ? 480 : 640, fontWeight: 300, fontSize: m ? 15 : 18, lineHeight: 1.55, color: "rgba(255,255,255,0.55)" }}>{CONFIG.heroCopy}</p>
   );
   const schedule = (
-    <div style={{ display: "flex", flexWrap: "wrap", gap: "8px 16px", fontSize: 14, color: "rgba(255,255,255,0.65)" }}>
+    <div style={{ display: "flex", flexWrap: "wrap", justifyContent: hasMedia ? "flex-start" : "center", gap: "8px 16px", fontSize: 14, color: "rgba(255,255,255,0.65)" }}>
       <span>{CONFIG.dateLabel}</span><span style={{ color: "rgba(255,255,255,0.3)" }}>·</span><span>{CONFIG.timeLabel}</span>
       {CONFIG.eventLabel && (<><span style={{ color: "rgba(255,255,255,0.3)" }}>·</span><span>{CONFIG.eventLabel}</span></>)}
     </div>
@@ -215,6 +222,26 @@ function Hero() {
           {copy}
           {schedule}
           {speaker}
+        </div>
+      </section>
+    );
+  }
+
+  if (!hasMedia) {
+    return (
+      <section style={{ background: "#000", color: "#fff" }}>
+        {livePulse}
+        <div style={{ maxWidth: 1312, margin: "0 auto", padding: "56px 64px 100px" }}>
+          {topRow}
+          <div style={{ maxWidth: 900, margin: "0 auto", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center" }}>
+            {badge}
+            {headline}
+            <div style={{ marginTop: 20 }}>{copy}</div>
+            <div style={{ marginTop: 28 }}>{schedule}</div>
+            <div style={{ marginTop: 32 }}>{cta}</div>
+            <div style={{ marginTop: 40 }}>{speaker}</div>
+          </div>
+          <div style={{ marginTop: 64 }}>{media}</div>
         </div>
       </section>
     );

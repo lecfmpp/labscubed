@@ -88,6 +88,9 @@ function Hero() {
   const CONFIG = useWebinar();
   const isShow = CONFIG.kind === "tradeshow";
   const m = useM();
+  /* Same rule as the registration hero: no video or image, no fake player.
+     The confirmation is a single centred column until one is configured. */
+  const hasMedia = !!(youTubeId(CONFIG.thankYouVideoUrl || CONFIG.heroVideoUrl) || CONFIG.heroImageUrl);
   const calendarButtons = [
     { name: "Google", href: CONFIG.calendarLinks.google, icon: "/assets/img/calendar/google-calendar.svg", letter: "G", color: "#4285F4" },
     { name: "Outlook", href: CONFIG.calendarLinks.outlook, icon: "/assets/img/calendar/outlook.svg", letter: "O", color: "#0078D4" },
@@ -158,8 +161,8 @@ function Hero() {
             </div>
           </>
         ) : (
-        <div style={{ display: "grid", gridTemplateColumns: m ? "1fr" : "1fr 1fr", gap: m ? 32 : 56, alignItems: "center" }}>
-        <div>
+        <div style={{ display: "grid", gridTemplateColumns: m || !hasMedia ? "1fr" : "1fr 1fr", gap: m ? 32 : 56, alignItems: "center" }}>
+        <div style={hasMedia ? undefined : { maxWidth: 720, margin: "0 auto", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center" }}>
           <span style={{ width: 56, height: 56, borderRadius: "50%", background: COLORS.teal, display: "inline-flex", alignItems: "center", justifyContent: "center", marginBottom: 24 }}>
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4 10-11" stroke="#000" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
           </span>
@@ -171,7 +174,7 @@ function Hero() {
             <span style={{ fontWeight: 600, fontSize: 15 }}>{CONFIG.title}</span>
             <span style={{ fontSize: 13, color: "rgba(255,255,255,0.5)" }}>{CONFIG.dateLabel} · {CONFIG.timeLabel}</span>
           </div>
-          <div style={{ display: "flex", gap: 12, marginTop: 28, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: 12, marginTop: 28, flexWrap: "wrap", justifyContent: hasMedia ? "flex-start" : "center" }}>
             {calendarButtons.map((btn) => (
               <a key={btn.name} href={btn.href} target="_blank" rel="noopener noreferrer" style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 500, color: "#fff", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 999, padding: "10px 16px", textDecoration: "none", transition: "all 0.2s" }}>
                 <CalendarIcon icon={btn.icon} letter={btn.letter} color={btn.color} name={btn.name} />
@@ -180,9 +183,9 @@ function Hero() {
             ))}
           </div>
         </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 0, minWidth: 0 }}>
+        {hasMedia && <div style={{ display: "flex", flexDirection: "column", gap: 0, minWidth: 0 }}>
           <HeroVideo label={isShow ? "CubeOne in action" : "Event preview"} video={CONFIG.thankYouVideoUrl || CONFIG.heroVideoUrl} image={CONFIG.heroImageUrl} imageAlt={CONFIG.heroImageAlt} />
-        </div>
+        </div>}
         </div>
         )}
       </div>
