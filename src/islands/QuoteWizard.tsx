@@ -6,8 +6,11 @@
    which logs the lead and tags the Resend "Quote Requested" segment with the
    full answer set as properties.
 
-   The wizard never promises a quote by return: the team needs to understand
-   the lab's testing first, so every screen says a specialist follows up. */
+   The wizard never promises a quote by return and never names a machine to
+   the visitor: the team needs to understand the lab's testing routine first,
+   so every screen says a specialist follows up and evaluates the best option
+   together with them. `recommendMachine()` still runs, but only to give sales
+   an internal "likely fit" in the payload. */
 import React from 'react';
 import { SAMPLES, getSample, Sample } from '../lib/samples';
 import { Button } from '../lib/ui';
@@ -92,7 +95,7 @@ function SampleCard({ s, active, onClick }: any) {
   );
 }
 
-function SampleGroup({ label, machine, items, selected, onToggle, m, open, onHead }: any) {
+function SampleGroup({ label, items, selected, onToggle, m, open, onHead }: any) {
   if (!items.length) return null;
   const count = items.filter((s: any) => selected.includes(s.id)).length;
   return (
@@ -102,7 +105,7 @@ function SampleGroup({ label, machine, items, selected, onToggle, m, open, onHea
         <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--lc-teal)', flex: 'none' }} />
         <span style={{ flex: 1, minWidth: 0 }}>
           <span style={{ display: 'block', fontWeight: 700, fontSize: 12.5, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--lc-ink)' }}>{label}</span>
-          <span style={{ display: 'block', marginTop: 4, fontSize: 13, color: count ? 'var(--lc-teal-deep)' : 'var(--text-muted)', fontWeight: count ? 500 : 300 }}>{count ? count + ' selected' : machine + ' · ' + items.length + ' specimens'}</span>
+          <span style={{ display: 'block', marginTop: 4, fontSize: 13, color: count ? 'var(--lc-teal-deep)' : 'var(--text-muted)', fontWeight: count ? 500 : 300 }}>{count ? count + ' selected' : items.length + ' specimens'}</span>
         </span>
         <svg width="15" height="15" viewBox="0 0 14 14" style={{ flex: 'none', transform: open ? 'rotate(180deg)' : 'none', transition: 'transform .2s ease' }}><path d="M3 5l4 4 4-4" stroke="var(--lc-ink)" strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round" /></svg>
       </button>
@@ -286,42 +289,39 @@ function QSummary({ data, rec, go, m }: any) {
   ];
   return (
     <aside style={{ background: '#fff', color: 'var(--lc-ink)', borderRadius: 24, padding: m ? 28 : 34, position: m ? 'static' : 'sticky', top: 32, boxShadow: 'var(--shadow-edge), 0 12px 30px rgba(0,0,0,0.05)' }}>
-      <div style={{ fontWeight: 700, fontSize: 11, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Likely fit</div>
-      <div style={{ marginTop: 18, display: 'flex', alignItems: 'center', gap: 12 }}>
-        <span style={{ width: 9, height: 9, borderRadius: '50%', background: rec.name ? '#17DDC5' : 'rgba(0,0,0,0.15)', flex: 'none' }} />
-        <span style={{ fontWeight: 600, fontSize: 30, letterSpacing: '-0.03em', lineHeight: 1.05 }}>{rec.name || 'We\u2019ll confirm together'}</span>
-      </div>
-      <div style={{ marginTop: 10, fontSize: 14, lineHeight: 1.55, fontWeight: 300, color: 'var(--text-muted)' }}>
-        {rec.name
-          ? rec.standard + ' · matched to ' + (rec.samples.length || 'your') + ' specimen' + (rec.samples.length === 1 ? '' : 's') + (data.otherSample.trim() ? ' + your custom spec' : '')
-          : data.knowsSamples === 'no'
-            ? 'A specialist will go through the standards and specimen types with you, then recommend the right machine.'
-            : 'Tell us your daily volume — and your specimens, if you know them — and the likely machine appears here.'}
+      <div style={{ fontWeight: 700, fontSize: 11, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>What happens next</div>
+      <div style={{ marginTop: 18, display: 'flex', flexDirection: 'column', gap: 16 }}>
+        {[
+          ['A specialist reviews your answers', 'Within one business day.'],
+          ['We talk through your testing routine', 'Specimens, standards, volumes and where the bottlenecks are.'],
+          ['You get a recommendation and quote', 'Built around what we learn together — not a catalogue pick.'],
+        ].map(([t, d], i) => (
+          <div key={t} style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
+            <span style={{ width: 26, height: 26, borderRadius: '50%', flex: 'none', background: i === 0 ? '#17DDC5' : 'var(--lc-gray-100)', color: 'var(--lc-ink)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontWeight: 600, fontSize: 12.5 }}>{i + 1}</span>
+            <div style={{ minWidth: 0 }}>
+              <div style={{ fontWeight: 600, fontSize: 14.5, lineHeight: 1.35 }}>{t}</div>
+              <div style={{ marginTop: 3, fontSize: 13, lineHeight: 1.5, fontWeight: 300, color: 'var(--text-muted)' }}>{d}</div>
+            </div>
+          </div>
+        ))}
       </div>
       {rec.samples && rec.samples.length > 0 && (
-        <div style={{ marginTop: 20, display: 'flex', flexDirection: 'column', gap: 10 }}>
-          {rec.samples.map((s: any) => (
-            <div key={s.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', borderRadius: 10, background: 'var(--lc-gray-100)' }}>
-              <div style={{ width: 62, flex: '0 0 62px', display: 'flex', alignItems: 'center' }}>
-                <Sample spec={s} variant="fill" tone="light" style={{ width: '100%', maxHeight: 24 }} />
+        <React.Fragment>
+          <div style={{ marginTop: 28, fontWeight: 700, fontSize: 11, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Your specimens</div>
+          <div style={{ marginTop: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {rec.samples.map((s: any) => (
+              <div key={s.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', borderRadius: 10, background: 'var(--lc-gray-100)' }}>
+                <div style={{ width: 62, flex: '0 0 62px', display: 'flex', alignItems: 'center' }}>
+                  <Sample spec={s} variant="fill" tone="light" style={{ width: '100%', maxHeight: 24 }} />
+                </div>
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600 }}>{s.name}</div>
+                  <div style={{ fontSize: 11.5, color: 'var(--text-muted)', marginTop: 1 }}>{s.standard} · {s.testType}</div>
+                </div>
               </div>
-              <div style={{ minWidth: 0 }}>
-                <div style={{ fontSize: 13, fontWeight: 600 }}>{s.name}</div>
-                <div style={{ fontSize: 11.5, color: 'var(--text-muted)', marginTop: 1 }}>{s.standard} · {s.testType}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-      {rec.name && (
-        <div style={{ marginTop: 22, display: 'flex', flexDirection: 'column' }}>
-          {rec.specs!.map(([k, v]: [string, string]) => (
-            <div key={k} style={{ display: 'flex', justifyContent: 'space-between', gap: 14, padding: '11px 0', borderBottom: '1px solid rgba(0,0,0,0.07)' }}>
-              <span style={{ fontSize: 12.5, fontWeight: 300, color: 'var(--text-muted)' }}>{k}</span>
-              <span style={{ fontSize: 12.5, fontWeight: 500, textAlign: 'right' }}>{v}</span>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </React.Fragment>
       )}
       <div style={{ height: 1, background: 'rgba(0,0,0,0.08)', margin: '26px 0 2px' }} />
       <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -398,8 +398,8 @@ function QPanel({ step, data, set, toggleSample, go, rec, m }: any) {
       )}
       {data.knowsSamples === 'yes' && (
       <div style={{ marginTop: 26 }}>
-        <SampleGroup label="Plastic" machine="CubeTen / CubeFlex" items={list.filter((s: any) => s.material === 'plastic')} selected={data.selected} onToggle={toggleSample} m={m} open={openGroup === 'plastic'} onHead={head('plastic')} />
-        <SampleGroup label="Rubber" machine="CubeOne" items={list.filter((s: any) => s.material === 'rubber')} selected={data.selected} onToggle={toggleSample} m={m} open={openGroup === 'rubber'} onHead={head('rubber')} />
+        <SampleGroup label="Plastic" items={list.filter((s: any) => s.material === 'plastic')} selected={data.selected} onToggle={toggleSample} m={m} open={openGroup === 'plastic'} onHead={head('plastic')} />
+        <SampleGroup label="Rubber" items={list.filter((s: any) => s.material === 'rubber')} selected={data.selected} onToggle={toggleSample} m={m} open={openGroup === 'rubber'} onHead={head('rubber')} />
         <div style={{ marginTop: 16, borderRadius: 16, background: '#fff', boxShadow: data.otherSample.trim() ? 'inset 0 0 0 1.5px var(--lc-teal)' : 'var(--shadow-edge)', overflow: 'hidden', transition: 'box-shadow .2s ease' }}>
           <button onClick={head('other')} className="qw-ghead" style={{ all: 'unset', cursor: 'pointer', boxSizing: 'border-box', width: '100%', display: 'flex', alignItems: 'center', gap: 14, padding: m ? '18px 18px' : '20px 24px' }}>
             <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--lc-teal)', flex: 'none' }} />
@@ -438,22 +438,17 @@ function QPanel({ step, data, set, toggleSample, go, rec, m }: any) {
   ];
   return (
     <div>
-      <QHead n="05" title="Review and send." sub="Everything below is editable — click a row or jump back from the rail above." m={m} />
-      {rec.name && (
-        <div style={{ marginTop: 30, maxWidth: 760, borderRadius: 20, background: '#000', color: '#fff', overflow: 'hidden', position: 'relative', display: 'grid', gridTemplateColumns: m ? '1fr' : 'minmax(0,1fr) 40%', alignItems: 'stretch' }}>
-          <span style={{ position: 'absolute', width: 240, height: 60, top: -14, left: '38%', borderRadius: 60, background: '#17DDC5', opacity: 0.28, filter: 'blur(60px)', pointerEvents: 'none' }} />
-          <div style={{ position: 'relative', padding: m ? '26px 22px 4px' : '32px 34px' }}>
-            <div style={{ fontWeight: 700, fontSize: 11, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--lc-teal)' }}>Likely fit</div>
-            <div style={{ marginTop: 12, fontWeight: 600, fontSize: m ? 26 : 32, letterSpacing: '-0.02em', lineHeight: 1.1 }}>{rec.name} looks like the right fit for your lab.</div>
-            <p style={{ margin: '14px 0 0', fontSize: 14.5, lineHeight: 1.6, fontWeight: 300, color: 'rgba(255,255,255,0.62)' }}>
-              {rec.blurb} A specialist will go through your workflow with you to confirm the right configuration, and prepare your pricing and lead time from there.
-            </p>
-          </div>
-          <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: m ? '0 22px 26px' : '32px 24px', minHeight: m ? 190 : 0 }}>
-            <img src={rec.img} alt={rec.name + ' automated tensile testing machine'} style={{ width: '100%', maxWidth: m ? 240 : 300, height: 'auto', display: 'block', objectFit: 'contain' }} />
-          </div>
+      <QHead n="05" title="Review and request your call." sub="Everything below is editable — click a row or jump back from the rail above." m={m} />
+      <div style={{ marginTop: 30, maxWidth: 760, borderRadius: 20, background: '#000', color: '#fff', overflow: 'hidden', position: 'relative', padding: m ? '26px 22px' : '32px 34px' }}>
+        <span style={{ position: 'absolute', width: 240, height: 60, top: -14, left: '38%', borderRadius: 60, background: '#17DDC5', opacity: 0.28, filter: 'blur(60px)', pointerEvents: 'none' }} />
+        <div style={{ position: 'relative' }}>
+          <div style={{ fontWeight: 700, fontSize: 11, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--lc-teal)' }}>Next step</div>
+          <div style={{ marginTop: 12, fontWeight: 600, fontSize: m ? 26 : 32, letterSpacing: '-0.02em', lineHeight: 1.1 }}>Let's talk through your testing routine.</div>
+          <p style={{ margin: '14px 0 0', maxWidth: 560, fontSize: 14.5, lineHeight: 1.6, fontWeight: 300, color: 'rgba(255,255,255,0.62)' }}>
+            A specialist will go through how you test today, then work with you to find the best option for your lab — and prepare your pricing and lead time from there.
+          </p>
         </div>
-      )}
+      </div>
       <div style={{ marginTop: 30, maxWidth: 760, display: 'grid', gridTemplateColumns: m ? '1fr' : '1fr 1fr', gap: '0 40px' }}>
         {lines.map(([k, v, i]) => (
           <button key={k} onClick={() => go(i)} className="qw-row"
@@ -464,8 +459,8 @@ function QPanel({ step, data, set, toggleSample, go, rec, m }: any) {
         ))}
       </div>
       <div style={{ marginTop: 34, maxWidth: 720 }}>
-        <span style={{ display: 'block', fontWeight: 700, fontSize: 11, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Anything else we should know?</span>
-        <textarea className="qw-input" rows={3} value={data.message} onChange={(e) => set('message', e.target.value)} placeholder="Current equipment, timelines, specimen types…"
+        <span style={{ display: 'block', fontWeight: 700, fontSize: 11, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Tell us about your testing routine</span>
+        <textarea className="qw-input" rows={3} value={data.message} onChange={(e) => set('message', e.target.value)} placeholder="What you test today, how you test it, what slows you down, timelines…"
           style={{ width: '100%', boxSizing: 'border-box', marginTop: 10, border: 'none', borderBottom: '1px solid rgba(0,0,0,0.14)', background: 'transparent', padding: '12px 0', fontFamily: 'inherit', fontWeight: 300, fontSize: 17, resize: 'vertical', outline: 'none', color: 'var(--lc-ink)' }} />
         <label style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 22, cursor: 'pointer', fontSize: 14, color: 'var(--text-muted)', fontWeight: 300 }}>
           <input type="checkbox" checked={data.subscribe} onChange={(e) => set('subscribe', e.target.checked)} style={{ width: 17, height: 17, accentColor: '#000' }} />
@@ -485,7 +480,7 @@ function QDone({ data, rec, reset }: any) {
       </span>
       <h2 style={{ fontWeight: 600, fontSize: m ? 30 : 44, letterSpacing: '-0.03em', lineHeight: 1.1, margin: '26px 0 0', color: 'var(--lc-ink)' }}>Request received, {data.first || 'there'}.</h2>
       <p style={{ margin: '16px auto 0', maxWidth: 540, fontWeight: 300, fontSize: 17, lineHeight: 1.6, color: 'var(--text-muted)' }}>
-        A LabsCubed specialist will reach out to {data.email || 'your inbox'} within one business day to understand how {data.company || 'your lab'} tests today, confirm the right system and prepare your quote from there. In the meantime, watch the video below to see just how simple the steps to automate your tensile testing really are.
+        A LabsCubed specialist will reach out to {data.email || 'your inbox'} within one business day to talk through how {data.company || 'your lab'} tests today and find the best option for your routine. Your quote follows from that conversation. In the meantime, watch the video below to see just how simple the steps to automate your tensile testing really are.
       </p>
       <div style={{ position: 'relative', width: '100%', maxWidth: 640, margin: '32px auto 0', aspectRatio: '16 / 9', borderRadius: 16, overflow: 'hidden', boxShadow: 'var(--shadow-edge), 0 20px 50px rgba(0,0,0,0.07)' }}>
         <iframe
@@ -628,7 +623,7 @@ export default function QuoteWizard() {
               <div style={{ display: 'flex', alignItems: 'center', gap: sm ? 12 : 20 }}>
                 <span style={{ fontSize: 13, fontWeight: 300, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>Step {step + 1} of {STEPS.length}</span>
                 {step === STEPS.length - 1
-                  ? <Button variant="primary" size="md" href="#" onClick={(e: any) => { e.preventDefault(); if (!canNext) { setNudge(true); return; } submit(); }} style={sending ? { opacity: 0.6, pointerEvents: 'none' } : undefined}>{sending ? 'Sending…' : 'Send request'}</Button>
+                  ? <Button variant="primary" size="md" href="#" onClick={(e: any) => { e.preventDefault(); if (!canNext) { setNudge(true); return; } submit(); }} style={sending ? { opacity: 0.6, pointerEvents: 'none' } : undefined}>{sending ? 'Sending…' : 'Request a call'}</Button>
                   : <Button variant={canNext ? 'primary' : 'dark'} size="md" href="#" onClick={(e: any) => { e.preventDefault(); next(); }} style={canNext ? undefined : { opacity: 0.35 }}>Continue</Button>}
               </div>
             </div>
