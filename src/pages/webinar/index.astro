@@ -134,10 +134,19 @@ const STATE_LABEL = { 'live-only': 'Live session only', 'recording-soon': 'Recor
               data-post={w.postWebinar ? '1' : '0'}
             >
               <div class="wh-rec-media">
-                <div class="wh-rec-soon">
-                  <span class="wh-rec-soon-dot"></span>
-                  <span data-state-label>{STATE_LABEL[w.state]}</span>
-                </div>
+                {/* Never an empty black box: the webinar's own thumbnail when it has
+                    one, otherwise a branded tile carrying its title. */}
+                {w.thumbnailUrl ? (
+                  <a class="wh-rec-thumb" href={w.registrationUrl} tabindex="-1" aria-label={w.title}>
+                    <img src={w.thumbnailUrl} alt={w.thumbnailAlt || w.title} width="1280" height="720" loading="lazy" />
+                  </a>
+                ) : (
+                  <a class="wh-rec-tile" href={w.registrationUrl} tabindex="-1" aria-label={w.title}>
+                    <span class="wh-rec-tile-title">{w.title}</span>
+                    <span class="wh-rec-tile-sub">{w.speakerName} · {w.dateLabel}</span>
+                  </a>
+                )}
+                <span class="wh-rec-chip"><span class="wh-rec-soon-dot"></span><span data-state-label>{STATE_LABEL[w.state]}</span></span>
               </div>
               <div class="wh-rec-body">
                 <span class="wh-rec-date">{w.dateLabel}</span>
@@ -284,6 +293,12 @@ const STATE_LABEL = { 'live-only': 'Live session only', 'recording-soon': 'Recor
   .wh-rec-media { position: relative; width: 100%; aspect-ratio: 16 / 9; background: #000; }
   .wh-rec-media iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
   .wh-rec-soon { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 10px; background: linear-gradient(160deg, #1a1b1f, #000); color: rgba(255,255,255,0.55); font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+  .wh-rec-thumb, .wh-rec-tile { position: absolute; inset: 0; display: block; }
+  .wh-rec-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .wh-rec-tile { display: flex; flex-direction: column; justify-content: flex-end; gap: 8px; padding: 22px 24px; text-decoration: none; color: #fff; background: radial-gradient(ellipse at 100% 0%, rgba(23,221,197,0.35), transparent 60%), linear-gradient(160deg, #1a1b1f, #000); }
+  .wh-rec-tile-title { font-weight: 700; font-size: 22px; line-height: 1.15; letter-spacing: -0.02em; }
+  .wh-rec-tile-sub { font-size: 12.5px; font-weight: 500; color: rgba(255,255,255,0.6); }
+  .wh-rec-chip { position: absolute; left: 14px; top: 14px; display: inline-flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.72); color: #fff; border-radius: 999px; padding: 6px 12px; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
   .wh-rec-soon-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--lc-teal, #17ddc5); }
   .wh-rec-body { padding: 22px 26px 26px; }
   .wh-rec-date { font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--lc-teal-deep); }

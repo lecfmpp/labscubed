@@ -60,8 +60,21 @@ function H2({ children }) {
 /* One slot for the hero media: plays the configured YouTube video when the
    webinar has one, and shows the placeholder until then. Set heroVideoUrl in
    webinarConfig to fill it — a URL, a share link or a pasted <iframe> all work. */
-function HeroVideo({ label, video, image, imageAlt, autoplay = false, locked = false }) {
+function HeroVideo({ label, video, image, imageAlt, autoplay = false, locked = false, lockedImage, children }) {
   const id = youTubeId(video);
+  const mm = useM();
+  /* Locked: the replay's own artwork, blurred and dimmed, with the unlock form
+     centred over it. No video id is on the page, so this is only a backdrop.
+     On a phone the frame grows to fit the form instead of being 16:9. */
+  if (locked) {
+    return (
+      <div style={{ position: "relative", width: "100%", aspectRatio: mm ? undefined : "16/9", minHeight: mm ? 360 : undefined, borderRadius: 20, overflow: "hidden", border: "1px solid rgba(255,255,255,0.1)", background: "#000", display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
+        {lockedImage && <img src={lockedImage} alt="" aria-hidden="true" style={{ position: "absolute", inset: -24, width: "calc(100% + 48px)", height: "calc(100% + 48px)", objectFit: "cover", filter: "blur(14px)" }} />}
+        <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.3)" }} />
+        <div style={{ position: "relative", width: "100%", maxWidth: 340 }}>{children}</div>
+      </div>
+    );
+  }
   const frame = {
     position: "relative",
     width: "100%",
@@ -175,20 +188,20 @@ function ReplayGate({ onUnlock }) {
     }
   }
 
-  const dark = { ...fieldInput, background: "#fff" };
+  const dark = { ...fieldInput, padding: "9px 12px", fontSize: 13.5, borderRadius: 8 };
   return (
-    <form onSubmit={submit} style={{ background: "#fff", color: COLORS.ink, borderRadius: 16, padding: m ? 18 : 22, marginBottom: 14, display: "flex", flexDirection: "column", gap: 12 }}>
-      <div>
-        <div style={{ fontWeight: 700, fontSize: 17, letterSpacing: "-0.01em" }}>Unlock the replay</div>
-        <div style={{ marginTop: 4, fontSize: 13.5, fontWeight: 300, color: COLORS.muted }}>Tell us who you are and the recording plays right here.</div>
+    <form onSubmit={submit} style={{ background: "#fff", color: COLORS.ink, borderRadius: 14, padding: 16, display: "flex", flexDirection: "column", gap: 8, boxShadow: "0 12px 40px rgba(0,0,0,0.45)" }}>
+      <div style={{ fontWeight: 700, fontSize: 15, letterSpacing: "-0.01em", display: "flex", alignItems: "center", gap: 8 }}>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={COLORS.tealDeep} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="11" width="14" height="9" rx="2" /><path d="M8 11V8a4 4 0 018 0v3" /></svg>
+        Unlock the replay
       </div>
-      {error && <div style={{ padding: "10px 12px", borderRadius: 10, background: "#fee", color: "#c33", fontSize: 13.5 }}>{error}</div>}
-      <div style={{ display: "grid", gridTemplateColumns: m ? "1fr" : "1fr 1fr", gap: 12 }}>
-        <Field label="First name"><input id="replay-first" type="text" required autoComplete="given-name" placeholder="Jane" style={dark} value={f.first} onChange={set("first")} /></Field>
-        <Field label="Last name"><input type="text" required autoComplete="family-name" placeholder="Doe" style={dark} value={f.last} onChange={set("last")} /></Field>
+      {error && <div style={{ padding: "7px 10px", borderRadius: 8, background: "#fee", color: "#c33", fontSize: 12.5 }}>{error}</div>}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+        <input id="replay-first" aria-label="First name" type="text" required autoComplete="given-name" placeholder="First name" style={dark} value={f.first} onChange={set("first")} />
+        <input aria-label="Last name" type="text" required autoComplete="family-name" placeholder="Last name" style={dark} value={f.last} onChange={set("last")} />
       </div>
-      <Field label="Company email"><input type="email" required autoComplete="email" placeholder="jane@company.com" style={dark} value={f.email} onChange={set("email")} /></Field>
-      <button type="submit" disabled={busy} style={{ padding: "13px 20px", borderRadius: 999, border: "none", background: busy ? "#ccc" : COLORS.teal, fontWeight: 600, fontSize: 15, cursor: busy ? "not-allowed" : "pointer", color: "#000" }}>{busy ? "Unlocking..." : "Unlock the replay"}</button>
+      <input aria-label="Company email" type="email" required autoComplete="email" placeholder="Company email" style={dark} value={f.email} onChange={set("email")} />
+      <button type="submit" disabled={busy} style={{ marginTop: 2, padding: "10px 16px", borderRadius: 999, border: "none", background: busy ? "#ccc" : COLORS.teal, fontWeight: 600, fontSize: 14, cursor: busy ? "not-allowed" : "pointer", color: "#000" }}>{busy ? "Unlocking..." : "Watch the replay"}</button>
     </form>
   );
 }
@@ -274,9 +287,8 @@ function Hero() {
   );
   const media = hasMedia ? (
     <div id={post ? "replay" : undefined} style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
-      {gated && !unlocked && <ReplayGate onUnlock={unlock} />}
       {gated && unlocked?.first && <div style={{ marginBottom: 12, fontSize: 14, color: "rgba(255,255,255,0.7)" }}>Thanks, {unlocked.first} — enjoy the replay.</div>}
-      <HeroVideo locked={gated && !unlocked} label={gated && !unlocked ? "Unlock to watch" : post ? "Webinar replay" : CONFIG.kind === "tradeshow" ? "CubeOne in action" : "Webinar preview"} video={heroVideo} image={CONFIG.heroImageUrl} imageAlt={CONFIG.heroImageAlt} autoplay={playing} />
+      <HeroVideo locked={gated && !unlocked} lockedImage={CONFIG.thumbnailUrl} label={gated && !unlocked ? "Unlock to watch" : post ? "Webinar replay" : CONFIG.kind === "tradeshow" ? "CubeOne in action" : "Webinar preview"} video={heroVideo} image={CONFIG.heroImageUrl} imageAlt={CONFIG.heroImageAlt} autoplay={playing}>{gated && !unlocked && <ReplayGate onUnlock={unlock} />}</HeroVideo>
       <LogoSlider />
     </div>
   ) : (
