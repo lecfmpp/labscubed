@@ -63,11 +63,14 @@ export function nextSessions(replay, now = Date.now(), count = 4, leadMinutes = 
 
 /* Where a webinar's recording stands:
      live-only       — the live session has not aired yet
+     replay          — aired, and the webinar has its own replay page
+                       (`postWebinar` in the registry)
      recording-soon  — it has aired, but replays are not switched on
      evergreen       — aired, replays on: visitors can book a session
    The server additionally requires the recording id to exist before it will
    book or play anything. */
 export function replayState(w, now = Date.now()) {
   if (Date.parse(w.endUTC) > now) return "live-only";
+  if (w.postWebinar) return "replay";
   return w.replay?.enabled ? "evergreen" : "recording-soon";
 }

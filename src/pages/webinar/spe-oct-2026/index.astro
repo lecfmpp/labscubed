@@ -1,19 +1,18 @@
 ---
 import Base from '../../../layouts/Base.astro';
-import WebinarTopBar from '../../../components/WebinarTopBar.jsx';
+import Nav from '../../../islands/Nav.tsx';
 import RegistrationApp from '../../../components/RegistrationApp.jsx';
 import Footer from '../../../components/Footer.astro';
 import ScrollTopOnLoad from '../../../components/ScrollTopOnLoad.astro';
 ---
 
-<Base title="The Hidden Cost of Manual Plastics Testing — LabsCubed Webinar" description="Free webinar, Tuesday October 20 2026 at 11:00 AM EST. Where the hidden costs and variability sit in manual plastics tensile testing, and what automation changes. With real CubeTen data on HIPS and polypropylene.">
+<Base title="Watch the Replay — The Hidden Cost of Manual Plastics Testing — LabsCubed Webinar" description="Watch the replay of our SPE webinar, first aired October 20 2026. Where the hidden costs and variability sit in manual plastics tensile testing, and what automation changes. With real CubeTen data on HIPS and polypropylene.">
   <ScrollTopOnLoad />
-  {/* No site header on this page on purpose: every link in it is a way to
-      leave, and the page has one job — registration. The countdown bar stays,
-      sticky on its own. The thank-you page keeps the header, since by then the
-      conversion has happened. */}
+  {/* The session has aired, so this is a replay page and no longer a
+      registration page: the countdown bar is gone and the site header is back,
+      since there is nothing left to register for. Same URL as before. */}
   <div class="lc-sticky-top">
-    <WebinarTopBar slug="spe-oct-2026" client:only="react" />
+    <Nav client:load inFlow />
   </div>
   <main class="lc-page">
     <RegistrationApp slug="spe-oct-2026" client:only="react" />
@@ -30,9 +29,8 @@ import ScrollTopOnLoad from '../../../components/ScrollTopOnLoad.astro';
   }
 
   /* Belt-and-braces for arrivals that skip the JS scroll helper — a
-     /webinar/spe-oct-2026/#register link, or an in-page anchor. Keeps the top of
-     the registration section clear of the sticky countdown bar, measured at
-     57px now that the site header is gone from this page. */
+     /webinar/spe-oct-2026/#register link, or an in-page anchor. Keeps the next
+     steps section clear of the sticky site header. */
   #register {
     scroll-margin-top: 70px;
   }

@@ -141,7 +141,9 @@ const STATUS_LABEL = { recorded: 'Highlights available', pending: 'Highlights co
                     ></iframe>
                   ) : w.thumbnailUrl ? (
                     <>
-                      <img class="wh-rec-photo" src={w.thumbnailUrl} alt={w.thumbnailAlt || w.title} width="800" height="450" loading="lazy" />
+                      <a href={w.registrationUrl} aria-label={w.title} tabindex="-1">
+                        <img class="wh-rec-photo" src={w.thumbnailUrl} alt={w.thumbnailAlt || w.title} width="800" height="450" loading="lazy" />
+                      </a>
                       <span class="wh-rec-chip">{STATUS_LABEL[w.status]}</span>
                     </>
                   ) : (
@@ -153,11 +155,11 @@ const STATUS_LABEL = { recorded: 'Highlights available', pending: 'Highlights co
                 </div>
                 <div class="wh-rec-body">
                   <span class="wh-rec-date">{w.dateLabel}</span>
-                  <h3 class="wh-rec-title">{w.title}</h3>
+                  <h3 class="wh-rec-title"><a href={w.registrationUrl} class="wh-rec-title-link">{w.title}</a></h3>
                   <p class="wh-rec-desc">{w.heroCopy}</p>
-                  {w.status === 'upcoming' && (
-                    <a class="wh-rec-link" href={w.registrationUrl}>Book a demo at this show →</a>
-                  )}
+                  <a class="wh-rec-link" href={w.registrationUrl}>
+                    {w.status === 'upcoming' ? 'Book a demo at this show →' : 'View the event page →'}
+                  </a>
                 </div>
               </article>
             );
@@ -283,6 +285,9 @@ const STATUS_LABEL = { recorded: 'Highlights available', pending: 'Highlights co
   .wh-rec { background: #fff; border: 1px solid var(--lc-line); border-radius: 20px; overflow: hidden; box-shadow: 0 1px 0 rgba(0,0,0,0.04); }
   .wh-rec-media { position: relative; width: 100%; aspect-ratio: 16 / 9; background: #000; }
   .wh-rec-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+  .wh-rec-media > a { position: absolute; inset: 0; display: block; }
+  .wh-rec-title-link { color: inherit; text-decoration: none; }
+  .wh-rec-title-link:hover { text-decoration: underline; }
   .wh-rec-chip { position: absolute; left: 14px; bottom: 14px; background: rgba(0,0,0,0.72); color: #fff; border-radius: 999px; padding: 6px 12px; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
   .wh-rec-media iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
   .wh-rec-soon { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 10px; background: linear-gradient(160deg, #1a1b1f, #000); color: rgba(255,255,255,0.55); font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }

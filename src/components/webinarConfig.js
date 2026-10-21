@@ -193,6 +193,31 @@ export const WEBINARS = {
         { weekday: 5, time: "14:00" },
       ],
     },
+    // Post-webinar mode. Once set, the same URL stops selling seats and
+    // becomes the replay page: the hero plays `replayVideoUrl` (a YouTube URL,
+    // share link or <iframe> snippet), the countdown bar and registration
+    // form go, and the page ends in next steps instead. Delete the block to
+    // go back to a registration page.
+    postWebinar: {
+      // TEMPORARY: still the invitational video. Swap for the recording once
+      // it is on YouTube.
+      replayVideoUrl: "https://youtu.be/wuEurbhcKUw",
+      badge: "Webinar replay",
+      ctaLabel: "Watch the replay",
+      heroCopy:
+        "This session aired live with SPE on October 20, 2026. Watch the full recording to see where the hidden costs and variability sit in manual plastics tensile testing, and what an automation-first workflow changes. With real CubeTen data on HIPS and polypropylene.",
+      agendaHeading: "What the session covered",
+      expectHeading: "What's in the replay",
+      expectIntro:
+        "Press play and you'll get a practical understanding of where the hidden costs and sources of variability sit in manual plastics tensile testing, and how automation addresses them.",
+      nextStepsHeading: "Keep going after the replay",
+      nextSteps: [
+        ["Explore CubeTen", "The automated tensile tester for plastics and adhesives shown in the session.", "/plastic-testing", "See CubeTen"],
+        ["Talk to our team", "Tell us what you test and we'll tell you whether automation fits your lab.", "/get-a-quote", "Get a quote"],
+        ["Read the white paper", "The data-backed business case for automating tensile testing.", "/white-paper-automation-vs-manual-testing", "Get the white paper"],
+        ["More webinars", "Every session we run, with recordings as they become available.", "/webinar#recordings", "Browse webinars"],
+      ],
+    },
     // Cross-promoted on the registration page and the thank-you page.
     nextWebinarSlug: "automation-ai-nov-2026",
   }),
