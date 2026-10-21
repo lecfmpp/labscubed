@@ -23,11 +23,13 @@ const resourceLinks: [string, string][] = [
   ['ASTM D412', '/resources/astm-d412-iso-37-rubber-tensile-testing'],
   ['All resources', '/resources'],
 ];
-// The header CTA sends visitors to the Get a Quote wizard (replaced the old
-// "Download our White-Paper" button, 2026-09-14).
-const QUOTE = '/get-a-quote';
+// The header CTA sends visitors to the Resources hub (it was Get a Quote from
+// 2026-09-14, and "Download our White-Paper" before that; changed 2026-10-21).
+// Quote requests are still one click away in the footer and on the product pages.
+const QUOTE = '/resources';
+const CTA_LABEL = 'Check Resources';
 
-/* `showQuote` hides the header's primary button (Get a Quote). No page turns it off today; it exists so
+/* `showQuote` hides the header's primary button (Check Resources). No page turns it off today; it exists so
    a single-purpose page can carry exactly one call to action.
 
    `inFlow` takes the bar out of overlay mode. By default it is absolutely
@@ -51,7 +53,7 @@ export default function Nav({ inFlow = false, showQuote = true, sticky = false }
     : { position, top: 0, left: 0, right: 0 };
 
   const cta = showQuote ? (
-    <Button variant="primary" size="sm" href={QUOTE}>Get a Quote</Button>
+    <Button variant="primary" size="sm" href={QUOTE}>{CTA_LABEL}</Button>
   ) : (
     <img src="/assets/img/logo.webp" alt="" aria-hidden="true" width={419} height={104} style={{ height: 34, width: "auto", display: "block", visibility: "hidden" }} />
   );
@@ -78,7 +80,7 @@ export default function Nav({ inFlow = false, showQuote = true, sticky = false }
             {resourceLinks.map(([l, href]) => (
               <a key={l} href={href} style={{ color: "rgba(255,255,255,0.85)", fontSize: 15, textDecoration: "none", padding: "10px 0 10px 12px", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>{l}</a>
             ))}
-            {showQuote && <div style={{ marginTop: 16 }}><Button variant="primary" size="sm" href={QUOTE}>Get a Quote</Button></div>}
+            {showQuote && <div style={{ marginTop: 16 }}><Button variant="primary" size="sm" href={QUOTE}>{CTA_LABEL}</Button></div>}
           </div>
         )}
       </div>

@@ -221,6 +221,9 @@ function Hero() {
   const gated = !!post?.gate;
   const [unlocked, setUnlocked] = React.useState(() => {
     if (!gated) return null;
+    // ?locked shows the form again on a browser that already unlocked it, so
+    // the gate can be checked without clearing storage.
+    if (/[?&]locked\b/.test(location.search)) return null;
     try { return JSON.parse(localStorage.getItem(`lc-replay-${CONFIG.slug}`)); } catch { return null; }
   });
   const unlock = (videoId, first) => {
