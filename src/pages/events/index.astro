@@ -16,10 +16,10 @@ const all = Object.values(WEBINARS)
   .sort((a, b) => new Date(a.startUTC) - new Date(b.startUTC));
 const now = Date.now();
 const upcoming = all.filter((w) => new Date(w.endUTC).getTime() > now);
-// The library lists EVERY session, not only past ones, so the section is never
-// empty: an upcoming webinar appears with "not recorded yet" until it airs.
+// The library below is the PAST shows only. Upcoming ones already have their
+// own section above, and listing them twice put them under "Past shows".
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-const library = [...all].reverse().map((w) => {
+const library = [...all].reverse().filter((w) => new Date(w.endUTC).getTime() <= now).map((w) => {
   const d = new Date(w.startUTC);
   const period = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`;
   const aired = new Date(w.endUTC).getTime() <= now;
@@ -91,11 +91,12 @@ const STATUS_LABEL = { recorded: 'Recap available', pending: 'Highlights coming 
       </div>
     </section>
 
+    {library.length > 0 && (
     <section class="wh-sec wh-sec-alt">
       <div class="wh-inner">
         <h2 class="wh-h2">Past shows</h2>
         <p class="wh-sub">
-          Every show we exhibit at. Highlights appear here once a show has finished.
+          The shows we have been to. A recap appears here once a show has finished.
         </p>
 
         <div class="wh-filters">
@@ -171,6 +172,7 @@ const STATUS_LABEL = { recorded: 'Recap available', pending: 'Highlights coming 
         </p>
       </div>
     </section>
+    )}
 
   </main>
 
@@ -290,6 +292,7 @@ const STATUS_LABEL = { recorded: 'Recap available', pending: 'Highlights coming 
   .wh-rec-title-link:hover { text-decoration: underline; }
   .wh-rec-chip { position: absolute; left: 14px; bottom: 14px; background: rgba(0,0,0,0.72); color: #fff; border-radius: 999px; padding: 6px 12px; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
   .wh-rec-media iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .wh-rec-soon { background-image: linear-gradient(160deg, rgba(26,27,31,0.82), rgba(0,0,0,0.9)), url('/assets/img/about/story-2021-1280.webp') !important; background-size: cover !important; background-position: center !important; }
   .wh-rec-soon { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 10px; background: linear-gradient(160deg, #1a1b1f, #000); color: rgba(255,255,255,0.55); font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
   .wh-rec-soon-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--lc-teal, #17ddc5); }
   .wh-rec-body { padding: 22px 26px 26px; }
