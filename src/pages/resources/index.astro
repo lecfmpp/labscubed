@@ -6,7 +6,8 @@
 import Base from '../../layouts/Base.astro';
 import Nav from '../../islands/Nav.tsx';
 import Footer from '../../components/Footer.astro';
-import { SITE_URL } from '../../site.mjs';
+import { SITE_URL, POST_BASE, BLOG_BASE } from '../../site.mjs';
+import { getPosts, postDate, categoryLabel, readTime, thumbImage, thumbAlt, sbImage, sbSrcset, formatDate } from '../../lib/blog';
 
 const GUIDES = [
   {
@@ -34,6 +35,13 @@ const GUIDES = [
     alt: 'LabsCubed test results dashboard',
   },
 ];
+// Latest published posts for the carousel, newest first. Built at deploy time
+// like the blog itself, so a new post shows here after the next build.
+const LATEST = 8;
+const latest = (await getPosts())
+  .slice()
+  .sort((a, b) => postDate(b).getTime() - postDate(a).getTime())
+  .slice(0, LATEST);
 const canonical = `${SITE_URL}/resources`;
 const title = 'Tensile Testing Standards Guides (ASTM D638, D412) | LabsCubed';
 const description = 'Practical guides to ASTM D638 / ISO 527-2 plastic and ASTM D412 / ISO 37 rubber tensile testing, and how automation makes each test faster and more repeatable.';
@@ -75,7 +83,47 @@ const jsonLd = [
         </li>
       ))}
     </ul>
-    <p class="rh-more">More articles on tensile testing and lab automation are on the <a href="/blog">LabsCubed blog</a>.</p>
+    {latest.length > 0 && (
+      <section class="rh-blog" aria-labelledby="rh-blog-h" data-carousel>
+        <div class="rh-blog__head">
+          <div>
+            <p class="rh-eyebrow rh-eyebrow--tight">From the blog</p>
+            <h2 id="rh-blog-h">Keep exploring</h2>
+            <p class="rh-blog__lede">The latest articles on tensile testing and lab automation.</p>
+          </div>
+          <div class="rh-blog__ctrl">
+            <a class="rh-blog__all" href={BLOG_BASE}>View all articles →</a>
+            <button type="button" class="rh-arrow" data-dir="-1" aria-label="Previous articles"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+            <button type="button" class="rh-arrow" data-dir="1" aria-label="Next articles"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+          </div>
+        </div>
+        <ul class="rh-track" data-track tabindex="0" aria-label="Latest blog articles">
+          {latest.map((p) => (
+            <li>
+              <a class="rh-post" href={`${POST_BASE}/${p.slug}`}>
+                {thumbImage(p) ? (
+                  <img
+                    src={sbImage(thumbImage(p), 640)}
+                    srcset={sbSrcset(thumbImage(p), [400, 640, 800])}
+                    sizes="(max-width: 760px) 80vw, 340px"
+                    alt={thumbAlt(p)}
+                    loading="lazy"
+                    decoding="async"
+                    width="640"
+                    height="400"
+                  />
+                ) : (
+                  <div class="rh-post__ph" aria-hidden="true"><span>{categoryLabel(p.categories[0] ?? 'LabsCubed')}</span></div>
+                )}
+                <span class="rh-card__eyebrow">{categoryLabel(p.categories[0] ?? 'LabsCubed')} · {readTime(p)} min read</span>
+                <strong>{p.title}</strong>
+                <span class="rh-post__date">{formatDate(postDate(p))}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
   </main>
   <Footer />
 </Base>
@@ -102,4 +150,55 @@ const jsonLd = [
     .rh h1 { font-size: 34px; }
     .rh-grid { grid-template-columns: 1fr; }
   }
+  .rh-blog { margin-top: 84px; }
+  .rh-blog__head { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; }
+  .rh-eyebrow--tight { margin: 0; }
+  .rh-blog h2 { font-weight: 700; font-size: 34px; letter-spacing: -0.02em; line-height: 1.15; margin: 8px 0 0; }
+  .rh-blog__lede { font-weight: 300; font-size: 17px; color: var(--text-muted); margin: 10px 0 0; }
+  .rh-blog__ctrl { display: flex; align-items: center; gap: 10px; flex: none; }
+  .rh-blog__all { font-size: 14px; font-weight: 600; color: var(--lc-ink); text-decoration: none; margin-right: 8px; }
+  .rh-blog__all:hover { text-decoration: underline; }
+  .rh-arrow { width: 42px; height: 42px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.14); background: #fff; color: var(--lc-ink); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: border-color .18s ease, opacity .18s ease; }
+  .rh-arrow svg { width: 18px; height: 18px; }
+  .rh-arrow:hover:not(:disabled) { border-color: var(--lc-teal); }
+  .rh-arrow:disabled { opacity: 0.35; cursor: default; }
+  .rh-track { list-style: none; padding: 4px 2px 12px; margin: 28px -2px 0; display: flex; gap: 24px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-left: 2px; scrollbar-width: none; }
+  .rh-track::-webkit-scrollbar { display: none; }
+  .rh-track:focus-visible { outline: 2px solid var(--lc-teal); outline-offset: 4px; border-radius: 12px; }
+  .rh-track li { flex: 0 0 calc((100% - 48px) / 3); scroll-snap-align: start; min-width: 0; }
+  .rh-post { display: flex; flex-direction: column; gap: 10px; height: 100%; padding: 16px 16px 22px; border: 1px solid rgba(0,0,0,0.08); border-radius: 18px; color: var(--lc-ink); text-decoration: none; transition: border-color .18s ease, transform .12s ease; }
+  .rh-post:hover { border-color: var(--lc-teal); transform: translateY(-2px); }
+  .rh-post img, .rh-post__ph { width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 12px; background: var(--lc-gray-100, #f4f4f5); display: block; }
+  .rh-post__ph { display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); }
+  .rh-post strong { font-weight: 600; font-size: 18px; line-height: 1.3; flex: 1; }
+  .rh-post__date { font-size: 13px; font-weight: 300; color: var(--text-muted); }
+  @media (max-width: 960px) { .rh-track li { flex-basis: calc((100% - 24px) / 2); } }
+  @media (max-width: 760px) {
+    .rh-blog { margin-top: 56px; }
+    .rh-blog h2 { font-size: 26px; }
+    .rh-blog__head { flex-direction: column; align-items: flex-start; gap: 16px; }
+    .rh-track { gap: 16px; margin-right: -20px; padding-right: 20px; }
+    .rh-track li { flex-basis: 80%; }
+  }
 </style>
+
+<script>
+  // Prev/next buttons scroll the snap track one card at a time and disable at
+  // either end. The track scrolls (and swipes) on its own without this.
+  document.querySelectorAll<HTMLElement>('[data-carousel]').forEach((root) => {
+    const track = root.querySelector<HTMLElement>('[data-track]');
+    const prev = root.querySelector<HTMLButtonElement>('[data-dir="-1"]');
+    const next = root.querySelector<HTMLButtonElement>('[data-dir="1"]');
+    if (!track || !prev || !next) return;
+    const step = () => (track.querySelector('li')?.getBoundingClientRect().width ?? 320) + 24;
+    const sync = () => {
+      prev.disabled = track.scrollLeft < 4;
+      next.disabled = track.scrollLeft + track.clientWidth >= track.scrollWidth - 4;
+    };
+    prev.addEventListener('click', () => track.scrollBy({ left: -step(), behavior: 'smooth' }));
+    next.addEventListener('click', () => track.scrollBy({ left: step(), behavior: 'smooth' }));
+    track.addEventListener('scroll', sync, { passive: true });
+    window.addEventListener('resize', sync);
+    sync();
+  });
+</script>
