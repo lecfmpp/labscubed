@@ -1,4 +1,8 @@
 ---
+import { WEBINARS } from '../../../components/webinarConfig.js';
+import { eventSchema } from '../../../lib/event-schema.mjs';
+import { buildJsonLd } from '../../../lib/jsonld';
+import { SITE_URL } from '../../../site.mjs';
 import Base from '../../../layouts/Base.astro';
 import WebinarTopBar from '../../../components/WebinarTopBar.jsx';
 import RegistrationApp from '../../../components/RegistrationApp.jsx';
@@ -6,7 +10,7 @@ import Footer from '../../../components/Footer.astro';
 import ScrollTopOnLoad from '../../../components/ScrollTopOnLoad.astro';
 ---
 
-<Base title="See CubeTen at the Compounding World Expo 2026 — Cleveland" description="LabsCubed is exhibiting at AMI's Plastics World Expos in Cleveland, November 11–12 2026. Get hands-on with CubeTen automated tensile testing and book a demo built around your own lab.">
+<Base jsonLd={[...buildJsonLd(SITE_URL), eventSchema(WEBINARS['ami-nov-2026'])]} title="See CubeTen at the Compounding World Expo 2026 — Cleveland" description="LabsCubed is at AMI's Plastics World Expos in Cleveland, Nov 11–12 2026. See CubeTen automated tensile testing and book a demo for your own lab.">
   <ScrollTopOnLoad />
   {/* No site header on this page on purpose: every link in it is a way to
       leave, and the page has one job — registration. The countdown bar stays,

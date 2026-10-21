@@ -1,4 +1,8 @@
 ---
+import { WEBINARS } from '../../../components/webinarConfig.js';
+import { eventSchema } from '../../../lib/event-schema.mjs';
+import { buildJsonLd } from '../../../lib/jsonld';
+import { SITE_URL } from '../../../site.mjs';
 import Base from '../../../layouts/Base.astro';
 import Nav from '../../../islands/Nav.tsx';
 import RegistrationApp from '../../../components/RegistrationApp.jsx';
@@ -6,7 +10,7 @@ import Footer from '../../../components/Footer.astro';
 import ScrollTopOnLoad from '../../../components/ScrollTopOnLoad.astro';
 ---
 
-<Base title="LabsCubed at the Global Polymer Summit 2026 — Event Recap" description="What we showed at the Global Polymer Summit 2026 in Louisville, September 28–30: CubeOne live at booth 815, what we heard from the rubber testing community, and our panel on AI and autonomous laboratories.">
+<Base jsonLd={[...buildJsonLd(SITE_URL), eventSchema(WEBINARS['gps-sep-2026'])]} title="LabsCubed at the Global Polymer Summit 2026 — Event Recap" description="What we showed at the Global Polymer Summit 2026 in Louisville: CubeOne live at booth 815, what rubber labs told us, and our panel on AI in testing.">
   <ScrollTopOnLoad />
   {/* The show is over, so this is a recap page and no longer a booking page:
       no countdown bar, and the site header is back since there is nothing left
