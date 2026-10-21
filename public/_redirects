@@ -27,6 +27,10 @@
 /webinar/gis-spe-feb-2027/thank-you     /webinar/gis-spe-oct-2026/thank-you      301
 /webinar/gis-spe-feb-2027/thank-you/    /webinar/gis-spe-oct-2026/thank-you      301
 
+# GPS is over: its confirmation/scheduler page is gone, send stragglers to the recap.
+/events/gps-sep-2026/thank-you   /events/gps-sep-2026  301
+/events/gps-sep-2026/thank-you/  /events/gps-sep-2026  301
+
 
 
 # /api/* is served by this site's own Netlify Functions. It MUST stay above the

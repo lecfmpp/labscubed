@@ -41,7 +41,9 @@ const WEBINARS = {
   // and company here and the visitor is sent on to SPE's page. No welcomeEvent
   // any more (it was 'spe2026_registered'): a "you're registered" email would be
   // untrue until they finish on SPE's site.
-  'spe-oct-2026': { segmentId: 'd7b053f5-67b3-4747-807e-1e8db27c45a1', leadOnly: true },
+  // replaySegmentId: where the replay-gate form (`unlock`) files people, kept
+  // apart from the registrants above. Resend segment "Webinar: SPE Replay".
+  'spe-oct-2026': { segmentId: 'd7b053f5-67b3-4747-807e-1e8db27c45a1', replaySegmentId: '9bfd5925-a699-4c6b-a46f-5275e4b24992', leadOnly: true },
   'automation-ai-nov-2026': { segmentId: 'ca2a167f-e3c6-483b-90f0-8590d69ad2a1' },
   // Tradeshow demo bookings, not a webinar — same funnel, its own list.
   'gps-sep-2026': { segmentId: '316f18d8-86ba-459f-817a-67cd921e4e2d', kind: 'tradeshow' },
@@ -109,7 +111,7 @@ export default async (request) => {
   const resendKey = process.env.RESEND_API_KEY;
   if (resendKey) {
     try {
-      await addToResend(data, resendKey, webinar.segmentId, webinar.leadOnly);
+      await addToResend(data, resendKey, (data.unlock && webinar.replaySegmentId) || webinar.segmentId, webinar.leadOnly);
       resendSynced = true;
       // After the contact exists, so the automation can resolve it by email.
       // A failure here lands in sync_error with resend_synced still true, which
