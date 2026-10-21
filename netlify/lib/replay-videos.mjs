@@ -15,7 +15,7 @@
 // the visitor has given their name and company email. No `replay.enabled`
 // needed.
 export const REPLAY_VIDEOS = {
-  // TEMPORARY: the invitational video, until the recording is on YouTube.
-  'spe-oct-2026': 'wuEurbhcKUw',
+  // The recording of the Oct 20, 2026 SPE webinar.
+  'spe-oct-2026': 'q5mGNtZzDBU',
   'automation-ai-nov-2026': null,
 };
