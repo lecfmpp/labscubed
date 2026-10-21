@@ -295,6 +295,68 @@ export const WEBINARS = {
     nextWebinarSlug: null,
   }),
 
+  /* Technical webinar built around a customer's request (Dec 2, 2026). It is
+     invitation-only in practice — the customer circulates the link internally —
+     so it is `unlisted`: noindex, out of the sitemap and off the /webinar hub,
+     reachable by direct link only. The customer's name is deliberately NOT on
+     the page, and no customer data or unverified figures are quoted; content is
+     from the "SABIC Content Blueprint" Google Doc, trimmed to what is safe to
+     say publicly. Plan: ~45 minutes of content and ~15 of Q&A. */
+  "plastics-testing-dec-2026": build({
+    slug: "plastics-testing-dec-2026",
+    unlisted: true,
+    title: "Rethinking Plastics Testing: The Shift to Automated Workflows",
+    dateLabel: "Wednesday, December 2, 2026",
+    timeLabel: "9:30 AM EST · 60 minutes, including Q&A",
+    startUTC: "2026-12-02T14:30:00Z",
+    endUTC: "2026-12-02T15:30:00Z",
+    heroCopy:
+      "A tensile test is more than the moment a machine pulls a specimen. Follow the whole workflow, from specimen to report: where variation enters, what separates an automated machine from an automated testing workflow, and what the technical evidence on CubeTen does and does not show.",
+    showSeats: false,
+    ...KHALED,
+    agenda: [
+      ["01", "Where variation enters a tensile test", "Testing is a chain of steps, from specimen and measurement through gripping, testing, extension measurement, analysis and reporting. The main sources of variation, and why consistency has to be judged across the whole workflow rather than at the machine alone."],
+      ["02", "From an automated machine to an automated workflow", "What each term means, how to judge the scope of automation stage by stage, and where AI fits in, including vision-based sample tracking and machine-learning grip-pressure adjustment."],
+      ["03", "CubeTen up close", "How specimens are handled, positioned and clamped, which specimen types and limits apply, how extension is measured, why the system is compact, and how data and lab integration work. Includes a live demonstration and close-up video of the testing process."],
+      ["04", "What the technical evidence shows", "Repeatability data on plastics, and a comparison of manual and automated testing: the methods, the conditions, the results and the limitations, including what is not yet verified."],
+    ],
+    expectIntro:
+      "You'll leave with a clear way to judge how much of a testing workflow is actually automated, and an honest view of what the data supports and where it stops.",
+    expect: [
+      "Where variation enters a tensile test, from specimen to report",
+      "The difference between an automated machine and an automated testing workflow",
+      "How specimens are handled, positioned and clamped, and the specimen types and limits",
+      "How extension is measured, and crosshead displacement versus direct strain",
+      "Where AI is used today, and what is still in development",
+      "Repeatability evidence, with methods, conditions and limitations stated openly",
+      "A live CubeTen demonstration with close-up video",
+      "How the system fits a laboratory: footprint, data handling and integration",
+      "Live Q&A with the team",
+    ],
+    audienceIntro:
+      "Research, processing, application and quality teams who run or rely on plastics tensile testing, and the people deciding how their lab workflow should evolve.",
+    roles: [
+      ["Research & materials scientists", "Characterising materials"],
+      ["Processing & application developers", "Turning data into products"],
+      ["QC / QA professionals", "Consistency and traceability"],
+      ["Lab managers & supervisors", "Throughput, capacity and validation"],
+    ],
+    alsoFor: [
+      "Teams at other sites and regions",
+      "Anyone comparing automated tensile systems",
+      "Anyone planning validation against existing equipment",
+    ],
+    exploreCtaLabel: "Explore CubeTen",
+    exploreCtaHref: "https://labscubed.com/plastic-testing",
+    registerNote:
+      "Can't make it live? Register anyway and we'll send you the recording afterwards.",
+    heroVideoUrl: null,
+    thankYouVideoUrl: null,
+    onDemandVideoUrl: "https://www.youtube.com/embed/EA0jUa83Qjs",
+    thumbnailUrl: null,
+    nextWebinarSlug: null,
+  }),
+
   /* Tradeshow, not a webinar: no speaker slot and no seat counter, a booth and
      a city instead of a start time, and the form books a demo rather than a
      seat. Content is the GPS campaign copy. */

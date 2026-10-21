@@ -1,0 +1,19 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//LabsCubed//Webinar//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:LabsCubed Webinar - Rethinking Plastics Testing: The Shift to Automated Workflows
+X-WR-TIMEZONE:America/New_York
+BEGIN:VEVENT
+UID:webinar-plastics-testing-dec-2026@labscubed.com
+DTSTAMP:20261021T000000Z
+DTSTART:20261202T143000Z
+DTEND:20261202T153000Z
+SUMMARY:Rethinking Plastics Testing: The Shift to Automated Workflows - LabsCubed Webinar
+DESCRIPTION:With Khaled Boqaileh, co-founder and CEO of LabsCubed. Where variation enters a tensile test, what separates an automated machine from an automated testing workflow, and what the technical evidence on CubeTen shows.
+LOCATION:Online
+URL:https://labscubed.com/webinar/plastics-testing-dec-2026
+STATUS:CONFIRMED
+END:VEVENT
+END:VCALENDAR

@@ -19,10 +19,11 @@ export default defineConfig({
     sitemap({
       // Replay session pages are personal and gated; they have no business in
       // the sitemap (they are also noindex).
-      // Partner funnels (/webinar/gis-*) are unlisted: direct link only.
+      // Partner funnels (/webinar/gis-*) and the invitation-only technical webinar
+      // are unlisted: direct link only.
       filter: (page) => {
         const path = new URL(page).pathname;
-        return !/\/(session|booth)(\/thank-you)?\/?$/.test(path) && !/^\/webinar\/gis-/.test(path);
+        return !/\/(session|booth)(\/thank-you)?\/?$/.test(path) && !/^\/webinar\/(gis-|plastics-testing-dec-2026)/.test(path);
       },
       /* Blog/post entries are rewritten without a trailing slash so each entry
          matches the page's own canonical exactly — a sitemap that disagrees
