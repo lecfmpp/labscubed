@@ -118,13 +118,12 @@ export const WEBINARS = {
       ["01", "The hidden costs of manual testing", "How manual specimen measurement, positioning, gripping, testing and data processing consume technician time and introduce opportunities for variability."],
       ["02", "Where variability enters plastics tensile testing", "The factors that affect testing consistency, and the difference between accuracy, repeatability and reproducibility."],
       ["03", "What automation can actually change", "How an automation-first workflow standardises the key steps — specimen measurement, gripping, deformation measurement, testing and analysis — and the impact on technician time and reproducibility."],
-      ["04", "From testing data to a smarter lab workflow", "Practical CubeTen examples with HIPS and polypropylene, covering ASTM/ISO requirements, calibration, service and support, cybersecurity and data integration."],
+      ["04", "From testing data to a smarter lab workflow", "Practical CubeTen examples, covering ASTM/ISO requirements, calibration, service and support, cybersecurity and data integration."],
     ],
     expectIntro:
       "You'll leave with a practical understanding of where the hidden costs and sources of variability sit in manual plastics tensile testing, and how automation addresses them.",
     expect: [
       "Real-world CubeTen plastics testing data",
-      "Examples using HIPS and polypropylene (PP)",
       "The automated workflow, from specimen measurement through data analysis",
       "A short demonstration of CubeTen in operation",
       "Measurement reproducibility and technician-time savings",
@@ -213,7 +212,7 @@ export const WEBINARS = {
       badge: "Webinar replay",
       ctaLabel: "Watch the replay",
       heroCopy:
-        "This session aired live with SPE on October 20, 2026. Watch the full recording to see where the hidden costs and variability sit in manual plastics tensile testing, and what an automation-first workflow changes. With real CubeTen data on HIPS and polypropylene.",
+        "This session aired live with SPE on October 20, 2026. Watch the full recording to see where the hidden costs and variability sit in manual plastics tensile testing, and what an automation-first workflow changes. With real CubeTen plastics testing data.",
       agendaHeading: "What the session covered",
       expectHeading: "What's in the replay",
       expectIntro:
