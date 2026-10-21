@@ -196,7 +196,7 @@ export const WEBINARS = {
     // Card artwork on the webinar hub, and the blurred backdrop behind the
     // replay gate. A webinar with none still gets a branded text tile on the
     // hub, never a black box.
-    thumbnailUrl: "/assets/img/events/spe-replay-thumb.webp",
+    thumbnailUrl: "/assets/img/events/spe-replay-thumb-v2.webp",
     thumbnailAlt: "The Hidden Cost of Manual Plastics Testing — webinar replay with Khaled Boqaileh, in partnership with SPE",
     // Post-webinar mode. Once set, the same URL stops selling seats and
     // becomes the replay page: the hero plays `replayVideoUrl` (a YouTube URL,
