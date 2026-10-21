@@ -580,45 +580,56 @@ function NextWebinar() {
   );
 }
 
-/* The body of a past-event page: the organiser's own write-up, section by
-   section, with photos beside the sections that have one. Rows alternate
-   background for rhythm, and a section with no photo is a single column. */
+/* The body of a past-event page — the template every finished tradeshow uses.
+   It follows the blog post layout: one centred 792px article column, the blog's
+   type scale (28px headings, 17px body) in Inter Tight, a hairline between
+   sections. Every photo is the same 16:10 frame, full column width and sitting
+   under its heading, so nothing floats beside the text and the headings, copy
+   and images all share the same left edge. A quick-facts card opens the page. */
+const RECAP_FONT = '"Inter Tight", Inter, system-ui, -apple-system, sans-serif';
+
 function Recap() {
   const CONFIG = useWebinar();
   const m = useM();
   const past = CONFIG.pastEvent;
+  const facts = [
+    ["Dates", CONFIG.dateLabel],
+    ["Where", CONFIG.locationLabel],
+    ["Our stand", CONFIG.boothLabel],
+    ["Show", CONFIG.eventLabel],
+  ].filter(([, v]) => v);
   return (
-    <div id="recap">
-      {past.sections.map((sec, i) => {
-        const img = sec.image;
-        const flip = !m && i % 4 === 1;
-        const text = (
-          <div style={{ minWidth: 0 }}>
-            <H2>{sec.heading}</H2>
-            <div style={{ marginTop: m ? 18 : 24, display: "flex", flexDirection: "column", gap: 16, maxWidth: 680 }}>
+    <section id="recap" style={{ background: "#fff", fontFamily: RECAP_FONT }}>
+      <div style={{ maxWidth: 792, margin: "0 auto", padding: m ? "40px 20px 24px" : "64px 20px 40px" }}>
+        <dl style={{ margin: 0, display: "grid", gridTemplateColumns: m ? "1fr 1fr" : `repeat(${facts.length}, 1fr)`, gap: m ? "18px 16px" : 24, padding: m ? 20 : "22px 26px", border: `1px solid ${COLORS.line}`, borderRadius: 16, background: COLORS.gray100 }}>
+          {facts.map(([k, v]) => (
+            <div key={k} style={{ minWidth: 0 }}>
+              <dt style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: COLORS.tealDeep }}>{k}</dt>
+              <dd style={{ margin: "6px 0 0", fontSize: 15, fontWeight: 600, lineHeight: 1.35, color: COLORS.ink }}>{v}</dd>
+            </div>
+          ))}
+        </dl>
+
+        {past.sections.map((sec, i) => (
+          <article key={sec.heading} style={{ marginTop: m ? 40 : 56, paddingTop: i === 0 ? 0 : m ? 40 : 56, borderTop: i === 0 ? "none" : `1px solid ${COLORS.line}` }}>
+            <h2 style={{ margin: 0, fontSize: m ? 24 : 28, fontWeight: 700, lineHeight: 1.2, letterSpacing: "-0.02em", color: "#0f0f0f" }}>{sec.heading}</h2>
+            {sec.image && (
+              <figure style={{ margin: m ? "20px 0 0" : "24px 0 0" }}>
+                <img src={sec.image.src} alt={sec.image.alt} width={1600} height={1000} loading="lazy" style={{ display: "block", width: "100%", height: "auto", aspectRatio: "16 / 10", objectFit: "cover", objectPosition: sec.image.position || "50% 40%", borderRadius: 16, background: COLORS.gray100 }} />
+              </figure>
+            )}
+            <div style={{ marginTop: m ? 20 : 24, display: "flex", flexDirection: "column", gap: 16 }}>
               {sec.paragraphs.map((p, j) => (
-                <p key={j} style={{ margin: 0, fontSize: m ? 15.5 : 17, lineHeight: 1.65, fontWeight: 300, color: COLORS.muted }}>{p}</p>
+                <p key={j} style={{ margin: 0, fontSize: m ? 16 : 17, lineHeight: 1.65, fontWeight: 400, color: "#222" }}>{p}</p>
               ))}
             </div>
             {sec.link && (
               <a href={sec.link.href} style={{ display: "inline-block", marginTop: 24, fontSize: 14, fontWeight: 600, color: "#000", background: COLORS.teal, borderRadius: 999, padding: "13px 26px", textDecoration: "none" }}>{sec.link.label}</a>
             )}
-          </div>
-        );
-        const pic = img ? (
-          <img src={img.src} alt={img.alt} width={img.width} height={img.height} loading="lazy" style={{ width: "100%", height: "auto", borderRadius: 20, display: "block" }} />
-        ) : null;
-        return (
-          <Wrap key={sec.heading} bg={i % 2 ? COLORS.gray100 : "#fff"}>
-            {pic ? (
-              <div style={{ display: "grid", gridTemplateColumns: m ? "1fr" : "1fr 1fr", gap: m ? 28 : 64, alignItems: "center" }}>
-                {flip ? <>{pic}{text}</> : <>{text}{pic}</>}
-              </div>
-            ) : text}
-          </Wrap>
-        );
-      })}
-    </div>
+          </article>
+        ))}
+      </div>
+    </section>
   );
 }
 

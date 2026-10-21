@@ -298,7 +298,8 @@ const STATE_LABEL = { 'live-only': 'Live session only', 'recording-soon': 'Recor
   .wh-rec-tile { display: flex; flex-direction: column; justify-content: flex-end; gap: 8px; padding: 22px 24px; text-decoration: none; color: #fff; background: radial-gradient(ellipse at 100% 0%, rgba(23,221,197,0.35), transparent 60%), linear-gradient(160deg, #1a1b1f, #000); }
   .wh-rec-tile-title { font-weight: 700; font-size: 22px; line-height: 1.15; letter-spacing: -0.02em; }
   .wh-rec-tile-sub { font-size: 12.5px; font-weight: 500; color: rgba(255,255,255,0.6); }
-  .wh-rec-chip { position: absolute; left: 14px; top: 14px; display: inline-flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.72); color: #fff; border-radius: 999px; padding: 6px 12px; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+  .wh-rec-chip { position: absolute; left: 14px; top: 14px; display: inline-flex; align-items: center; gap: 8px; background: #fff; color: #000; border-radius: 999px; padding: 6px 12px; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; box-shadow: 0 1px 6px rgba(0,0,0,0.25); }
+  .wh-rec-chip .wh-rec-soon-dot { background: #dc2626; }
   .wh-rec-soon-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--lc-teal, #17ddc5); }
   .wh-rec-body { padding: 22px 26px 26px; }
   .wh-rec-date { font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--lc-teal-deep); }

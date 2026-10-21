@@ -410,7 +410,10 @@ export const WEBINARS = {
     // CTA. This is the standard treatment for every tradeshow once it ends:
     // add a block like this, set the page to render the site header, and drop
     // the registration CTAs. Delete the block to go back to a booking page.
-    // Copy is from Mo'min's "GPS 2026" Google Doc.
+    // Copy is from Mo'min's "GPS 2026" Google Doc. Each `sections[]` entry is
+    // {heading, paragraphs[], image?: {src, alt, position?}, link?: {label,
+    // href}}; the page frames every image at 16:10, so any photo works whatever
+    // its shape — use `position` ("50% 30%") to keep faces in frame.
     pastEvent: {
       badge: "Event recap",
       ctaLabel: "Read the recap",
@@ -425,7 +428,7 @@ export const WEBINARS = {
             "Across dozens of conversations, we heard many of the same challenges: repetitive manual work, time-consuming testing workflows, and the possibility of human error in every test.",
             "At the same time, we saw genuine curiosity about what automation could look like in a rubber laboratory and how it could improve reproducibility, reduce dependence on manual processes, and create greater value for laboratories.",
           ],
-          image: { src: "/assets/img/events/gps-2026-4.webp", alt: "Two members of the LabsCubed team at the stand during the Global Polymer Summit 2026", width: 1600, height: 1280 },
+          image: { src: "/assets/img/events/gps-2026-4.webp", alt: "Two members of the LabsCubed team at the stand during the Global Polymer Summit 2026" },
         },
         {
           heading: "Putting CubeOne to the test at GPS 2026",
@@ -436,7 +439,7 @@ export const WEBINARS = {
             "We also shared real testing data comparing automated and manual testing, including results from our ASTM and ISO testing work, helping visitors see the potential for greater consistency and reproducibility.",
             "Most importantly, these demonstrations gave us the opportunity to meet people from across the rubber industry, understand their workflows and challenges, and continue conversations about what a more automated laboratory could look like.",
           ],
-          image: { src: "/assets/img/events/gps-2026-3.webp", alt: "Visitors gathered around the machine at the LabsCubed stand while a team member explains the workflow", width: 1600, height: 1280 },
+          image: { src: "/assets/img/events/gps-2026-3.webp", alt: "Visitors gathered around the machine at the LabsCubed stand while a team member explains the workflow" },
         },
         {
           heading: "What we heard from the rubber testing community",
@@ -454,7 +457,7 @@ export const WEBINARS = {
             "The conversation looked at how AI can move beyond data analysis and become part of the physical laboratory workflow, from interpreting experimental data to guiding what happens next.",
             "Khaled shared the LabsCubed perspective on how automation and AI can work together, including how CubeOne is beginning to incorporate AI capabilities into automated testing. The discussion also explored the longer-term path toward more connected and autonomous laboratories, and what that could mean for the role of materials scientists and testing teams.",
           ],
-          image: { src: "/assets/img/events/gps-2026-2.webp", alt: "Khaled Boqaileh on the open panel on AI and autonomous laboratories at the Global Polymer Summit 2026", width: 1464, height: 712 },
+          image: { src: "/assets/img/events/gps-2026-2.webp", alt: "Khaled Boqaileh on the open panel on AI and autonomous laboratories at the Global Polymer Summit 2026", position: "50% 55%" },
         },
         {
           heading: "From manual testing to a more automated workflow",
