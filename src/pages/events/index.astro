@@ -27,13 +27,13 @@ const library = [...all].reverse().map((w) => {
     ...w,
     period,
     periodLabel: `${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}`,
-    status: w.recordingUrl ? 'recorded' : aired ? 'pending' : 'upcoming',
+    status: w.recordingUrl || w.pastEvent ? 'recorded' : aired ? 'pending' : 'upcoming',
     // Everything the keyword box searches.
     haystack: [w.title, w.heroCopy, w.dateLabel, w.eventLabel, w.locationLabel, w.boothLabel].filter(Boolean).join(' ').toLowerCase(),
   };
 });
 const periods = [...new Map(library.map((w) => [w.period, w.periodLabel])).entries()];
-const STATUS_LABEL = { recorded: 'Highlights available', pending: 'Highlights coming soon', upcoming: 'Upcoming show' };
+const STATUS_LABEL = { recorded: 'Recap available', pending: 'Highlights coming soon', upcoming: 'Upcoming show' };
 ---
 
 <Base
@@ -158,7 +158,7 @@ const STATUS_LABEL = { recorded: 'Highlights available', pending: 'Highlights co
                   <h3 class="wh-rec-title"><a href={w.registrationUrl} class="wh-rec-title-link">{w.title}</a></h3>
                   <p class="wh-rec-desc">{w.heroCopy}</p>
                   <a class="wh-rec-link" href={w.registrationUrl}>
-                    {w.status === 'upcoming' ? 'Book a demo at this show →' : 'View the event page →'}
+                    {w.status === 'upcoming' ? 'Book a demo at this show →' : w.pastEvent ? 'Read the recap →' : 'View the event page →'}
                   </a>
                 </div>
               </article>

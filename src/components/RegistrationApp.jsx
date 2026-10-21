@@ -60,7 +60,7 @@ function H2({ children }) {
 /* One slot for the hero media: plays the configured YouTube video when the
    webinar has one, and shows the placeholder until then. Set heroVideoUrl in
    webinarConfig to fill it — a URL, a share link or a pasted <iframe> all work. */
-function HeroVideo({ label, video, image, imageAlt, autoplay = false }) {
+function HeroVideo({ label, video, image, imageAlt, autoplay = false, locked = false }) {
   const id = youTubeId(video);
   const frame = {
     position: "relative",
@@ -104,7 +104,9 @@ function HeroVideo({ label, video, image, imageAlt, autoplay = false }) {
   return (
     <div style={{ ...frame, background: "linear-gradient(160deg, #1a1b1f, #000)", display: "flex", alignItems: "center", justifyContent: "center" }}>
       <span style={{ width: 72, height: 72, borderRadius: "50%", background: COLORS.teal, display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="#000"><path d="M8 5v14l11-7z" /></svg>
+        {locked
+          ? <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="11" width="14" height="9" rx="2" /><path d="M8 11V8a4 4 0 018 0v3" /></svg>
+          : <svg width="24" height="24" viewBox="0 0 24 24" fill="#000"><path d="M8 5v14l11-7z" /></svg>}
       </span>
       <span style={{ position: "absolute", bottom: 18, left: 20, fontSize: 12, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(255,255,255,0.55)" }}>{label}</span>
     </div>
@@ -124,6 +126,73 @@ function SpeakerAvatar({ size = 44 }) {
   return <img src={CONFIG.speakerPhoto} alt={CONFIG.speakerName} width={size} height={size} onError={() => setFailed(true)} style={{ ...base, objectFit: "cover", display: "block" }} />;
 }
 
+/* The replay gate: first name, last name and company email in exchange for the
+   recording. The submit goes to the same endpoint as a registration with
+   `unlock: true`, which files the lead and answers with the video id, so the id
+   is never in the page bundle. */
+const FREE_MAIL = /@(gmail|googlemail|yahoo|ymail|hotmail|outlook|live|msn|aol|icloud|me|proton|protonmail|gmx|mail|yandex|qq|163)\./i;
+
+function ReplayGate({ onUnlock }) {
+  const CONFIG = useWebinar();
+  const m = useM();
+  const [f, setF] = React.useState({ first: "", last: "", email: "" });
+  const [busy, setBusy] = React.useState(false);
+  const [error, setError] = React.useState("");
+  const set = (k) => (e) => setF((p) => ({ ...p, [k]: e.target.value }));
+
+  async function submit(e) {
+    e.preventDefault();
+    setError("");
+    if (FREE_MAIL.test(f.email)) {
+      setError("Please use your company email address.");
+      return;
+    }
+    setBusy(true);
+    try {
+      const res = await fetch(CONFIG.submitEndpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: `${f.first.trim()} ${f.last.trim()}`,
+          first_name: f.first.trim(),
+          last_name: f.last.trim(),
+          email: f.email.trim(),
+          unlock: true,
+          webinar: CONFIG.title,
+          webinar_slug: CONFIG.slug,
+          kind: CONFIG.kind,
+          timestamp: new Date().toISOString(),
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.videoId) throw new Error(data.error || `HTTP ${res.status}`);
+      track("generate_lead", { form: "replay_gate", webinar_slug: CONFIG.slug });
+      onUnlock(data.videoId, f.first.trim());
+    } catch (err) {
+      console.error("Replay unlock failed:", err);
+      setError(String(err.message || "").includes("company email") ? "Please use your company email address." : "Something went wrong. Please try again.");
+      setBusy(false);
+    }
+  }
+
+  const dark = { ...fieldInput, background: "#fff" };
+  return (
+    <form onSubmit={submit} style={{ background: "#fff", color: COLORS.ink, borderRadius: 16, padding: m ? 18 : 22, marginBottom: 14, display: "flex", flexDirection: "column", gap: 12 }}>
+      <div>
+        <div style={{ fontWeight: 700, fontSize: 17, letterSpacing: "-0.01em" }}>Unlock the replay</div>
+        <div style={{ marginTop: 4, fontSize: 13.5, fontWeight: 300, color: COLORS.muted }}>Tell us who you are and the recording plays right here.</div>
+      </div>
+      {error && <div style={{ padding: "10px 12px", borderRadius: 10, background: "#fee", color: "#c33", fontSize: 13.5 }}>{error}</div>}
+      <div style={{ display: "grid", gridTemplateColumns: m ? "1fr" : "1fr 1fr", gap: 12 }}>
+        <Field label="First name"><input id="replay-first" type="text" required autoComplete="given-name" placeholder="Jane" style={dark} value={f.first} onChange={set("first")} /></Field>
+        <Field label="Last name"><input type="text" required autoComplete="family-name" placeholder="Doe" style={dark} value={f.last} onChange={set("last")} /></Field>
+      </div>
+      <Field label="Company email"><input type="email" required autoComplete="email" placeholder="jane@company.com" style={dark} value={f.email} onChange={set("email")} /></Field>
+      <button type="submit" disabled={busy} style={{ padding: "13px 20px", borderRadius: 999, border: "none", background: busy ? "#ccc" : COLORS.teal, fontWeight: 600, fontSize: 15, cursor: busy ? "not-allowed" : "pointer", color: "#000" }}>{busy ? "Unlocking..." : "Unlock the replay"}</button>
+    </form>
+  );
+}
+
 /* Mobile reorders the hero deliberately: headline, then the video, then the
    CTA. Supporting copy, schedule and speaker follow underneath. On desktop the
    same pieces sit in the usual two columns. The two branches share the piece
@@ -131,14 +200,35 @@ function SpeakerAvatar({ size = 44 }) {
 function Hero() {
   const CONFIG = useWebinar();
   const m = useM();
+  const past = CONFIG.pastEvent;
   const post = CONFIG.postWebinar;
   const [playing, setPlaying] = React.useState(false);
+  /* A gated replay's video id arrives from the server on unlock, and is kept
+     in localStorage so a returning visitor is not asked again. */
+  const gated = !!post?.gate;
+  const [unlocked, setUnlocked] = React.useState(() => {
+    if (!gated) return null;
+    try { return JSON.parse(localStorage.getItem(`lc-replay-${CONFIG.slug}`)); } catch { return null; }
+  });
+  const unlock = (videoId, first) => {
+    const v = { videoId, first };
+    try { localStorage.setItem(`lc-replay-${CONFIG.slug}`, JSON.stringify(v)); } catch { /* private mode */ }
+    setUnlocked(v);
+    setPlaying(true);
+  };
   /* Replay mode: the button plays the video in place. On a phone the video is
      above the button already, so scrolling is only needed on desktop where the
      hero is two columns and the player may sit off-screen at small heights. */
-  const scrollToForm = post
+  const scrollToForm = past
     ? () => {
-        setPlaying(true);
+        const el = document.getElementById("recap");
+        const header = document.querySelector(".lc-sticky-top");
+        if (el) window.scrollTo({ top: Math.max(el.getBoundingClientRect().top + window.scrollY - (header ? header.getBoundingClientRect().height : 0), 0), behavior: "smooth" });
+      }
+    : post
+    ? () => {
+        if (gated && !unlocked) setTimeout(() => document.getElementById("replay-first")?.focus({ preventScroll: true }), 400);
+        else setPlaying(true);
         const el = document.getElementById("replay");
         const header = document.querySelector(".lc-sticky-top");
         if (el) window.scrollTo({ top: Math.max(el.getBoundingClientRect().top + window.scrollY - (header ? header.getBoundingClientRect().height : 0) - 16, 0), behavior: "smooth" });
@@ -148,7 +238,7 @@ function Hero() {
      a single centred column instead of a two-column grid with a fake player in
      it, and goes back to two columns the moment heroVideoUrl (or an image) is
      set in webinarConfig. */
-  const heroVideo = post ? post.replayVideoUrl : CONFIG.heroVideoUrl;
+  const heroVideo = post ? (gated ? unlocked?.videoId : post.replayVideoUrl) : CONFIG.heroVideoUrl;
   const hasMedia = !!post || !!(youTubeId(CONFIG.heroVideoUrl) || CONFIG.heroImageUrl);
 
   /* These pages carry no site header on purpose, so this is the only route
@@ -162,11 +252,11 @@ function Hero() {
   );
 
   const badge = (
-    <span style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: m ? 11 : 12, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", padding: m ? "7px 13px" : "8px 15px", borderRadius: 999, background: post ? COLORS.teal : "#dc2626", color: post ? "#000" : "#fff" }}>
+    <span style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: m ? 11 : 12, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", padding: m ? "7px 13px" : "8px 15px", borderRadius: 999, background: post || past ? COLORS.teal : "#dc2626", color: post || past ? "#000" : "#fff" }}>
       {/* White dot, not red — a red dot on a red pill would be invisible. A
           replay is not live, so its badge is teal and does not pulse. */}
-      <span className={post ? undefined : "lc-live-dot"} style={{ width: 7, height: 7, borderRadius: "50%", background: post ? "#000" : "#fff", flexShrink: 0 }} />
-      {post ? post.badge || "Webinar replay" : CONFIG.kind === "tradeshow" ? "Live demo" : "Live webinar"}
+      <span className={post || past ? undefined : "lc-live-dot"} style={{ width: 7, height: 7, borderRadius: "50%", background: post || past ? "#000" : "#fff", flexShrink: 0 }} />
+      {past ? past.badge || "Event recap" : post ? post.badge || "Webinar replay" : CONFIG.kind === "tradeshow" ? "Live demo" : "Live webinar"}
     </span>
   );
   /* The partnership badge sits opposite the breadcrumb at the top of the hero
@@ -184,17 +274,19 @@ function Hero() {
   );
   const media = hasMedia ? (
     <div id={post ? "replay" : undefined} style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
-      <HeroVideo label={post ? "Webinar replay" : CONFIG.kind === "tradeshow" ? "CubeOne in action" : "Webinar preview"} video={heroVideo} image={CONFIG.heroImageUrl} imageAlt={CONFIG.heroImageAlt} autoplay={playing} />
+      {gated && !unlocked && <ReplayGate onUnlock={unlock} />}
+      {gated && unlocked?.first && <div style={{ marginBottom: 12, fontSize: 14, color: "rgba(255,255,255,0.7)" }}>Thanks, {unlocked.first} — enjoy the replay.</div>}
+      <HeroVideo locked={gated && !unlocked} label={gated && !unlocked ? "Unlock to watch" : post ? "Webinar replay" : CONFIG.kind === "tradeshow" ? "CubeOne in action" : "Webinar preview"} video={heroVideo} image={CONFIG.heroImageUrl} imageAlt={CONFIG.heroImageAlt} autoplay={playing} />
       <LogoSlider />
     </div>
   ) : (
     <LogoSlider />
   );
   const cta = (
-    <button onClick={scrollToForm} style={{ background: COLORS.teal, color: "#000", border: "none", borderRadius: 999, padding: m ? "15px 28px" : "14px 28px", fontWeight: 600, fontSize: m ? 16 : 15, cursor: "pointer", width: m ? "100%" : "auto" }}>{post ? post.ctaLabel || "Watch the replay" : CONFIG.ctaLabel || "Save My Seat"}</button>
+    <button onClick={scrollToForm} style={{ background: COLORS.teal, color: "#000", border: "none", borderRadius: 999, padding: m ? "15px 28px" : "14px 28px", fontWeight: 600, fontSize: m ? 16 : 15, cursor: "pointer", width: m ? "100%" : "auto" }}>{past ? past.ctaLabel || "Read the recap" : post ? post.ctaLabel || "Watch the replay" : CONFIG.ctaLabel || "Save My Seat"}</button>
   );
   const copy = (
-    <p style={{ margin: 0, maxWidth: hasMedia ? 480 : 640, fontWeight: 300, fontSize: m ? 15 : 18, lineHeight: 1.55, color: "rgba(255,255,255,0.55)" }}>{post?.heroCopy || CONFIG.heroCopy}</p>
+    <p style={{ margin: 0, maxWidth: hasMedia ? 480 : 640, fontWeight: 300, fontSize: m ? 15 : 18, lineHeight: 1.55, color: "rgba(255,255,255,0.55)" }}>{past?.heroCopy || post?.heroCopy || CONFIG.heroCopy}</p>
   );
   const schedule = (
     <div style={{ display: "flex", flexWrap: "wrap", justifyContent: hasMedia ? "flex-start" : "center", gap: "8px 16px", fontSize: 14, color: "rgba(255,255,255,0.65)" }}>
@@ -202,7 +294,7 @@ function Hero() {
       {CONFIG.eventLabel && (<><span style={{ color: "rgba(255,255,255,0.3)" }}>·</span><span>{CONFIG.eventLabel}</span></>)}
     </div>
   );
-  const speaker = (
+  const speaker = past ? null : (
     <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
       <SpeakerAvatar />
       <div>
@@ -466,13 +558,55 @@ function NextWebinar() {
     <Wrap bg={COLORS.gray100}>
       <div style={{ display: "flex", flexDirection: m ? "column" : "row", alignItems: m ? "flex-start" : "center", justifyContent: "space-between", gap: m ? 18 : 32 }}>
         <div>
-          <span style={{ display: "inline-flex", background: "#fff", color: COLORS.muted, border: `1px solid ${COLORS.line}`, borderRadius: 4, padding: "5px 12px", fontWeight: 700, fontSize: 11, letterSpacing: "0.2em", textTransform: "uppercase", lineHeight: 1 }}>Next in the series</span>
+          <span style={{ display: "inline-flex", background: "#fff", color: COLORS.muted, border: `1px solid ${COLORS.line}`, borderRadius: 4, padding: "5px 12px", fontWeight: 700, fontSize: 11, letterSpacing: "0.2em", textTransform: "uppercase", lineHeight: 1 }}>{CONFIG.kind === "tradeshow" ? "Next show" : "Next in the series"}</span>
           <h3 style={{ margin: "14px 0 0", fontWeight: 700, fontSize: m ? 20 : 26, letterSpacing: "-0.02em", lineHeight: 1.25, color: COLORS.ink, maxWidth: 640 }}>{next.title}</h3>
           <div style={{ marginTop: 8, fontSize: 14, fontWeight: 500, color: COLORS.tealDeep }}>{next.dateLabel} · {next.timeLabel}</div>
         </div>
-        <a href={next.registrationUrl} style={{ flex: "none", fontSize: 13, fontWeight: 600, color: "#000", background: COLORS.teal, borderRadius: 999, padding: "12px 24px", textDecoration: "none", whiteSpace: "nowrap" }}>Register</a>
+        <a href={next.registrationUrl} style={{ flex: "none", fontSize: 13, fontWeight: 600, color: "#000", background: COLORS.teal, borderRadius: 999, padding: "12px 24px", textDecoration: "none", whiteSpace: "nowrap" }}>{CONFIG.kind === "tradeshow" ? "Book a demo" : "Register"}</a>
       </div>
     </Wrap>
+  );
+}
+
+/* The body of a past-event page: the organiser's own write-up, section by
+   section, with photos beside the sections that have one. Rows alternate
+   background for rhythm, and a section with no photo is a single column. */
+function Recap() {
+  const CONFIG = useWebinar();
+  const m = useM();
+  const past = CONFIG.pastEvent;
+  return (
+    <div id="recap">
+      {past.sections.map((sec, i) => {
+        const img = sec.image;
+        const flip = !m && i % 4 === 1;
+        const text = (
+          <div style={{ minWidth: 0 }}>
+            <H2>{sec.heading}</H2>
+            <div style={{ marginTop: m ? 18 : 24, display: "flex", flexDirection: "column", gap: 16, maxWidth: 680 }}>
+              {sec.paragraphs.map((p, j) => (
+                <p key={j} style={{ margin: 0, fontSize: m ? 15.5 : 17, lineHeight: 1.65, fontWeight: 300, color: COLORS.muted }}>{p}</p>
+              ))}
+            </div>
+            {sec.link && (
+              <a href={sec.link.href} style={{ display: "inline-block", marginTop: 24, fontSize: 14, fontWeight: 600, color: "#000", background: COLORS.teal, borderRadius: 999, padding: "13px 26px", textDecoration: "none" }}>{sec.link.label}</a>
+            )}
+          </div>
+        );
+        const pic = img ? (
+          <img src={img.src} alt={img.alt} width={img.width} height={img.height} loading="lazy" style={{ width: "100%", height: "auto", borderRadius: 20, display: "block" }} />
+        ) : null;
+        return (
+          <Wrap key={sec.heading} bg={i % 2 ? COLORS.gray100 : "#fff"}>
+            {pic ? (
+              <div style={{ display: "grid", gridTemplateColumns: m ? "1fr" : "1fr 1fr", gap: m ? 28 : 64, alignItems: "center" }}>
+                {flip ? <>{pic}{text}</> : <>{text}{pic}</>}
+              </div>
+            ) : text}
+          </Wrap>
+        );
+      })}
+    </div>
   );
 }
 
@@ -481,13 +615,13 @@ function NextWebinar() {
 function NextSteps() {
   const CONFIG = useWebinar();
   const m = useM();
-  const post = CONFIG.postWebinar;
+  const post = CONFIG.postWebinar || CONFIG.pastEvent;
   return (
     <Wrap id="register">
       <H2>{post.nextStepsHeading || "What to do next"}</H2>
       <div style={{ marginTop: m ? 28 : 44, display: "grid", gridTemplateColumns: m ? "1fr" : "repeat(4, 1fr)", gap: m ? 16 : 20 }}>
         {post.nextSteps.map(([title, text, href, label]) => (
-          <a key={href} href={href} onClick={() => track("select_content", { content_type: "replay_next_step", item_id: href, webinar_slug: CONFIG.slug })} style={{ display: "flex", flexDirection: "column", gap: 10, padding: 24, borderRadius: 16, border: `1px solid ${COLORS.line}`, background: "#fff", textDecoration: "none", color: COLORS.ink }}>
+          <a key={href} href={href} onClick={() => track("select_content", { content_type: CONFIG.pastEvent ? "recap_next_step" : "replay_next_step", item_id: href, webinar_slug: CONFIG.slug })} style={{ display: "flex", flexDirection: "column", gap: 10, padding: 24, borderRadius: 16, border: `1px solid ${COLORS.line}`, background: "#fff", textDecoration: "none", color: COLORS.ink }}>
             <h3 style={{ margin: 0, fontWeight: 700, fontSize: 19, letterSpacing: "-0.01em" }}>{title}</h3>
             <p style={{ margin: 0, flex: 1, fontSize: 14.5, lineHeight: 1.55, fontWeight: 300, color: COLORS.muted }}>{text}</p>
             <span style={{ marginTop: 6, fontSize: 13.5, fontWeight: 600, color: COLORS.tealDeep }}>{label} →</span>
@@ -664,7 +798,7 @@ export default function App({ slug }) {
   const webinar = React.useMemo(() => getWebinar(slug), [slug]);
   return (
     <WebinarContext.Provider value={webinar}>
-      <Hero />{webinar.kind === "tradeshow" ? <EventSummary /> : <Agenda />}<WhatToExpect />{webinar.showSpeaker !== false && <Speaker />}<WhoIsThisFor /><NextWebinar />{webinar.postWebinar ? <NextSteps /> : <RegisterSection />}
+      <Hero />{webinar.pastEvent ? <Recap /> : <>{webinar.kind === "tradeshow" ? <EventSummary /> : <Agenda />}<WhatToExpect />{webinar.showSpeaker !== false && <Speaker />}<WhoIsThisFor /></>}<NextWebinar />{webinar.postWebinar || webinar.pastEvent ? <NextSteps /> : <RegisterSection />}
     </WebinarContext.Provider>
   );
 }

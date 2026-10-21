@@ -9,7 +9,13 @@
 //   1. its recording id here (any YouTube id, e.g. "EA0jUa83Qjs"), and
 //   2. `replay.enabled: true` in src/components/webinarConfig.js.
 // Neither does anything before the live session has aired.
+//
+// A webinar with `postWebinar.gate` set uses this map differently: its replay
+// page unlocks through /api/webinar/register, which returns the id here once
+// the visitor has given their name and company email. No `replay.enabled`
+// needed.
 export const REPLAY_VIDEOS = {
-  'spe-oct-2026': null,
+  // TEMPORARY: the invitational video, until the recording is on YouTube.
+  'spe-oct-2026': 'wuEurbhcKUw',
   'automation-ai-nov-2026': null,
 };

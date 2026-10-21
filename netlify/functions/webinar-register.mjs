@@ -16,8 +16,14 @@
 // the row rather than only in the logs. Neither sync can cost us a signup: the
 // visitor gets a 200 as long as their input was valid.
 
+import { REPLAY_VIDEOS } from '../lib/replay-videos.mjs';
+
 const REQUIRED = ['name', 'email', 'company', 'website', 'role', 'industry', 'volume', 'location'];
 const LEAD_ONLY_REQUIRED = ['name', 'email', 'company'];
+// The replay gate asks for first name, last name and work email only.
+const UNLOCK_REQUIRED = ['name', 'email'];
+// Free mailboxes are not a company email. The form checks the same list.
+const FREE_MAIL = /@(gmail|googlemail|yahoo|ymail|hotmail|outlook|live|msn|aol|icloud|me|proton|protonmail|gmx|mail|yandex|qq|163)\./i;
 
 // Per-webinar routing. The client posts webinar_slug; this map decides which
 // Resend segment the registrant joins. Adding a webinar means creating a Resend
@@ -75,7 +81,17 @@ export default async (request) => {
     return json(400, { error: `Unknown webinar: ${slug}` });
   }
 
-  for (const field of webinar.leadOnly ? LEAD_ONLY_REQUIRED : REQUIRED) {
+  // Replay gate: a visitor on a post-webinar page trades name + company email
+  // for the recording. Only slugs with a recording id can be unlocked.
+  const videoId = data.unlock ? REPLAY_VIDEOS[slug] || null : null;
+  if (data.unlock) {
+    if (!videoId) return json(404, { error: 'No replay is available for this webinar' });
+    if (FREE_MAIL.test(String(data.email || ''))) {
+      return json(400, { error: 'Please use your company email address' });
+    }
+  }
+
+  for (const field of data.unlock ? UNLOCK_REQUIRED : webinar.leadOnly ? LEAD_ONLY_REQUIRED : REQUIRED) {
     if (!data[field]) {
       return json(400, { error: `Missing required field: ${field}` });
     }
@@ -83,7 +99,7 @@ export default async (request) => {
 
   console.log('Webinar registration:', {
     email: data.email,
-    company: data.company,
+    company: data.company || null,
     webinar: slug,
   });
 
@@ -125,7 +141,7 @@ export default async (request) => {
     console.error('Supabase write failed:', error, JSON.stringify(data));
   }
 
-  return json(200, { success: true, synced: resendSynced, stored });
+  return json(200, { success: true, synced: resendSynced, stored, ...(videoId ? { videoId } : {}) });
 };
 
 async function addToResend(data, apiKey, segmentId, leadOnly) {
@@ -140,7 +156,7 @@ async function addToResend(data, apiKey, segmentId, leadOnly) {
   // A lead-only form has no details to send. The upsert would overwrite an
   // existing contact's properties with blanks, so only send what we have.
   const properties = leadOnly
-    ? { company_name: data.company, added_to_list_on: new Date().toISOString().slice(0, 10) }
+    ? { ...(data.company ? { company_name: data.company } : {}), added_to_list_on: new Date().toISOString().slice(0, 10) }
     : {
         company_name: data.company,
         company_website: data.website,
@@ -237,7 +253,9 @@ async function recordInSupabase(data, slug, kind, resendSynced, syncError) {
         webinar_title: data.webinar || null,
         name: data.name,
         email: data.email,
-        company: data.company,
+        // The gate does not ask for one; the email's domain stands in so the
+        // row is not blank.
+        company: data.company || String(data.email).split('@')[1] || '',
         website: data.website,
         role: data.role,
         industry: data.industry,

@@ -199,9 +199,12 @@ export const WEBINARS = {
     // form go, and the page ends in next steps instead. Delete the block to
     // go back to a registration page.
     postWebinar: {
-      // TEMPORARY: still the invitational video. Swap for the recording once
-      // it is on YouTube.
-      replayVideoUrl: "https://youtu.be/wuEurbhcKUw",
+      // The replay sits behind a short form (first name, last name, company
+      // email). The video id is NOT kept here: the form's submit returns it
+      // from the server, out of netlify/lib/replay-videos.mjs, so it is not in
+      // the public bundle. Remove `gate` to publish the video openly instead
+      // (then set `replayVideoUrl` to a YouTube URL).
+      gate: true,
       badge: "Webinar replay",
       ctaLabel: "Watch the replay",
       heroCopy:
@@ -294,7 +297,7 @@ export const WEBINARS = {
   "gps-sep-2026": build({
     kind: "tradeshow",
     slug: "gps-sep-2026",
-    title: "Get Hands-On With CubeOne at the Global Polymer Summit",
+    title: "LabsCubed at the Global Polymer Summit 2026",
     dateLabel: "September 28–30, 2026",
     timeLabel: "Booth #815 · Louisville, Kentucky",
     locationLabel: "Louisville, Kentucky",
@@ -398,18 +401,106 @@ export const WEBINARS = {
     // element on a campaign landing page. Same artwork, 1200px wide, ~112 KB.
     // An image slot sits behind a video, so adding a heroVideoUrl later would
     // replace it.
-    heroImageUrl: "/assets/img/events/gps-2026-banner.webp",
+    heroImageUrl: "/assets/img/events/gps-2026-1.webp",
     // Card artwork on the events hub — used both as the thumbnail on the
     // upcoming row and as the media on the show's card.
-    thumbnailUrl: "/assets/img/events/gps-2025-panel.webp",
-    thumbnailAlt: "LabsCubed on a panel at a previous Global Polymer Summit",
-    heroImageAlt: "LabsCubed at the Global Polymer Summit 2026 — Booth #815",
+    thumbnailUrl: "/assets/img/events/gps-2026-1.webp",
+    thumbnailAlt: "The LabsCubed stand at the Global Polymer Summit 2026",
+    heroImageAlt: "The LabsCubed stand (Booth #815) at the Global Polymer Summit 2026",
     heroVideoUrl: null,
     thankYouVideoUrl: null,
     onDemandVideoUrl: "https://www.youtube.com/embed/EA0jUa83Qjs",
     recordingUrl: null,
-    nextWebinarSlug: null,
+    // Past-event mode — the show is over, so the same URL stops taking demo
+    // bookings and becomes a recap: no countdown bar, no form, no scheduler
+    // CTA. This is the standard treatment for every tradeshow once it ends:
+    // add a block like this, set the page to render the site header, and drop
+    // the registration CTAs. Delete the block to go back to a booking page.
+    // Copy is from Mo'min's "GPS 2026" Google Doc.
+    pastEvent: {
+      badge: "Event recap",
+      ctaLabel: "Read the recap",
+      heroCopy:
+        "From September 28 to 30 we brought CubeOne to booth 815 in Louisville. Here is what we showed, what we heard from the rubber testing community, and where we think the industry is heading.",
+      recapHeading: "When the rubber industry meets automation",
+      sections: [
+        {
+          heading: "When the rubber industry meets automation",
+          paragraphs: [
+            "At the Global Polymer Summit (GPS) 2026 in Louisville, Kentucky, one thing became clear to our team: the rubber testing industry is ready for a more automated future. From September 28 to 30, we brought CubeOne to booth 815, where we demonstrated automated rubber tensile testing through live demonstrations for pre-booked visitors and attendees throughout the show.",
+            "Across dozens of conversations, we heard many of the same challenges: repetitive manual work, time-consuming testing workflows, and the possibility of human error in every test.",
+            "At the same time, we saw genuine curiosity about what automation could look like in a rubber laboratory and how it could improve reproducibility, reduce dependence on manual processes, and create greater value for laboratories.",
+          ],
+          image: { src: "/assets/img/events/gps-2026-4.webp", alt: "Two members of the LabsCubed team at the stand during the Global Polymer Summit 2026", width: 1600, height: 1280 },
+        },
+        {
+          heading: "Putting CubeOne to the test at GPS 2026",
+          paragraphs: [
+            "At the heart of our presence at GPS 2026 was CubeOne, giving visitors the opportunity to see automated rubber tensile testing in action. For visitors who booked demonstrations ahead of the event, our team used the laboratory and specimen information they provided to prepare the CubeOne around their specific testing requirements, including preparing the relevant specimens for a live demonstration.",
+            "We also ran general demonstrations throughout the show, walking attendees through the complete workflow, from specimen handling and testing to data collection and the vision system.",
+            "What stood out was how many visitors were surprised by the level of automation and how straightforward the system was to operate, as well as how much of the testing process could be carried out with minimal human intervention.",
+            "We also shared real testing data comparing automated and manual testing, including results from our ASTM and ISO testing work, helping visitors see the potential for greater consistency and reproducibility.",
+            "Most importantly, these demonstrations gave us the opportunity to meet people from across the rubber industry, understand their workflows and challenges, and continue conversations about what a more automated laboratory could look like.",
+          ],
+          image: { src: "/assets/img/events/gps-2026-3.webp", alt: "Visitors gathered around the machine at the LabsCubed stand while a team member explains the workflow", width: 1600, height: 1280 },
+        },
+        {
+          heading: "What we heard from the rubber testing community",
+          paragraphs: [
+            "One of the most valuable parts of GPS 2026 was hearing directly from people working in rubber testing about the challenges they face every day.",
+            "Across our conversations, several themes came up repeatedly: manual and repetitive work, the amount of time required to complete testing, and the risk of human error from relying heavily on manual processes.",
+            "Many attendees were looking for ways to make their workflows more efficient while improving the consistency and reproducibility of their results. These conversations reinforced something we have been seeing across the industry: laboratories are increasingly looking beyond individual automated machines and toward more connected and autonomous testing workflows.",
+            "For us, GPS 2026 was an opportunity not only to demonstrate what CubeOne can do, but also to listen, learn, and better understand where automation can have the greatest impact in real-world rubber laboratories.",
+          ],
+        },
+        {
+          heading: "Exploring the role of AI in rubber testing",
+          paragraphs: [
+            "On the third day of GPS 2026, September 30, our CEO, Khaled Boqaileh, joined an open panel discussion exploring the role of AI and autonomous laboratories in the rubber industry.",
+            "The conversation looked at how AI can move beyond data analysis and become part of the physical laboratory workflow, from interpreting experimental data to guiding what happens next.",
+            "Khaled shared the LabsCubed perspective on how automation and AI can work together, including how CubeOne is beginning to incorporate AI capabilities into automated testing. The discussion also explored the longer-term path toward more connected and autonomous laboratories, and what that could mean for the role of materials scientists and testing teams.",
+          ],
+          image: { src: "/assets/img/events/gps-2026-2.webp", alt: "Khaled Boqaileh on the open panel on AI and autonomous laboratories at the Global Polymer Summit 2026", width: 1464, height: 712 },
+        },
+        {
+          heading: "From manual testing to a more automated workflow",
+          paragraphs: [
+            "The conversations at GPS 2026 also gave us an opportunity to show how automation can address some of the challenges laboratories are facing today.",
+            "With CubeOne, the testing process can move from manually handling specimens and operating the testing machine to a more automated workflow that covers specimen handling, testing, vision, and data collection.",
+            "The goal is not simply to automate one step, but to reduce the amount of repetitive work involved in the overall testing process while maintaining consistent and reproducible results.",
+            "The testing data we shared at the event, including comparisons between manual and automated testing across ASTM and ISO methods, helped put that difference into perspective and gave visitors a clearer view of what automation can bring to a rubber testing laboratory.",
+          ],
+          link: { label: "Download the white paper", href: "/white-paper-automation-vs-manual-testing" },
+        },
+        {
+          heading: "Building connections beyond the booth",
+          paragraphs: [
+            "Beyond the demonstrations themselves, GPS 2026 gave our team the opportunity to connect with people from across the rubber industry and continue conversations that started before the event.",
+            "From laboratories exploring automation for the first time to those already considering how to expand their automated workflows, each conversation gave us a better understanding of the different needs and priorities across the industry.",
+            "We also had the opportunity to meet existing and potential customers, explore new partnerships, and discuss how LabsCubed can support laboratories as they move toward more automated testing. These connections are an important part of why we continue to participate in GPS and stay closely engaged with the rubber testing community.",
+          ],
+        },
+        {
+          heading: "Looking ahead: the future of rubber testing",
+          paragraphs: [
+            "Our time at GPS 2026 reinforced a clear direction for the rubber testing industry: laboratories are looking for ways to move toward more automated and autonomous workflows.",
+            "The conversations we had reflected a growing interest in reducing repetitive manual work, minimizing the influence of human factors, improving reproducibility, and making better use of laboratory time and resources.",
+            "For LabsCubed, these conversations are an important part of shaping what we develop next. As we continue working with laboratories around the world, we see the future of rubber testing moving beyond individual automated machines toward laboratories where more of the testing workflow can operate intelligently, consistently, and with less manual intervention.",
+          ],
+        },
+      ],
+      nextStepsHeading: "Keep the conversation going",
+      nextSteps: [
+        ["Explore CubeOne", "Automated tensile testing for rubber and elastomers — ASTM D412 / ISO 37.", "/rubber-testing", "See CubeOne"],
+        ["Talk to our team", "Tell us what you test and we'll tell you whether automation fits your lab.", "/get-a-quote", "Get a quote"],
+        ["Read the white paper", "The data-backed business case for automating tensile testing.", "/white-paper-automation-vs-manual-testing", "Get the white paper"],
+        ["Meet us at the next show", "Where we're exhibiting next, and the shows we've been to.", "/events", "See all events"],
+      ],
+    },
+    nextWebinarSlug: "ami-nov-2026",
   }),
+
+  
 
   /* AMI's North American plastics week — four co-located expos, one of which is
      the Polymer Testing World Expo, which is as close to our exact audience as
