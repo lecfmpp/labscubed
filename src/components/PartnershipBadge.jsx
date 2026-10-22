@@ -34,7 +34,7 @@ function useM(bp = 760) {
 
 export default function PartnershipBadge({ partner }) {
   const m = useM();
-  if (!partner || !partner.logoSrc) return null;
+  if (!partner || (!partner.logoSrc && !partner.name)) return null;
 
   const label = partner.label || 'Official Partnership Webinar';
   // Both logos shrink together on a phone so the row keeps its proportions.
@@ -83,17 +83,23 @@ export default function PartnershipBadge({ partner }) {
           aria-hidden="true"
           style={{ width: 1, height: dividerHeight, background: 'rgba(0,0,0,0.12)', flex: 'none' }}
         />
-        <img
-          src={partner.logoSrc}
-          alt={partner.logoAlt || partner.name || 'Partner'}
-          width={
-            partner.logoWidth && partner.logoNativeHeight
-              ? Math.round((partner.logoWidth / partner.logoNativeHeight) * partnerHeight)
-              : undefined
-          }
-          height={partnerHeight}
-          style={{ height: partnerHeight, width: 'auto', display: 'block' }}
-        />
+        {partner.logoSrc ? (
+          <img
+            src={partner.logoSrc}
+            alt={partner.logoAlt || partner.name || 'Partner'}
+            width={
+              partner.logoWidth && partner.logoNativeHeight
+                ? Math.round((partner.logoWidth / partner.logoNativeHeight) * partnerHeight)
+                : undefined
+            }
+            height={partnerHeight}
+            style={{ height: partnerHeight, width: 'auto', display: 'block' }}
+          />
+        ) : (
+          /* No logo file yet: the partner's name in plain type, so the card is
+             never a half-empty box. */
+          <span style={{ fontWeight: 800, fontSize: Math.round(partnerHeight * 0.7), letterSpacing: '0.08em', color: '#1d1d1f' }}>{partner.name}</span>
+        )}
       </div>
     </div>
   );

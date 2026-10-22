@@ -311,7 +311,7 @@ export const WEBINARS = {
     startUTC: "2026-12-02T14:30:00Z",
     endUTC: "2026-12-02T15:30:00Z",
     heroCopy:
-      "A tensile test is more than the moment a machine pulls a specimen. Follow the whole workflow, from specimen to report: where variation enters, what separates an automated machine from an automated testing workflow, and what the technical evidence on CubeTen does and does not show.",
+      "A private technical session prepared exclusively for the SABIC team. A tensile test is more than the moment a machine pulls a specimen. Follow the whole workflow, from specimen to report: where variation enters, what separates an automated machine from an automated testing workflow, and what the technical evidence on CubeTen does and does not show.",
     showSeats: false,
     ...KHALED,
     agenda: [
@@ -334,7 +334,7 @@ export const WEBINARS = {
       "Live Q&A with the team",
     ],
     audienceIntro:
-      "Research, processing, application and quality teams who run or rely on plastics tensile testing, and the people deciding how their lab workflow should evolve.",
+      "Prepared exclusively for SABIC's research, processing, application and quality teams who run or rely on plastics tensile testing, and the people deciding how their lab workflow should evolve.",
     roles: [
       ["Research & materials scientists", "Characterising materials"],
       ["Processing & application developers", "Turning data into products"],
@@ -342,14 +342,27 @@ export const WEBINARS = {
       ["Lab managers & supervisors", "Throughput, capacity and validation"],
     ],
     alsoFor: [
-      "Teams at other sites and regions",
+      "Peer teams at other SABIC sites and regions",
       "Anyone comparing automated tensile systems",
       "Anyone planning validation against existing equipment",
     ],
     exploreCtaLabel: "Explore CubeTen",
     exploreCtaHref: "https://labscubed.com/plastic-testing",
+    registerHeading: "Register for your team's session",
     registerNote:
-      "Can't make it live? Register anyway and we'll send you the recording afterwards.",
+      "This is a private session prepared exclusively for the SABIC team, so please register with your SABIC email. Can't make it live? Register anyway and we'll send you the recording afterwards.",
+    // Exclusive-session branding: the hero badge reads "Private webinar" and the
+    // partnership card carries the SABIC mark. Drop the SABIC logo file at
+    // public/assets/img/partners/sabic.webp (or .svg) and set `logoSrc`; until
+    // then the card shows the name as text.
+    private: true,
+    partner: {
+      name: "SABIC",
+      label: "Private session · Prepared for the SABIC team",
+      logoSrc: null,
+      logoAlt: "SABIC",
+      logoHeight: 30,
+    },
     heroVideoUrl: null,
     thankYouVideoUrl: null,
     onDemandVideoUrl: "https://www.youtube.com/embed/EA0jUa83Qjs",

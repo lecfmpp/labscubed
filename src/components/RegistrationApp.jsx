@@ -272,7 +272,7 @@ function Hero() {
       {/* White dot, not red — a red dot on a red pill would be invisible. A
           replay is not live, so its badge is teal and does not pulse. */}
       <span className={post || past ? undefined : "lc-live-dot"} style={{ width: 7, height: 7, borderRadius: "50%", background: post || past ? "#000" : "#fff", flexShrink: 0 }} />
-      {past ? past.badge || "Event recap" : post ? post.badge || "Webinar replay" : CONFIG.kind === "tradeshow" ? "Live demo" : "Live webinar"}
+      {past ? past.badge || "Event recap" : post ? post.badge || "Webinar replay" : CONFIG.kind === "tradeshow" ? "Live demo" : CONFIG.private ? "Private webinar" : "Live webinar"}
     </span>
   );
   /* The partnership badge sits opposite the breadcrumb at the top of the hero
