@@ -49,7 +49,7 @@ const WEBINARS = {
   'plastics-testing-dec-2026': { segmentId: 'fc080aa9-cbf1-4095-a4e1-59e155950d6a' },
   // Tradeshow demo bookings, not a webinar — same funnel, its own list.
   'gps-sep-2026': { segmentId: '316f18d8-86ba-459f-817a-67cd921e4e2d', kind: 'tradeshow' },
-  'ami-nov-2026': { segmentId: '2328d784-cde6-4473-b394-bb9b2ed27088', kind: 'tradeshow' },
+  'ami-nov-2026': { segmentId: '2328d784-cde6-4473-b394-bb9b2ed27088', kind: 'tradeshow', leadOnly: true },
   'npe-may-2027': { segmentId: 'db1f36b0-627e-4db7-98d5-92bc8367c853', kind: 'tradeshow' },
   // Partner funnels (Global Instrumentation Services): clones of the two
   // webinars above, in their own segments. Deliberately no welcomeEvent, so our

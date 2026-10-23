@@ -601,7 +601,15 @@ export const WEBINARS = {
       "Guyth will be running CubeTen demonstrations across both days of the show. Book a slot and he'll build the demonstration around your own materials and workflow rather than running through a script.",
     ctaLabel: "Book my demo",
     registerHeading: "Book your custom demo",
-    registerSubmitLabel: "Book my demo",
+    // After the three-field form, send the visitor straight to Guyth's Google
+    // Calendar appointment schedule (the same link as the AMI Resend emails),
+    // so they pick a demo slot. Same mechanism as SPE: the details modal and
+    // thank-you page are skipped, and `leadOnly` is set for this slug in
+    // netlify/functions/webinar-register.mjs.
+    externalRegistrationUrl: "https://calendar.google.com/calendar/appointments/schedules/AcZssZ3euIx4Mb9AXBsNaY8vTFD57jHKEK4d-KBw4OGjkYSAI7lWVJXEiSqrT7e1mPCI4fkDWzE_U-p2",
+    registerSubmitLabel: "Continue to pick your time",
+    registerNote:
+      "After this step you'll choose a demo time in Guyth's calendar.",
     about: {
       heading: "About the Compounding World Expo",
       imageUrl: "/assets/img/events/ami-booth.webp",
