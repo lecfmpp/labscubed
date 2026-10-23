@@ -267,7 +267,9 @@ function Hero() {
     </nav>
   );
 
-  const badge = (
+  // Private (invitation-only) sessions already say so on the partnership card, so
+  // they get no red pill of their own.
+  const badge = CONFIG.private && !post && !past ? null : (
     <span style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: m ? 11 : 12, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", padding: m ? "7px 13px" : "8px 15px", borderRadius: 999, background: post || past ? COLORS.teal : "#dc2626", color: post || past ? "#000" : "#fff" }}>
       {/* White dot, not red — a red dot on a red pill would be invisible. A
           replay is not live, so its badge is teal and does not pulse. */}

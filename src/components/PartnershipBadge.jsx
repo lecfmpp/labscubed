@@ -36,9 +36,16 @@ export default function PartnershipBadge({ partner }) {
   const m = useM();
   if (!partner || (!partner.logoSrc && !partner.name)) return null;
 
+  // Inverted: no white card — white marks sit straight on the black hero inside a
+  // thin white outline. Set `inverted: true` on the partner block to opt in.
+  const inv = !!partner.inverted;
+  const logoSrc = inv && partner.logoSrcLight ? partner.logoSrcLight : partner.logoSrc;
+  const lcFilter = inv ? 'brightness(0) invert(1)' : undefined;
   const label = partner.label || 'Official Partnership Webinar';
   // Both logos shrink together on a phone so the row keeps its proportions.
-  const scale = m ? 0.68 : 1;
+  // `partner.size` shrinks or grows the whole card (0.5 = half size).
+  const size = partner.size || 1;
+  const scale = (m ? 0.68 : 1) * size;
   const lcHeight = Math.round(22 * scale);
   const partnerHeight = Math.round((partner.logoHeight || 30) * scale);
   const dividerHeight = Math.max(lcHeight, partnerHeight) + 6;
@@ -49,43 +56,43 @@ export default function PartnershipBadge({ partner }) {
         display: 'inline-flex',
         flexDirection: 'column',
         alignItems: 'center',
-        gap: m ? 9 : 11,
+        gap: Math.round((m ? 9 : 11) * size),
         maxWidth: '100%',
         boxSizing: 'border-box',
-        padding: m ? '11px 14px' : '15px 22px',
-        borderRadius: m ? 13 : 16,
-        background: '#fff',
-        boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.08), 0 18px 36px rgba(0,0,0,0.18)',
+        padding: `${Math.round((m ? 11 : 15) * size)}px ${Math.round((m ? 14 : 22) * size)}px`,
+        borderRadius: Math.round((m ? 13 : 16) * size),
+        background: inv ? 'transparent' : '#fff',
+        boxShadow: inv ? 'inset 0 0 0 1.5px #fff' : 'inset 0 0 0 1px rgba(0,0,0,0.08), 0 18px 36px rgba(0,0,0,0.18)',
       }}
     >
       <span
         style={{
-          fontSize: m ? 8.5 : 10,
+          fontSize: Math.max(6, (m ? 8.5 : 10) * size),
           fontWeight: 700,
           letterSpacing: '0.16em',
           textTransform: 'uppercase',
-          color: '#86868b',
+          color: inv ? 'rgba(255,255,255,0.78)' : '#86868b',
           textAlign: 'center',
           lineHeight: 1.3,
         }}
       >
         {label}
       </span>
-      <div style={{ display: 'flex', alignItems: 'center', gap: m ? 11 : 18 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: Math.round((m ? 11 : 18) * size) }}>
         <img
           src={LC_LOGO}
           alt="LabsCubed"
           width={Math.round((LC_W / LC_H) * lcHeight)}
           height={lcHeight}
-          style={{ height: lcHeight, width: 'auto', display: 'block' }}
+          style={{ height: lcHeight, width: 'auto', display: 'block', filter: lcFilter }}
         />
         <span
           aria-hidden="true"
-          style={{ width: 1, height: dividerHeight, background: 'rgba(0,0,0,0.12)', flex: 'none' }}
+          style={{ width: 1, height: dividerHeight, background: inv ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.12)', flex: 'none' }}
         />
-        {partner.logoSrc ? (
+        {logoSrc ? (
           <img
-            src={partner.logoSrc}
+            src={logoSrc}
             alt={partner.logoAlt || partner.name || 'Partner'}
             width={
               partner.logoWidth && partner.logoNativeHeight
@@ -98,7 +105,7 @@ export default function PartnershipBadge({ partner }) {
         ) : (
           /* No logo file yet: the partner's name in plain type, so the card is
              never a half-empty box. */
-          <span style={{ fontWeight: 800, fontSize: Math.round(partnerHeight * 0.7), letterSpacing: '0.08em', color: '#1d1d1f' }}>{partner.name}</span>
+          <span style={{ fontWeight: 800, fontSize: Math.round(partnerHeight * 0.7), letterSpacing: '0.08em', color: inv ? '#fff' : '#1d1d1f' }}>{partner.name}</span>
         )}
       </div>
     </div>

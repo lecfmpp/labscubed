@@ -311,7 +311,7 @@ export const WEBINARS = {
     startUTC: "2026-12-02T14:30:00Z",
     endUTC: "2026-12-02T15:30:00Z",
     heroCopy:
-      "A private technical session prepared exclusively for the SABIC team. A tensile test is more than the moment a machine pulls a specimen. Follow the whole workflow, from specimen to report: where variation enters, what separates an automated machine from an automated testing workflow, and what the technical evidence on CubeTen does and does not show.",
+      "A private technical session for the SABIC team. Follow the full tensile workflow, from specimen to report: where variation enters and what the evidence on CubeTen does and does not show.",
     showSeats: false,
     ...KHALED,
     agenda: [
@@ -359,7 +359,10 @@ export const WEBINARS = {
     partner: {
       name: "SABIC",
       label: "Private session · Prepared for the SABIC team",
-      logoSrc: null,
+      logoSrc: "/assets/img/partners/sabic.webp",
+      logoSrcLight: "/assets/img/partners/sabic-white.webp",
+      inverted: true,
+      size: 0.5,
       logoAlt: "SABIC",
       logoHeight: 30,
     },
