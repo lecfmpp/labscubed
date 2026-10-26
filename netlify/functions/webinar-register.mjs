@@ -46,7 +46,7 @@ const WEBINARS = {
   'spe-oct-2026': { segmentId: 'd7b053f5-67b3-4747-807e-1e8db27c45a1', replaySegmentId: '9bfd5925-a699-4c6b-a46f-5275e4b24992', leadOnly: true },
   'automation-ai-nov-2026': { segmentId: 'ca2a167f-e3c6-483b-90f0-8590d69ad2a1' },
   // Invitation-only technical webinar (Dec 2, 2026), unlisted. Segment "Webinar: Rethinking Plastics Testing 2026".
-  'plastics-testing-dec-2026': { segmentId: 'fc080aa9-cbf1-4095-a4e1-59e155950d6a' },
+  'plastics-testing-dec-2026': { segmentId: 'fc080aa9-cbf1-4095-a4e1-59e155950d6a', welcomeEvent: 'plastics_testing_registered' },
   // Tradeshow demo bookings, not a webinar — same funnel, its own list.
   'gps-sep-2026': { segmentId: '316f18d8-86ba-459f-817a-67cd921e4e2d', kind: 'tradeshow' },
   'ami-nov-2026': { segmentId: '2328d784-cde6-4473-b394-bb9b2ed27088', kind: 'tradeshow', leadOnly: true },
