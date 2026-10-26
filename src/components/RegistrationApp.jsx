@@ -281,7 +281,13 @@ function Hero() {
      on desktop, and centred on its own line on a phone, where there is no room
      beside anything. */
   const partnerBadge = CONFIG.partner ? <PartnershipBadge partner={CONFIG.partner} /> : null;
-  const topRow = (
+  // partner.centered: breadcrumb on its own line, badge centred beneath it.
+  const topRow = CONFIG.partner?.centered ? (
+    <div>
+      {breadcrumb}
+      <div style={{ display: "flex", justifyContent: "center", marginTop: 8 }}>{partnerBadge}</div>
+    </div>
+  ) : (
     <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 32 }}>
       {breadcrumb}
       {partnerBadge}
@@ -290,14 +296,17 @@ function Hero() {
   const headline = (
     <h1 style={{ fontWeight: 700, fontSize: m ? 30 : 56, lineHeight: 1.1, letterSpacing: "-0.02em", margin: m ? "16px 0 0" : "20px 0 0" }}>{CONFIG.title}</h1>
   );
+  // Customer logos are left off invitation-only sessions: a private page for one
+  // company should not show other companies' marks.
+  const slider = CONFIG.private ? null : <LogoSlider />;
   const media = hasMedia ? (
     <div id={post ? "replay" : undefined} style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
       {gated && unlocked?.first && <div style={{ marginBottom: 12, fontSize: 14, color: "rgba(255,255,255,0.7)" }}>Thanks, {unlocked.first} — enjoy the replay.</div>}
       <HeroVideo locked={gated && !unlocked} lockedImage={CONFIG.thumbnailUrl} label={gated && !unlocked ? "Unlock to watch" : post ? "Webinar replay" : CONFIG.kind === "tradeshow" ? "CubeOne in action" : "Webinar preview"} video={heroVideo} image={CONFIG.heroImageUrl} imageAlt={CONFIG.heroImageAlt} autoplay={playing}>{gated && !unlocked && <ReplayGate onUnlock={unlock} />}</HeroVideo>
-      <LogoSlider />
+      {slider}
     </div>
   ) : (
-    <LogoSlider />
+    slider
   );
   const cta = (
     <button onClick={scrollToForm} style={{ background: COLORS.teal, color: "#000", border: "none", borderRadius: 999, padding: m ? "15px 28px" : "14px 28px", fontWeight: 600, fontSize: m ? 16 : 15, cursor: "pointer", width: m ? "100%" : "auto" }}>{past ? past.ctaLabel || "Read the recap" : post ? post.ctaLabel || "Watch the replay" : CONFIG.ctaLabel || "Save My Seat"}</button>
@@ -306,9 +315,9 @@ function Hero() {
     <p style={{ margin: 0, maxWidth: hasMedia ? 480 : 640, fontWeight: 300, fontSize: m ? 15 : 18, lineHeight: 1.55, color: "rgba(255,255,255,0.55)" }}>{past?.heroCopy || post?.heroCopy || CONFIG.heroCopy}</p>
   );
   const schedule = (
-    <div style={{ display: "flex", flexWrap: "wrap", justifyContent: hasMedia ? "flex-start" : "center", gap: "8px 16px", fontSize: 14, color: "rgba(255,255,255,0.65)" }}>
-      <span>{post ? `Aired ${CONFIG.dateLabel}` : CONFIG.dateLabel}</span><span style={{ color: "rgba(255,255,255,0.3)" }}>·</span><span>{post ? "On demand · about 50 minutes" : CONFIG.timeLabel}</span>
-      {CONFIG.eventLabel && (<><span style={{ color: "rgba(255,255,255,0.3)" }}>·</span><span>{CONFIG.eventLabel}</span></>)}
+    <div style={{ display: "flex", flexWrap: "wrap", flexDirection: m ? "column" : "row", justifyContent: hasMedia || m ? "flex-start" : "center", gap: m ? "4px" : "8px 16px", fontSize: 14, color: "rgba(255,255,255,0.65)" }}>
+      <span>{post ? `Aired ${CONFIG.dateLabel}` : CONFIG.dateLabel}</span>{!m && <span style={{ color: "rgba(255,255,255,0.3)" }}>·</span>}<span>{post ? "On demand · about 50 minutes" : CONFIG.timeLabel}</span>
+      {CONFIG.eventLabel && (<>{!m && <span style={{ color: "rgba(255,255,255,0.3)" }}>·</span>}<span>{CONFIG.eventLabel}</span></>)}
     </div>
   );
   const speaker = past ? null : (
@@ -339,11 +348,11 @@ function Hero() {
             {partnerBadge && <div style={{ display: "flex", justifyContent: "center", marginBottom: 20 }}>{partnerBadge}</div>}
             {badge}
             {headline}
+            <div style={{ marginTop: 14 }}>{schedule}</div>
           </div>
           {media}
           {cta}
           {copy}
-          {schedule}
           {speaker}
         </div>
       </section>
@@ -364,7 +373,7 @@ function Hero() {
             <div style={{ marginTop: 32 }}>{cta}</div>
             <div style={{ marginTop: 40 }}>{speaker}</div>
           </div>
-          <div style={{ marginTop: 64 }}>{media}</div>
+          {media && <div style={{ marginTop: 64 }}>{media}</div>}
         </div>
       </section>
     );

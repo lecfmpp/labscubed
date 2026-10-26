@@ -410,6 +410,7 @@ export const WEBINARS = {
     booth: {
       ...BOOTH,
       // The show's own mark, shown at the top of the page. Ours is not repeated
+      centered: true,
       // there — the site header already carries it.
       showLogo: {
         src: "/assets/img/events/gps-logo.webp",
