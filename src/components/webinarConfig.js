@@ -363,6 +363,7 @@ export const WEBINARS = {
       logoSrcLight: "/assets/img/partners/sabic-white.webp",
       inverted: true,
       size: 0.625,
+      centered: true,
       logoAlt: "SABIC",
       logoHeight: 44,
       logoWidth: 588,
@@ -410,7 +411,6 @@ export const WEBINARS = {
     booth: {
       ...BOOTH,
       // The show's own mark, shown at the top of the page. Ours is not repeated
-      centered: true,
       // there — the site header already carries it.
       showLogo: {
         src: "/assets/img/events/gps-logo.webp",
