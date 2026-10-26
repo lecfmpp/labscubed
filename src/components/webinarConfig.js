@@ -362,7 +362,7 @@ export const WEBINARS = {
       logoSrc: "/assets/img/partners/sabic.webp",
       logoSrcLight: "/assets/img/partners/sabic-white.webp",
       inverted: true,
-      size: 0.5,
+      size: 0.625,
       logoAlt: "SABIC",
       logoHeight: 30,
     },
