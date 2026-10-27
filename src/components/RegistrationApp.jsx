@@ -216,20 +216,20 @@ function Hero() {
   const past = CONFIG.pastEvent;
   const post = CONFIG.postWebinar;
   const [playing, setPlaying] = React.useState(false);
-  /* A gated replay's video id arrives from the server on unlock, and is kept
-     in localStorage so a returning visitor is not asked again. */
+  /* A gated replay's video id arrives from the server on unlock and lives in
+     memory only. Every page load starts locked, so the unlock form is the one
+     way in. Nothing is cached in localStorage: an older build stored the id
+     there, and a stale id kept showing the wrong video after the server had
+     been fixed. */
   const gated = !!post?.gate;
-  const [unlocked, setUnlocked] = React.useState(() => {
-    if (!gated) return null;
-    // ?locked shows the form again on a browser that already unlocked it, so
-    // the gate can be checked without clearing storage.
-    if (/[?&]locked\b/.test(location.search)) return null;
-    try { return JSON.parse(localStorage.getItem(`lc-replay-${CONFIG.slug}`)); } catch { return null; }
-  });
+  const [unlocked, setUnlocked] = React.useState(null);
+  React.useEffect(() => {
+    // Drop the copy an earlier build saved in this browser.
+    if (!gated) return;
+    try { localStorage.removeItem(`lc-replay-${CONFIG.slug}`); } catch { /* private mode */ }
+  }, [gated, CONFIG.slug]);
   const unlock = (videoId, first) => {
-    const v = { videoId, first };
-    try { localStorage.setItem(`lc-replay-${CONFIG.slug}`, JSON.stringify(v)); } catch { /* private mode */ }
-    setUnlocked(v);
+    setUnlocked({ videoId, first });
     setPlaying(true);
   };
   /* Replay mode: the button plays the video in place. On a phone the video is
