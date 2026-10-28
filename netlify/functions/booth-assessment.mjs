@@ -9,9 +9,13 @@
 //   * the contact is upserted into Resend and added to the show's assessment
 //     segment, which is what the "Thank you for completing your lab assessment"
 //     broadcast is sent to;
-//   * the whole submission is recorded in webinar_registrations (source
-//     'booth-assessment', answers in `raw`) through the existing
-//     record_webinar_registration RPC — no new table;
+//   * the whole submission is recorded in its own table, public.ami_pre_assessments,
+//     through the record_ami_pre_assessment RPC (migration 0072 in the portal
+//     repo). It is not mixed into webinar_registrations: these are structured
+//     lab-profile answers, one typed column per question;
+//     A database trigger on that table (migration 0073) turns each row into a
+//     pending webform_leads row, which is how it reaches the lead qualifier and
+//     its Slack cards in #inbound-leads and #tradeshow-meetings;
 //   * the visitor is emailed the "Thank you for completing your lab assessment"
 //     message straight away. Its content is read live from the Resend broadcast
 //     the team edits (THANKYOU_BROADCAST_ID below), so changing that draft in
@@ -28,10 +32,6 @@
 const EVENTS = {
   'ami-nov-2026': {
     segmentId: '69434a7d-510a-445a-a9a6-1f69cdf51b73',
-    // Its own registry key, so the assessment never overwrites the same
-    // person's booth-capture row (which is keyed on slug + email).
-    recordSlug: 'ami-nov-2026-assessment',
-    title: 'AMI Plastics World Expos North America 2026 — Lab Assessment',
   },
 };
 
@@ -205,30 +205,21 @@ export default async (request) => {
     const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_KEY;
     if (!url || !key) throw new Error('SUPABASE_URL/KEY not set');
 
-    const response = await fetch(`${url}/rest/v1/rpc/record_webinar_registration`, {
+    const response = await fetch(`${url}/rest/v1/rpc/record_ami_pre_assessment`, {
       method: 'POST',
       headers: { apikey: key, Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
         payload: {
-          webinar_slug: event.recordSlug,
-          kind: 'tradeshow',
-          webinar_title: event.title,
-          source: 'booth-assessment',
-          name,
-          email,
-          website,
-          phone,
-          location: country,
-          industry,
-          materials: tests,
-          test_volume: volume,
-          assessment: { ...answers, client_id: data.client_id ?? null },
-          resend_synced: resendSynced,
-          sync_error: syncError,
-          team_alerted: alerted,
-          thankyou_sent: emailed,
+          event_slug: slug,
+          client_id: data.client_id ?? null,
           page: data.page || null,
           submitted_at: data.submitted_at || new Date().toISOString(),
+          contact: { name, email, website, phone, country },
+          answers,
+          resend_synced: resendSynced,
+          sync_error: syncError,
+          thankyou_sent: emailed,
+          team_alerted: alerted,
         },
       }),
     });
