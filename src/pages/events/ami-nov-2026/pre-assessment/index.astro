@@ -1,0 +1,17 @@
+---
+/* Lab assessment — the iPad questionnaire at the AMI booth. A kiosk page, not
+   something anyone should reach from search: noindex, out of the sitemap
+   (astro.config.mjs), and no site nav/footer so it can fill the whole tablet
+   screen. */
+import Base from '../../../../layouts/Base.astro';
+import LabAssessment from '../../../../islands/LabAssessment.tsx';
+---
+
+<Base
+  title="Lab assessment — LabsCubed at AMI Plastics World Expos"
+  description="A few quick questions about your laboratory, so we can show you where automation could help."
+  preloadHero={false}
+  noindex
+>
+  <LabAssessment client:only="react" />
+</Base>

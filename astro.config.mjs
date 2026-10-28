@@ -23,7 +23,7 @@ export default defineConfig({
       // are unlisted: direct link only.
       filter: (page) => {
         const path = new URL(page).pathname;
-        return !/\/(session|booth)(\/thank-you)?\/?$/.test(path) && !/^\/webinar\/(gis-|plastics-testing-dec-2026)/.test(path);
+        return !/\/(session|booth|pre-assessment)(\/thank-you)?\/?$/.test(path) && !/^\/webinar\/(gis-|plastics-testing-dec-2026)/.test(path);
       },
       /* Blog/post entries are rewritten without a trailing slash so each entry
          matches the page's own canonical exactly — a sitemap that disagrees
