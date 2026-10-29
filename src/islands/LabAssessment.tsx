@@ -113,7 +113,7 @@ const MATERIALS: Opt[] = [
   { id: 'cubeten-brochure', label: 'CubeTen brochure', sub: 'Plastics · ASTM D638, ISO 527', img: K('hero-plastic.webp') },
   { id: 'spe-replay', label: 'SPE webinar replay', sub: 'The Hidden Cost of Manual Plastics Testing', img: K('step2-cubeten-measurement.webp') },
   { id: 'cubeone-brochure', label: 'CubeOne brochure', sub: 'Rubber · ASTM D412, ISO 37', img: K('hero-rubber.webp') },
-  { id: 'whitepaper', label: 'CubeOne white paper', sub: 'Automated rubber tensile testing', img: K('rubber-testing-large.webp') },
+  { id: 'whitepaper', label: 'White paper: Beyond the Bottleneck', sub: 'The data-backed business case for automating tensile testing', img: K('stats-bg.webp') },
 ];
 
 type QKey = 'industry' | 'tests' | 'machines' | 'volume' | 'priority' | 'standards' | 'learn';
