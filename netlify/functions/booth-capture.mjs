@@ -27,6 +27,15 @@ const ASSETS = {
   'cubeone-brochure': 'CubeOne brochure',
 };
 
+// Things that are a link, not a PDF: emailed straight from here rather than through
+// download-request. The SPE replay sits behind its own short form on the webinar page.
+const LINK_ASSETS = {
+  'spe-replay': {
+    label: 'SPE webinar replay: The Hidden Cost of Manual Plastics Testing',
+    url: 'https://labscubed.com/webinar/spe-oct-2026/',
+  },
+};
+
 // Which show this page belongs to, and which Resend segment its leads join.
 const EVENTS = {
   'gps-sep-2026': {
@@ -71,9 +80,11 @@ export default async (request) => {
   if (!event) return json(400, { error: `Unknown event: ${slug}` });
 
   const assets = Array.isArray(data.assets)
-    ? [...new Set(data.assets.map(String))].filter((a) => a in ASSETS)
+    ? [...new Set(data.assets.map(String))].filter((a) => a in ASSETS || a in LINK_ASSETS)
     : [];
   if (!assets.length) return json(400, { error: 'Pick at least one thing to send' });
+  const pdfAssets = assets.filter((a) => a in ASSETS);
+  const linkAssets = assets.filter((a) => a in LINK_ASSETS);
 
   const source = String(data.source || `/events/${slug}/booth/`);
 
@@ -84,7 +95,7 @@ export default async (request) => {
   // one alert per person, not one per PDF.
   const sent = [];
   const failed = [];
-  for (const [index, asset] of assets.entries()) {
+  for (const [index, asset] of pdfAssets.entries()) {
     try {
       const response = await fetch(DOWNLOAD_ENDPOINT, {
         method: 'POST',
@@ -110,6 +121,44 @@ export default async (request) => {
       }
     } catch (error) {
       failed.push({ asset, status: 0, reason: String(error) });
+    }
+  }
+
+  // --- Link assets (the webinar replay) -------------------------------------
+  // One short email with the links, and, when there was no PDF (so download-request
+  // sent no "new lead" alert), a note to the team so the request is seen today.
+  if (linkAssets.length) {
+    const key = process.env.RESEND_API_KEY;
+    try {
+      if (!key) throw new Error('RESEND_API_KEY not set');
+      const rh = { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' };
+      const first = name.split(/\s+/)[0] || 'there';
+      const items = linkAssets.map((a) => LINK_ASSETS[a]);
+      const text = `Hi ${first},\n\nThank you for stopping by the LabsCubed booth. Here is what you asked for:\n\n${items.map((i) => `${i.label}\n${i.url}`).join('\n\n')}\n\nThe replay asks for a short form the first time you open it.\n\nThe LabsCubed Team\ninfo@labscubed.com`;
+      const html = `<p style="font-family:Arial,sans-serif;font-size:16px;line-height:1.6">Hi ${first.replace(/[<>&"]/g, '')},</p><p style="font-family:Arial,sans-serif;font-size:16px;line-height:1.6">Thank you for stopping by the LabsCubed booth. Here is what you asked for:</p>${items.map((i) => `<p style="font-family:Arial,sans-serif;font-size:16px;line-height:1.6"><a href="${i.url}">${i.label}</a></p>`).join('')}<p style="font-family:Arial,sans-serif;font-size:14px;color:#666">The replay asks for a short form the first time you open it.</p><p style="font-family:Arial,sans-serif;font-size:16px">The LabsCubed Team</p>`;
+      const mail = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: { ...rh, 'Idempotency-Key': `booth-links-${data.client_id || email}` },
+        body: JSON.stringify({ from: 'LabsCubed <news@labscubed.com>', to: [email], reply_to: 'info@labscubed.com', subject: 'Your LabsCubed materials', html, text }),
+      });
+      if (!mail.ok) throw new Error(`Resend ${mail.status}: ${await mail.text()}`);
+      sent.push(...linkAssets);
+      if (!pdfAssets.length) {
+        await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: rh,
+          body: JSON.stringify({
+            from: 'LabsCubed <news@labscubed.com>',
+            to: [process.env.BOOTH_ASSESSMENT_TO || 'info@labscubed.com'],
+            reply_to: email,
+            subject: `AMI booth materials request: ${name} (${company})`,
+            text: `${name} <${email}> at ${company} asked for: ${items.map((i) => i.label).join(', ')}.`,
+          }),
+        }).catch(() => {});
+      }
+    } catch (error) {
+      for (const a of linkAssets) failed.push({ asset: a, status: 0, reason: String(error) });
+      console.error('Booth link email failed:', error);
     }
   }
 
