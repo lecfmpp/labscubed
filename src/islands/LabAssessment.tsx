@@ -252,6 +252,38 @@ const Eyebrow = ({ children, m, color = INK }: { children: React.ReactNode; m?: 
   </div>
 );
 
+/* One button standard for every action button in the kiosk (entry cards, cover, Back,
+   Next / Send / Skip, Start a new assessment): the same weight, radius per size, equal
+   left and right padding, a label that is always a single line. The label shrinks until it
+   fits the width it will really have, so a long label never wraps and never touches the
+   edge. */
+type BtnSpec = { h: number; r: number; px: number; fs: number; icon: number; gap: number };
+function fitFs(label: string, avail: number, base: number, upper = false) {
+  const per = upper ? 0.76 : 0.6; /* Inter 800 average glyph width, in em */
+  const need = label.length * per * base;
+  return need <= avail ? base : Math.max(13, Math.floor(avail / (label.length * per)));
+}
+function Btn({ label, alt, onClick, bg, fg, spec, w, arrow, back, ring, right, rightW, upper, disabled, style }: {
+  label: string; alt?: string; onClick: () => void; bg?: string; fg: string; spec: BtnSpec; w: number; arrow?: string; back?: boolean; ring?: string;
+  right?: React.ReactNode; rightW?: number; upper?: boolean; disabled?: boolean; style?: React.CSSProperties;
+}) {
+  const iconW = right ? rightW || spec.icon : arrow || back ? spec.icon : 0;
+  const avail = w - 2 * spec.px - iconW - (iconW ? spec.gap : 0);
+  /* A label that would have to go below 15px takes its short form instead (Send, Skip). */
+  let text = label;
+  let fs = fitFs(label, avail, spec.fs, upper);
+  if (alt && fs < 15) { text = alt; fs = fitFs(alt, avail, spec.fs, upper); }
+  const padR = right && rightW ? Math.max(8, Math.round((spec.h - rightW) / 2)) : spec.px;
+  return (
+    <div role="button" aria-disabled={disabled} onClick={(e) => { e.stopPropagation(); onClick(); }}
+      style={{ cursor: 'pointer', height: spec.h, borderRadius: spec.r, background: bg, boxShadow: ring, padding: `0 ${padR}px 0 ${spec.px}px`, display: 'flex', alignItems: 'center', justifyContent: back ? 'center' : 'space-between', gap: spec.gap, overflow: 'hidden', transition: 'background .2s', ...style }}>
+      {back && <svg width={spec.icon} height={spec.icon} viewBox="0 0 24 24" fill="none" stroke={fg} strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" style={{ flex: 'none' }}><path d="M19 12H5M11 6l-6 6 6 6" /></svg>}
+      <span style={{ fontSize: fs, fontWeight: 800, letterSpacing: upper ? '.06em' : '-0.01em', color: fg, whiteSpace: 'nowrap', overflow: 'hidden', lineHeight: 1.1, flex: back ? 'none' : 1, minWidth: 0 }}>{text}</span>
+      {right ? right : arrow ? <ArrowR c={arrow} s={spec.icon} /> : null}
+    </div>
+  );
+}
+
 function Tile({ o, on, mediaW, tileH, basis, otherValue, onOther, onTap, m }: {
   o: Opt; on: boolean; mediaW: number; tileH: number; basis: number; otherValue: string; onOther: (v: string) => void; onTap: () => void; m?: boolean;
 }) {
@@ -471,6 +503,11 @@ export default function LabAssessment() {
      and above all the Next button, stay on screen without scrolling. */
   const short = mobile && vpH < 700;
   const wideMobile = mobile && window.innerWidth > 640;
+  const W = window.innerWidth;
+  const compactBtn = short || wideMobile;
+  const BTN: BtnSpec = mobile
+    ? compactBtn ? { h: 48, r: 14, px: 16, fs: 16, icon: 20, gap: 10 } : { h: 56, r: 16, px: 20, fs: 17, icon: 22, gap: 12 }
+    : { h: 96, r: 24, px: 32, fs: 22, icon: 28, gap: 16 };
   /* The 10px row gap is part of the 1180x820 design; at 1024x768 four rows of 105px
      tiles (the machines list) only fit if the rows are spaced by space-evenly alone,
      the way the portrait layout already does. */
@@ -494,16 +531,12 @@ export default function LabAssessment() {
 
   /* ---------- screens ---------- */
   if (screen === 'cover') {
-    const slab = mobile
-      ? { width: '100%', height: 84, borderRadius: 22, padding: '0 28px 0 32px', fontSize: 26 }
-      : { width: 520, height: 136, borderRadius: 28, padding: '0 40px 0 48px', fontSize: 34 };
+    const heroSpec: BtnSpec = mobile ? { h: 72, r: 20, px: 24, fs: 22, icon: 28, gap: 16 } : { h: 136, r: 28, px: 48, fs: 34, icon: 46, gap: 24 };
+    const heroW = mobile ? W - 2 * padX : 520;
     const slabBtn = (
-      <div style={{ position: 'relative', width: slab.width, height: slab.height }}>
-        <span style={{ position: 'absolute', inset: 0, borderRadius: slab.borderRadius, animation: 'kPulseC 2.4s ease-out infinite', pointerEvents: 'none' }} />
-        <div role="button" onClick={() => go(1)} style={{ cursor: 'pointer', position: 'absolute', inset: 0, borderRadius: slab.borderRadius, background: TEAL, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: slab.padding }}>
-          <span style={{ fontSize: slab.fontSize, fontWeight: 800, letterSpacing: '.06em', color: '#000' }}>GET STARTED</span>
-          <svg width={mobile ? 34 : 46} height={mobile ? 34 : 46} viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-        </div>
+      <div style={{ position: 'relative', width: heroW, height: heroSpec.h }}>
+        <span style={{ position: 'absolute', inset: 0, borderRadius: heroSpec.r, animation: 'kPulseC 2.4s ease-out infinite', pointerEvents: 'none' }} />
+        <Btn label="GET STARTED" upper onClick={() => go(1)} bg={TEAL} fg="#000" arrow="#000" spec={heroSpec} w={heroW} style={{ position: 'absolute', inset: 0 }} />
       </div>
     );
     const coverSize = mobile ? 40 : port ? 84 : 66;
@@ -549,11 +582,10 @@ export default function LabAssessment() {
   }
 
   if (screen === 'choose') {
+    /* Width the button will really have, so its label can be fitted to one line. */
+    const cardInner = mobile ? (wideMobile ? (W - 2 * padX - 12) / 2 : W - 2 * padX) - (short ? 28 : 32) : (port ? W - 2 * padX : (W - 2 * padX - 16) / 2) - 56;
     const slabBtn = (label: string, bg: string, arrow: string, onClick: () => void) => (
-      <div role="button" onClick={(e) => { e.stopPropagation(); onClick(); }} style={{ cursor: 'pointer', height: mobile ? (short ? 52 : 60) : 96, padding: mobile ? '0 18px' : '0 32px', borderRadius: mobile ? 16 : 20, background: bg, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 20 }}>
-        <span style={{ fontSize: mobile ? (short ? 16 : 18) : 22, fontWeight: 800, color: '#000', whiteSpace: mobile ? 'nowrap' : undefined }}>{label}</span>
-        <ArrowR c={arrow} s={mobile ? 24 : 30} />
-      </div>
+      <Btn label={label} onClick={onClick} bg={bg} fg="#000" arrow={arrow} spec={BTN} w={cardInner} />
     );
     /* Phone: both buttons must fit without scrolling, so the photo takes whatever height is
        left after the text (the description line is dropped on a phone for the same reason). */
@@ -609,18 +641,20 @@ export default function LabAssessment() {
     { k: 'phone', label: 'Phone (optional)', type: 'tel', ph: '+1 555 000 0000', mode: 'tel', cap: 'off' },
   ] as const;
 
+  const resetW = port || mobile ? W - 2 * padX : Math.round(W * 0.54) - 2 * padX;
+  const ringSize = mobile ? 40 : 64;
   const resetBlock = (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-      <div role="button" onClick={reset} style={{ height: mobile ? 64 : 104, padding: mobile ? '0 8px 0 24px' : '0 14px 0 36px', borderRadius: mobile ? 20 : 24, background: INK, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 24, cursor: 'pointer' }}>
-        <span style={{ fontSize: mobile ? 18 : 24, fontWeight: 800 }}>Start a new assessment</span>
-        <span style={{ position: 'relative', width: mobile ? 48 : 76, height: mobile ? 48 : 76, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <svg width={mobile ? 48 : 76} height={mobile ? 48 : 76} viewBox="0 0 76 76" style={{ position: 'absolute', inset: 0, transform: 'rotate(-90deg)' }}>
-            <circle cx="38" cy="38" r="32" fill="none" stroke="rgba(255,255,255,.16)" strokeWidth="6" />
-            <circle cx="38" cy="38" r="32" fill="none" stroke={TEAL} strokeWidth="6" strokeDasharray="201.06" strokeDashoffset={201.06 * (1 - Math.max(count, 0) / THANKS_SECONDS)} style={{ transition: 'stroke-dashoffset 1s linear' }} />
-          </svg>
-          <span style={{ fontSize: mobile ? 17 : 26, fontWeight: 800, fontVariantNumeric: 'tabular-nums' }}>{Math.max(count, 0)}</span>
-        </span>
-      </div>
+      <Btn label="Start a new assessment" onClick={reset} bg={INK} fg="#fff" spec={BTN} w={resetW} rightW={ringSize}
+        right={(
+          <span style={{ position: 'relative', width: ringSize, height: ringSize, display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 'none' }}>
+            <svg width={ringSize} height={ringSize} viewBox="0 0 76 76" style={{ position: 'absolute', inset: 0, transform: 'rotate(-90deg)' }}>
+              <circle cx="38" cy="38" r="32" fill="none" stroke="rgba(255,255,255,.16)" strokeWidth="6" />
+              <circle cx="38" cy="38" r="32" fill="none" stroke={TEAL} strokeWidth="6" strokeDasharray="201.06" strokeDashoffset={201.06 * (1 - Math.max(count, 0) / THANKS_SECONDS)} style={{ transition: 'stroke-dashoffset 1s linear' }} />
+            </svg>
+            <span style={{ fontSize: mobile ? 15 : 22, fontWeight: 800, fontVariantNumeric: 'tabular-nums', color: '#fff' }}>{Math.max(count, 0)}</span>
+          </span>
+        )} />
       {!mobile && <div style={{ fontSize: 18, fontWeight: 500, color: MUTED }}>The screen resets for the next visitor.</div>}
     </div>
   );
@@ -737,14 +771,10 @@ export default function LabAssessment() {
         <div style={mobile
           ? { flex: 'none', padding: `10px ${padX}px calc(12px + env(safe-area-inset-bottom, 0px))`, display: 'flex', flexDirection: short || wideMobile ? 'row' : 'column-reverse', gap: 10, background: `linear-gradient(rgba(242,242,244,0), ${CANVAS} 30%)` }
           : { height: 120, flex: 'none', padding: `12px ${padX}px`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 14 }}>
-          <div role="button" onClick={back} style={{ cursor: 'pointer', height: mobile ? 52 : 96, width: mobile ? (short || wideMobile ? 120 : '100%') : 200, flex: mobile ? 'none' : undefined, borderRadius: mobile ? 16 : 24, boxShadow: `inset 0 0 0 ${mobile ? 2 : 2.5}px ${INK}`, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, fontSize: mobile ? 17 : 22, fontWeight: 800, color: INK }}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={INK} strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M11 6l-6 6 6 6" /></svg>Back
-          </div>
-          <div role="button" aria-disabled={!nextOn || sending} onClick={next}
-            style={{ cursor: 'pointer', height: mobile ? (short || wideMobile ? 52 : 60) : 96, flex: mobile ? (short || wideMobile ? 1 : 'none') : 1, width: mobile ? (short || wideMobile ? undefined : '100%') : undefined, maxWidth: mobile ? undefined : 460, padding: mobile ? '0 24px' : '0 36px', borderRadius: mobile ? 16 : 24, background: nextOn ? P.nextBg : P.offBg, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 24, transition: 'background .2s' }}>
-            <span style={{ fontSize: mobile ? 18 : 22, fontWeight: 800, color: nextOn ? P.nextFg : P.offFg }}>{sending ? 'Sending…' : nextLabel}</span>
-            <ArrowR c={nextOn ? P.nextArrow : P.offArrow} s={mobile ? 24 : 30} />
-          </div>
+          <Btn label="Back" onClick={back} fg={INK} back ring={`inset 0 0 0 ${mobile ? 2 : 2.5}px ${INK}`} spec={BTN} w={mobile ? (compactBtn ? 104 : W - 2 * padX) : 200}
+            style={{ width: mobile ? (compactBtn ? 104 : '100%') : 200, flex: 'none' }} />
+          <Btn label={sending ? 'Sending…' : nextLabel} alt={isContact || screen === 'learn' ? 'Send' : screen === 'standards' && sel.length === 0 ? 'Skip' : undefined} onClick={next} bg={nextOn ? P.nextBg : P.offBg} fg={nextOn ? P.nextFg : P.offFg} arrow={nextOn ? P.nextArrow : P.offArrow} spec={BTN} w={mobile ? (compactBtn ? W - 2 * padX - 114 : W - 2 * padX) : Math.min(460, W - 2 * padX - 214)} disabled={!nextOn || sending}
+            style={mobile ? (compactBtn ? { flex: 1 } : { width: '100%' }) : { flex: 1, maxWidth: 460 }} />
         </div>
       )}
       {pending > 0 && !kb.open && <div style={mobile ? { position: 'absolute', left: 0, right: 0, bottom: 1, textAlign: 'center', fontSize: 11, color: MUTED, pointerEvents: 'none' } : { position: 'absolute', left: '50%', top: 24, transform: 'translateX(-50%)', fontSize: 18, color: 'rgba(255,255,255,.6)', pointerEvents: 'none' }}>{pending} saved · will send when online</div>}
