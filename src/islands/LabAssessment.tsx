@@ -1,7 +1,7 @@
 /* LabAssessment — the iPad kiosk at the AMI booth (client:only).
  *
- * Built from the "Kiosk 1b, dark cinematic" design handoff (Kiosk directions
- * design review). Landscape 1180x820 (holds at 1024x768) and portrait 820x1180,
+ * Built from the "Kiosk 3b, photo-led and bold" design handoff (Kiosk directions
+ * design review): light canvas, dark top band, heavy Inter 800 type. Landscape 1180x820 (holds at 1024x768) and portrait 820x1180,
  * touch only: tap targets 96px+, nothing relies on hover, text never below 18px.
  *
  * Two paths from the first screen:
@@ -40,17 +40,19 @@ const LOGO = K('logo.png');
 
 /* ---------- design tokens (README, "Design tokens" and "Answer tiles") ---------- */
 const TEAL = '#17ddc5';
+const TEAL_D = '#0d9488';
+const INK = '#1d1d1f';
+const MUTED = '#86868b';
+const BAND = '#0b1213';
 const P = {
-  tileBg: 'rgba(255,255,255,.045)', tileOn: 'rgba(23,221,197,.12)',
-  ring: 'inset 0 0 0 1px rgba(255,255,255,.1)', ringOnIn: 'inset 0 0 0 2px #17ddc5',
-  glowOn: '0 0 0 6px rgba(23,221,197,.12), 0 16px 48px rgba(23,221,197,.28)',
-  fg: 'rgba(255,255,255,.88)', fgOn: '#ffffff', mark: 'rgba(255,255,255,.85)', markOn: TEAL,
-  segDone: 'rgba(23,221,197,.55)', segCur: TEAL, segOff: 'rgba(255,255,255,.12)',
-  offBg: 'rgba(255,255,255,.07)', offFg: 'rgba(255,255,255,.38)',
-  field: 'rgba(255,255,255,.06)', fieldErr: 'rgba(255,107,94,.08)', fieldRing: 'inset 0 0 0 1px rgba(255,255,255,.1)',
-  errRing: 'inset 0 0 0 2px #ff6b5e', label: 'rgba(255,255,255,.6)', labelErr: '#ff8f85',
+  tileBg: '#ffffff', tileOn: '#e6faf7',
+  ring: '0 1px 2px rgba(0,0,0,.05)', ringOnIn: 'inset 0 0 0 4px #17ddc5', glowOn: '0 18px 40px rgba(13,148,136,.22)',
+  fg: INK, fgOn: '#0b3b36', mark: '#ffffff', markOn: TEAL,
+  segDone: '#ffffff', segCur: TEAL, segOff: 'rgba(255,255,255,.18)',
+  nextBg: INK, nextFg: '#ffffff', nextArrow: TEAL, offBg: '#dedee3', offFg: '#8e8e93', offArrow: '#a1a1a6',
+  field: '#ffffff', fieldErr: '#fff5f4', fieldRing: 'none', errRing: 'inset 0 0 0 2.5px #d92d20', label: MUTED, labelErr: '#c4221a',
 };
-const CANVAS = 'radial-gradient(900px 520px at 88% -8%, rgba(23,221,197,.16), rgba(23,221,197,0) 70%), linear-gradient(180deg, #0b1213 0%, #0d1a1a 60%, #11302c 140%)';
+const CANVAS = '#f2f2f4';
 
 /* ---------- questions ---------- */
 type Opt = { id: string; label: string; sub?: string; img?: string; mark?: string; sample?: string; exclusive?: boolean; other?: boolean };
@@ -113,7 +115,7 @@ const MATERIALS: Opt[] = [
   { id: 'cubeten-brochure', label: 'CubeTen brochure', sub: 'Plastics · ASTM D638, ISO 527', img: K('hero-plastic.webp') },
   { id: 'spe-replay', label: 'SPE webinar replay', sub: 'The Hidden Cost of Manual Plastics Testing', img: K('step2-cubeten-measurement.webp') },
   { id: 'cubeone-brochure', label: 'CubeOne brochure', sub: 'Rubber · ASTM D412, ISO 37', img: K('hero-rubber.webp') },
-  { id: 'whitepaper', label: 'White paper: Beyond the Bottleneck', sub: 'The data-backed business case for automating tensile testing', img: K('stats-bg.webp') },
+  { id: 'whitepaper', label: 'White paper: Beyond the Bottleneck', sub: 'Automation business case', img: K('stats-bg.webp') },
 ];
 
 type QKey = 'industry' | 'tests' | 'machines' | 'volume' | 'priority' | 'standards' | 'learn';
@@ -220,19 +222,25 @@ function useKeyboard() {
 
 /* ---------- small pieces ---------- */
 const CSS = `
-.la{position:fixed;left:0;right:0;display:flex;flex-direction:column;overflow:hidden;background:${CANVAS};font-family:Inter,system-ui,-apple-system,sans-serif;color:#fff;-webkit-font-smoothing:antialiased;touch-action:manipulation;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;overscroll-behavior:none}
+.la{position:fixed;left:0;right:0;display:flex;flex-direction:column;overflow:hidden;background:${CANVAS};font-family:Inter,system-ui,-apple-system,sans-serif;color:${INK};-webkit-font-smoothing:antialiased;touch-action:manipulation;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;overscroll-behavior:none}
 .la *{box-sizing:border-box}
 .la input,.la select{-webkit-user-select:text;user-select:text}
-.la input::placeholder{color:rgba(255,255,255,.4)}
-.la select option{color:#000}
+.la input::placeholder{color:#a1a1a6}
 .la-scroll{overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
-@keyframes kPulseB{0%{transform:scale(1);opacity:.75}100%{transform:scale(1.35);opacity:0}}
+@keyframes kPulseC{0%{box-shadow:0 0 0 0 rgba(23,221,197,.6)}70%{box-shadow:0 0 0 30px rgba(23,221,197,0)}100%{box-shadow:0 0 0 0 rgba(23,221,197,0)}}
 `;
-const Arrow = ({ c = '#000' }: { c?: string }) => (
-  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round"><path d="M7 17L17 7M9 7h8v8" /></svg>
+const ArrowR = ({ c, s = 30 }: { c: string; s?: number }) => (
+  <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
 );
-const Pill = ({ children, m }: { children: React.ReactNode; m?: boolean }) => (
-  <div style={{ height: m ? 32 : 44, padding: m ? '0 12px' : '0 18px', borderRadius: 999, boxShadow: 'inset 0 0 0 1px rgba(23,221,197,.5)', display: 'flex', alignItems: 'center', fontSize: m ? 13 : 18, fontWeight: 600, letterSpacing: m ? '.08em' : '.12em', color: TEAL, whiteSpace: 'nowrap' }}>{children}</div>
+/* Chips on the dark band: NOV 11-12 teal, BOOTH C819 white. */
+const Chips = ({ m }: { m?: boolean }) => {
+  const base: React.CSSProperties = { height: m ? 32 : 44, padding: m ? '0 12px' : '0 18px', borderRadius: 999, display: 'flex', alignItems: 'center', fontSize: m ? 13 : 18, fontWeight: 800, letterSpacing: m ? '.06em' : '.1em', color: '#000', whiteSpace: 'nowrap' };
+  return <div style={{ display: 'flex', gap: m ? 6 : 10 }}><div style={{ ...base, background: TEAL }}>NOV 11-12</div><div style={{ ...base, background: '#fff' }}>BOOTH C819</div></div>;
+};
+const Eyebrow = ({ children, m, color = INK }: { children: React.ReactNode; m?: boolean; color?: string }) => (
+  <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: m ? 13 : 18, fontWeight: 800, letterSpacing: m ? '.1em' : '.14em', textTransform: 'uppercase', color }}>
+    <span style={{ width: m ? 8 : 10, height: m ? 8 : 10, background: TEAL, borderRadius: 2, flex: 'none' }} />{children}
+  </div>
 );
 
 function Tile({ o, on, mediaW, tileH, basis, otherValue, onOther, onTap, m }: {
@@ -240,9 +248,9 @@ function Tile({ o, on, mediaW, tileH, basis, otherValue, onOther, onTap, m }: {
 }) {
   const inp = on && !!o.other;
   const ml = (o.mark || '').length;
-  const markFs = Math.round((m ? 28 : 42) * (ml <= 2 ? 1 : ml === 3 ? 0.8 : 0.6));
+  const markFs = Math.round((m ? 34 : 54) * (ml <= 2 ? 1 : ml === 3 ? 0.8 : 0.6));
   const radius = m ? 18 : 22;
-  const zoom = on ? 'scale(1.08)' : 'scale(1)';
+  const zoom = on ? 'scale(1.1)' : 'scale(1)';
   const ref = React.useRef<HTMLInputElement>(null);
   React.useEffect(() => {
     if (inp && ref.current) {
@@ -252,36 +260,36 @@ function Tile({ o, on, mediaW, tileH, basis, otherValue, onOther, onTap, m }: {
   }, [inp]);
   return (
     <div role="button" aria-pressed={on} onClick={onTap}
-      style={{ flex: `1 1 ${basis}px`, height: tileH, display: 'flex', borderRadius: radius, overflow: 'hidden', cursor: 'pointer', position: 'relative', background: on ? P.tileOn : P.tileBg, boxShadow: on ? P.glowOn : 'none', transition: 'box-shadow .25s ease, background .25s ease' }}>
-      <div style={{ width: mediaW, flex: 'none', position: 'relative', overflow: 'hidden', background: '#11302c' }}>
-        {o.img && <img src={o.img} alt="" draggable={false} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', transform: zoom, filter: on ? 'none' : 'brightness(.78) saturate(.85)', transition: 'transform .45s ease, filter .3s ease' }} />}
-        {o.mark && <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: markFs, fontWeight: 800, letterSpacing: '-0.04em', color: on ? P.markOn : P.mark, transform: zoom, transition: 'transform .45s ease' }}>{o.mark}</div>}
+      style={{ flex: `1 1 ${basis}px`, height: tileH, display: 'flex', borderRadius: radius, overflow: 'hidden', cursor: 'pointer', position: 'relative', background: on ? P.tileOn : P.tileBg, boxShadow: on ? P.glowOn : P.ring, transition: 'box-shadow .2s ease, background .2s ease' }}>
+      <div style={{ width: mediaW, flex: 'none', position: 'relative', overflow: 'hidden', background: 'linear-gradient(140deg, #0b1213 0%, #11302c 100%)' }}>
+        {o.img && <img src={o.img} alt="" draggable={false} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', transform: zoom, transition: 'transform .45s ease' }} />}
+        {o.mark && <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: markFs, fontWeight: 800, letterSpacing: '-0.05em', color: on ? P.markOn : P.mark, transform: zoom, transition: 'transform .45s ease' }}>{o.mark}</div>}
         {o.sample && (
-          <div style={{ position: 'absolute', inset: 0, background: '#f5f5f7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ position: 'absolute', inset: 0, background: '#eef0f2', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <div style={{ width: '76%', transform: zoom, transition: 'transform .45s ease' }}>
-              <Sample standard={o.sample} color={on ? '#0d9488' : '#1d1d1f'} />
+              <Sample standard={o.sample} color={on ? TEAL_D : INK} />
             </div>
           </div>
         )}
       </div>
-      <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', padding: m ? '0 14px' : '0 26px' }}>
+      <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', padding: m ? '0 14px' : '0 24px' }}>
         {!inp && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <span style={{ fontSize: m ? 18 : 23, fontWeight: 500, lineHeight: 1.2, color: on ? P.fgOn : P.fg, textWrap: 'pretty' as any }}>{o.label}</span>
-            {o.sub && <span style={{ fontSize: m ? 14 : 18, fontWeight: 500, color: 'rgba(255,255,255,.6)' }}>{o.sub}</span>}
+            <span style={{ fontSize: m ? 18 : 23, fontWeight: 800, lineHeight: 1.15, letterSpacing: '-0.02em', color: on ? P.fgOn : P.fg, textWrap: 'pretty' as any }}>{o.label}</span>
+            {o.sub && <span style={{ fontSize: m ? 14 : 18, fontWeight: 500, color: MUTED }}>{o.sub}</span>}
           </div>
         )}
         {inp && (
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <span style={{ fontSize: m ? 14 : 18, fontWeight: 600, color: TEAL }}>Other, please specify</span>
+            <span style={{ fontSize: m ? 14 : 18, fontWeight: 800, color: TEAL_D }}>Other, please specify</span>
             <input ref={ref} value={otherValue} placeholder="Type your answer" autoComplete="off" autoCapitalize="sentences" enterKeyHint="done"
               onClick={(e) => e.stopPropagation()} onChange={(e) => onOther(e.target.value)}
-              style={{ height: m ? 44 : 48, border: 'none', outline: 'none', borderRadius: 12, background: 'rgba(0,0,0,.35)', boxShadow: 'inset 0 0 0 1.5px rgba(23,221,197,.6)', padding: '0 14px', font: m ? '500 17px Inter, sans-serif' : '500 21px Inter, sans-serif', color: '#fff', width: '100%' }} />
+              style={{ height: m ? 44 : 48, border: 'none', outline: 'none', borderRadius: 12, background: '#fff', boxShadow: 'inset 0 0 0 1.5px rgba(13,148,136,.45)', padding: '0 14px', font: m ? '500 17px Inter, sans-serif' : '500 21px Inter, sans-serif', color: INK, width: '100%' }} />
           </div>
         )}
       </div>
       {/* The selected ring sits on an overlay so it draws above the media panel. */}
-      <div style={{ position: 'absolute', inset: 0, borderRadius: radius, boxShadow: on ? P.ringOnIn : P.ring, pointerEvents: 'none', zIndex: 2, transition: 'box-shadow .2s ease' }} />
+      <div style={{ position: 'absolute', inset: 0, borderRadius: radius, boxShadow: on ? P.ringOnIn : 'none', pointerEvents: 'none', zIndex: 2, transition: 'box-shadow .2s ease' }} />
     </div>
   );
 }
@@ -445,8 +453,8 @@ export default function LabAssessment() {
   const back = () => { clearTimeout(advance.current); go(-1); };
 
   /* ---------- geometry (README, "Values that change with orientation") ---------- */
-  const padX = mobile ? 20 : port ? 48 : 56;
-  const segW = mobile ? 18 : port ? 28 : 36;
+  const padX = mobile ? 20 : port ? 44 : 52;
+  const segW = mobile ? 20 : port ? 30 : 40;
   const tileH = mobile ? 76 : port ? 96 : 105;
   const topH = mobile ? 56 : 72;
   /* The 10px row gap is part of the 1180x820 design; at 1024x768 four rows of 105px
@@ -456,139 +464,123 @@ export default function LabAssessment() {
   const opts = optsFor();
   const three = !mobile && !port && opts.length > 4 && opts.length <= 6;
   const basis = mobile ? 280 : three ? 300 : 440;
-  const mediaW = mobile ? 84 : port ? 128 : three ? 120 : 150;
+  const narrow = !port && window.innerWidth < 1100;
+  /* The 200px photo panel leaves too little text width on the 1024px iPad (the materials
+     tiles, with a title and a sub-line, clip), so it is 150px there like the 3-column layout. */
+  const mediaW = mobile ? 84 : port ? 150 : three || narrow ? 150 : 200;
   const titleLong = !!q && q.title.length > 44;
-  /* 48px question titles are drawn for the 1180px-wide landscape iPad. On the 1024px
+  /* 46px question titles are drawn for the 1180px-wide landscape iPad. On the 1024px
      one (the README says the layout must hold there too) a 43-character title wraps
      to two lines and pushes the last row of tiles off the screen, so it steps down
      to the 38px the README already uses for long titles. */
-  const narrow = !port && window.innerWidth < 1100;
-  const titleSize = mobile ? (titleLong ? 26 : 30) : port ? 42 : titleLong || narrow ? 38 : 48;
+  const titleSize = mobile ? (titleLong ? 24 : 28) : port ? 44 : titleLong || narrow ? 38 : 46;
   const rootStyle: React.CSSProperties = { top: kb.h ? kb.top : 0, height: kb.h ? kb.h : '100dvh' };
   const step = q ? q.step : 7;
   const noProg = screen === 'learn' || (learnPath && (isContact || screen === 'thanks'));
 
   /* ---------- screens ---------- */
-  if (screen === 'cover' && mobile) {
-    /* Phone cover: the headline, button and note flow in one centred column instead of
-       being pinned around the exact middle of a 1180px screen. */
-    return (
-      <div className="la" style={rootStyle}>
-        <style>{CSS}</style>
-        <div style={{ position: 'absolute', inset: 0, background: '#0b1213' }}>
-          <img src={COVER} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: '50% 40%' }} />
-          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(11,18,19,.7) 0%, rgba(11,18,19,.82) 45%, rgba(11,18,19,.96) 100%)' }} />
-          <div style={{ position: 'absolute', left: '50%', top: '52%', width: 640, height: 640, transform: 'translate(-50%,-50%)', background: 'radial-gradient(closest-side, rgba(23,221,197,.26), rgba(23,221,197,0))' }} />
-        </div>
-        <div className="la-scroll" style={{ position: 'relative', flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', padding: `0 ${padX}px calc(28px + env(safe-area-inset-bottom, 0px))` }}>
-          <div style={{ height: 64, flex: 'none', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <img src={LOGO} alt="LabsCubed" style={{ height: 22 }} />
-            <div style={{ display: 'flex', gap: 6 }}><Pill m>NOV 11-12</Pill><Pill m>BOOTH C819</Pill></div>
-          </div>
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', gap: 20, padding: '8px 0' }}>
-            <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '.22em', textTransform: 'uppercase', color: 'rgba(255,255,255,.7)' }}>Free lab assessment</div>
-            <div style={{ fontSize: 38, fontWeight: 300, letterSpacing: '-0.045em', lineHeight: 1.06, color: '#fff', textWrap: 'balance' as any }}>See what automation could <span style={{ fontWeight: 800, color: TEAL }}>save your lab.</span></div>
-            <div style={{ position: 'relative', width: 136, height: 136, margin: '6px 0' }}>
-              <span style={{ position: 'absolute', inset: 0, background: 'rgba(23,221,197,.45)', borderRadius: 999, animation: 'kPulseB 2.2s ease-out infinite', pointerEvents: 'none' }} />
-              <div role="button" onClick={() => go(1)} style={{ cursor: 'pointer', position: 'absolute', inset: 0, borderRadius: 999, background: TEAL, boxShadow: '0 0 0 8px rgba(23,221,197,.14), 0 0 60px rgba(23,221,197,.55)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-                <span style={{ fontSize: 16, fontWeight: 800, letterSpacing: '.12em', color: '#000', textAlign: 'center' }}>GET<br />STARTED</span>
-              </div>
-            </div>
-            <div style={{ fontSize: 16, fontWeight: 300, lineHeight: 1.45, color: 'rgba(255,255,255,.85)', textWrap: 'pretty' as any }}>Your testing costs and technician time, workflow bottlenecks, and estimated automation ROI and payback.</div>
-            <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '.14em', textTransform: 'uppercase', color: TEAL }}>Takes about 2 minutes</div>
-          </div>
+  if (screen === 'cover') {
+    const slab = mobile
+      ? { width: '100%', height: 84, borderRadius: 22, padding: '0 28px 0 32px', fontSize: 26 }
+      : { width: 520, height: 136, borderRadius: 28, padding: '0 40px 0 48px', fontSize: 34 };
+    const slabBtn = (
+      <div style={{ position: 'relative', width: slab.width, height: slab.height }}>
+        <span style={{ position: 'absolute', inset: 0, borderRadius: slab.borderRadius, animation: 'kPulseC 2.4s ease-out infinite', pointerEvents: 'none' }} />
+        <div role="button" onClick={() => go(1)} style={{ cursor: 'pointer', position: 'absolute', inset: 0, borderRadius: slab.borderRadius, background: TEAL, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: slab.padding }}>
+          <span style={{ fontSize: slab.fontSize, fontWeight: 800, letterSpacing: '.06em', color: '#000' }}>GET STARTED</span>
+          <svg width={mobile ? 34 : 46} height={mobile ? 34 : 46} viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
         </div>
       </div>
     );
-  }
-  if (screen === 'cover') {
+    const coverSize = mobile ? 40 : port ? 84 : 66;
     return (
       <div className="la" style={rootStyle}>
         <style>{CSS}</style>
-        <div style={{ position: 'absolute', inset: 0, background: '#0b1213' }}>
-          <img src={COVER} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: '50% 40%' }} />
-          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(11,18,19,.7) 0%, rgba(11,18,19,.82) 45%, rgba(11,18,19,.96) 100%)' }} />
-          <div style={{ position: 'absolute', left: '50%', top: '50%', width: 900, height: 900, transform: 'translate(-50%,-50%)', background: 'radial-gradient(closest-side, rgba(23,221,197,.28), rgba(23,221,197,0))' }} />
-          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 96, padding: '0 48px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <img src={LOGO} alt="LabsCubed" style={{ height: 30 }} />
-            <div style={{ display: 'flex', gap: 10 }}><Pill>NOV 11-12</Pill><Pill>BOOTH C819</Pill></div>
-          </div>
-          <div style={{ position: 'absolute', left: 64, right: 64, bottom: 'calc(50% + 110px)', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 16 }}>
-            <div style={{ fontSize: 18, fontWeight: 600, letterSpacing: '.24em', textTransform: 'uppercase', color: 'rgba(255,255,255,.7)' }}>Free lab assessment</div>
-            <div style={{ fontSize: 64, fontWeight: 300, letterSpacing: '-0.045em', lineHeight: 1.04, color: '#fff', maxWidth: 920, textWrap: 'balance' as any }}>See what automation could <span style={{ fontWeight: 800, color: TEAL }}>save your lab.</span></div>
-          </div>
-          <div style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%,-50%)', width: 168, height: 168 }}>
-            <span style={{ position: 'absolute', inset: 0, background: 'rgba(23,221,197,.45)', borderRadius: 999, animation: 'kPulseB 2.2s ease-out infinite', pointerEvents: 'none' }} />
-            <div role="button" onClick={() => go(1)} style={{ cursor: 'pointer', position: 'absolute', inset: 0, borderRadius: 999, background: TEAL, boxShadow: '0 0 0 10px rgba(23,221,197,.14), 0 0 80px rgba(23,221,197,.6)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-              <span style={{ fontSize: 20, fontWeight: 800, letterSpacing: '.12em', color: '#000', textAlign: 'center' }}>GET<br />STARTED</span>
+        <div style={{ position: 'absolute', inset: 0, background: '#000' }}>
+          <img src={COVER} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: '70% 50%' }} />
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, rgba(5,10,11,.92) 0%, rgba(5,10,11,.78) 45%, rgba(5,10,11,.35) 100%), linear-gradient(0deg, rgba(5,10,11,.7), rgba(5,10,11,0) 40%)' }} />
+        </div>
+        {!mobile && (
+          <div style={{ position: 'absolute', inset: 0 }}>
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 96, padding: `0 ${padX}px`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <img src={LOGO} alt="LabsCubed" style={{ height: 30 }} /><Chips />
+            </div>
+            <div style={{ position: 'absolute', left: padX, right: padX, bottom: 'calc(50% + 96px)', display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div style={{ fontSize: 18, fontWeight: 800, letterSpacing: '.2em', textTransform: 'uppercase', color: TEAL }}>Free lab assessment</div>
+              <div style={{ fontSize: coverSize, fontWeight: 800, letterSpacing: '-0.05em', lineHeight: 0.98, color: '#fff', maxWidth: 820 }}>See what automation could save your lab.</div>
+            </div>
+            <div style={{ position: 'absolute', left: padX, top: '50%', transform: 'translateY(-50%)' }}>{slabBtn}</div>
+            <div style={{ position: 'absolute', left: padX, right: padX, top: 'calc(50% + 92px)', display: 'flex', flexDirection: 'column', gap: 12, maxWidth: 600 }}>
+              <div style={{ fontSize: 20, fontWeight: 600, color: '#fff' }}>Takes about 2 minutes</div>
+              <div style={{ fontSize: 20, fontWeight: 300, lineHeight: 1.45, color: 'rgba(255,255,255,.82)', textWrap: 'pretty' as any }}>Your testing costs and technician time, workflow bottlenecks, and estimated automation ROI and payback.</div>
             </div>
           </div>
-          <div style={{ position: 'absolute', left: 64, right: 64, top: 'calc(50% + 120px)', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 14 }}>
-            <div style={{ fontSize: 20, fontWeight: 300, lineHeight: 1.45, color: 'rgba(255,255,255,.85)', maxWidth: 680, textWrap: 'pretty' as any }}>Your testing costs and technician time, workflow bottlenecks, and estimated automation ROI and payback.</div>
-            <div style={{ fontSize: 18, fontWeight: 600, letterSpacing: '.14em', textTransform: 'uppercase', color: TEAL }}>Takes about 2 minutes</div>
+        )}
+        {mobile && (
+          <div className="la-scroll" style={{ position: 'relative', flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', padding: `0 ${padX}px calc(28px + env(safe-area-inset-bottom, 0px))` }}>
+            <div style={{ height: 64, flex: 'none', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <img src={LOGO} alt="LabsCubed" style={{ height: 22 }} /><Chips m />
+            </div>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 20, padding: '8px 0' }}>
+              <div style={{ fontSize: 13, fontWeight: 800, letterSpacing: '.2em', textTransform: 'uppercase', color: TEAL }}>Free lab assessment</div>
+              <div style={{ fontSize: coverSize, fontWeight: 800, letterSpacing: '-0.05em', lineHeight: 0.98, color: '#fff' }}>See what automation could save your lab.</div>
+              {slabBtn}
+              <div style={{ fontSize: 16, fontWeight: 600, color: '#fff' }}>Takes about 2 minutes</div>
+              <div style={{ fontSize: 16, fontWeight: 300, lineHeight: 1.45, color: 'rgba(255,255,255,.82)', textWrap: 'pretty' as any }}>Your testing costs and technician time, workflow bottlenecks, and estimated automation ROI and payback.</div>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     );
   }
 
   if (screen === 'choose') {
-    const bigBtn = (label: string, bg: string, node: string, onClick: () => void) => (
-      <div role="button" onClick={(e) => { e.stopPropagation(); onClick(); }} style={{ cursor: 'pointer', height: mobile ? 60 : 96, padding: mobile ? '0 8px 0 24px' : '0 12px 0 32px', borderRadius: 999, background: bg, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 20 }}>
-        <span style={{ fontSize: mobile ? 18 : 22, fontWeight: 600, color: '#000' }}>{label}</span>
-        <span style={{ width: mobile ? 44 : 72, height: mobile ? 44 : 72, borderRadius: 999, background: node, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Arrow c={TEAL} /></span>
+    const slabBtn = (label: string, bg: string, arrow: string, onClick: () => void) => (
+      <div role="button" onClick={(e) => { e.stopPropagation(); onClick(); }} style={{ cursor: 'pointer', height: mobile ? 60 : 96, padding: mobile ? '0 24px' : '0 32px', borderRadius: mobile ? 16 : 20, background: bg, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 20 }}>
+        <span style={{ fontSize: mobile ? 18 : 22, fontWeight: 800, color: '#000' }}>{label}</span>
+        <ArrowR c={arrow} s={mobile ? 24 : 30} />
+      </div>
+    );
+    const card = (img: string, eb: string, title: string, line: string, btn: React.ReactNode, onClick: () => void) => (
+      <div role="button" onClick={onClick} style={{ flex: mobile ? 'none' : '1 1 440px', minHeight: 0, position: 'relative', borderRadius: mobile ? 20 : 22, overflow: 'hidden', cursor: 'pointer', background: BAND, display: 'flex', flexDirection: 'column' }}>
+        <div style={mobile ? { height: 170, flex: 'none', position: 'relative' } : { flex: 1, minHeight: 0, position: 'relative' }}>
+          <img src={img} alt="" style={{ position: 'absolute', top: mobile ? 16 : 24, left: mobile ? 16 : 24, width: mobile ? 'calc(100% - 32px)' : 'calc(100% - 48px)', height: mobile ? 'calc(100% - 16px)' : 'calc(100% - 24px)', objectFit: 'contain' }} />
+        </div>
+        <div style={{ flex: 'none', padding: mobile ? '16px 18px 18px' : '22px 28px 28px', display: 'flex', flexDirection: 'column', gap: mobile ? 8 : 10 }}>
+          <div style={{ fontSize: mobile ? 13 : 18, fontWeight: 800, letterSpacing: '.16em', textTransform: 'uppercase', color: TEAL }}>{eb}</div>
+          <div style={{ fontSize: mobile ? 26 : 36, fontWeight: 800, letterSpacing: '-0.045em', lineHeight: 1.02, color: '#fff', textWrap: 'balance' as any }}>{title}</div>
+          <div style={{ fontSize: mobile ? 16 : 18, fontWeight: 500, lineHeight: 1.4, color: 'rgba(255,255,255,.82)', textWrap: 'pretty' as any, marginBottom: 8 }}>{line}</div>
+          {btn}
+        </div>
       </div>
     );
     return (
       <div className="la" style={rootStyle}>
         <style>{CSS}</style>
-        <div className={mobile ? 'la-scroll' : undefined} style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', padding: mobile ? `0 ${padX}px calc(24px + env(safe-area-inset-bottom, 0px))` : `0 ${padX}px 40px` }}>
-          <div style={{ height: mobile ? 64 : 96, flex: 'none', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <img src={LOGO} alt="LabsCubed" style={{ height: mobile ? 22 : 28 }} />
-            <div style={{ display: 'flex', gap: mobile ? 6 : 10 }}><Pill m={mobile}>NOV 11-12</Pill><Pill m={mobile}>BOOTH C819</Pill></div>
+        <div className={mobile ? 'la-scroll' : undefined} style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column' }}>
+          <div style={{ height: mobile ? 64 : 84, flex: 'none', padding: `0 ${padX}px`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: BAND }}>
+            <img src={LOGO} alt="LabsCubed" style={{ height: mobile ? 22 : 26 }} /><Chips m={mobile} />
           </div>
-          <div style={{ flex: 'none', padding: mobile ? '0 0 18px' : '4px 0 26px', display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <div style={{ fontSize: mobile ? 13 : 18, fontWeight: 600, letterSpacing: '.2em', textTransform: 'uppercase', color: 'rgba(255,255,255,.7)' }}>Welcome to LabsCubed</div>
-            <div style={{ fontSize: mobile ? 34 : 54, fontWeight: 300, letterSpacing: '-0.045em', lineHeight: 1.04, color: '#fff' }}>What brings you to <span style={{ fontWeight: 800, color: TEAL }}>the booth?</span></div>
+          <div style={{ flex: 'none', padding: mobile ? `20px ${padX}px 16px` : `24px ${padX}px 22px`, display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <Eyebrow m={mobile}>Welcome to LabsCubed</Eyebrow>
+            <div style={{ fontSize: mobile ? 34 : 54, fontWeight: 800, letterSpacing: '-0.05em', lineHeight: 1, color: INK }}>What brings you to the booth?</div>
           </div>
-          <div style={mobile ? { flex: 'none', display: 'flex', flexDirection: 'column', gap: 16 } : { flex: 1, minHeight: 0, display: 'flex', flexWrap: 'wrap', gap: 20 }}>
-            <div role="button" onClick={() => goTo('cover', 'assess')} style={{ flex: mobile ? 'none' : '1 1 440px', minHeight: 0, borderRadius: mobile ? 20 : 22, overflow: 'hidden', display: 'flex', flexDirection: 'column', cursor: 'pointer', background: 'rgba(23,221,197,.08)', boxShadow: 'inset 0 0 0 2px #17ddc5, 0 0 0 6px rgba(23,221,197,.1), 0 20px 60px rgba(23,221,197,.25)' }}>
-              <div style={mobile ? { height: 150, flex: 'none', position: 'relative', overflow: 'hidden' } : { flex: 1, minHeight: 0, position: 'relative', overflow: 'hidden' }}><img src={K('step-load-hand.webp')} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} /></div>
-              <div style={{ flex: 'none', padding: mobile ? '18px 18px 18px' : '22px 26px 24px', display: 'flex', flexDirection: 'column', gap: 8 }}>
-                <div style={{ fontSize: mobile ? 13 : 18, fontWeight: 600, letterSpacing: '.14em', textTransform: 'uppercase', color: TEAL }}>Free lab assessment · 2 minutes</div>
-                <div style={{ fontSize: mobile ? 24 : 30, fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.1, color: '#fff', textWrap: 'balance' as any }}>See what automation could save your lab.</div>
-                <div style={{ fontSize: mobile ? 16 : 18, fontWeight: 300, lineHeight: 1.4, color: 'rgba(255,255,255,.8)', textWrap: 'pretty' as any, marginBottom: 10 }}>Your testing costs, bottlenecks and automation ROI, sent to you by email.</div>
-                {bigBtn('Start the assessment', TEAL, '#000', () => goTo('cover', 'assess'))}
-              </div>
-            </div>
-            <div role="button" onClick={() => goTo('learn', 'learn')} style={{ flex: mobile ? 'none' : '1 1 440px', minHeight: 0, borderRadius: mobile ? 20 : 22, overflow: 'hidden', display: 'flex', flexDirection: 'column', cursor: 'pointer', background: 'rgba(255,255,255,.045)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,.12)' }}>
-              <div style={mobile ? { height: 150, flex: 'none', position: 'relative', overflow: 'hidden' } : { flex: 1, minHeight: 0, position: 'relative', overflow: 'hidden' }}><img src={K('hero-plastic.webp')} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(.8) saturate(.85)' }} /></div>
-              <div style={{ flex: 'none', padding: mobile ? '18px 18px 18px' : '22px 26px 24px', display: 'flex', flexDirection: 'column', gap: 8 }}>
-                <div style={{ fontSize: mobile ? 13 : 18, fontWeight: 600, letterSpacing: '.14em', textTransform: 'uppercase', color: 'rgba(255,255,255,.7)' }}>CubeTen and CubeOne</div>
-                <div style={{ fontSize: mobile ? 24 : 30, fontWeight: 300, letterSpacing: '-0.03em', lineHeight: 1.1, color: '#fff', textWrap: 'balance' as any }}>Explore our machines.</div>
-                <div style={{ fontSize: mobile ? 16 : 18, fontWeight: 300, lineHeight: 1.4, color: 'rgba(255,255,255,.75)', textWrap: 'pretty' as any, marginBottom: 10 }}>Brochures and white papers for plastics and rubber testing, sent to your inbox.</div>
-                {bigBtn('Get the materials', '#fff', '#0b1213', () => goTo('learn', 'learn'))}
-              </div>
-            </div>
+          <div style={mobile ? { flex: 'none', padding: `0 ${padX}px calc(24px + env(safe-area-inset-bottom, 0px))`, display: 'flex', flexDirection: 'column', gap: 16 } : { flex: 1, minHeight: 0, padding: `0 ${padX}px 36px`, display: 'flex', flexWrap: 'wrap', gap: 16 }}>
+            {card(K('step-load-hand.webp'), 'Free lab assessment · 2 minutes', 'See what automation could save your lab.', 'Your testing costs, bottlenecks and automation ROI, sent to you by email.', slabBtn('Start the assessment', TEAL, '#000', () => goTo('cover', 'assess')), () => goTo('cover', 'assess'))}
+            {card(K('hero-plastic.webp'), 'CubeTen and CubeOne', 'Explore our machines.', 'Brochures and white papers for plastics and rubber testing, sent to your inbox.', slabBtn('Get the materials', '#fff', TEAL_D, () => goTo('learn', 'learn')), () => goTo('learn', 'learn'))}
           </div>
         </div>
-        {pending > 0 && <div style={{ position: 'absolute', right: 14, bottom: 10, fontSize: mobile ? 12 : 18, color: 'rgba(255,255,255,.5)' }}>{pending} saved on this iPad · will send when online</div>}
+        {pending > 0 && <div style={{ position: 'absolute', right: 14, bottom: 6, fontSize: mobile ? 11 : 18, color: MUTED, pointerEvents: 'none' }}>{pending} saved on this {mobile ? 'phone' : 'iPad'} · will send when online</div>}
       </div>
     );
   }
 
-  /* Question, contact and thank-you screens share the top bar. */
+  /* Question, contact and thank-you screens share the dark top band. */
   const isThanks = screen === 'thanks';
-  const segs = Array.from({ length: 7 }, (_, i) => ({
-    bg: isThanks || i < step - 1 ? P.segDone : i === step - 1 ? P.segCur : P.segOff,
-    glow: !isThanks && i === step - 1 ? '0 0 12px rgba(23,221,197,.8)' : 'none',
-  }));
+  const segs = Array.from({ length: 7 }, (_, i) => (isThanks || i < step - 1 ? P.segDone : i === step - 1 ? P.segCur : P.segOff));
   const mats = MATERIALS.filter((m) => (ans.learn || []).includes(m.id));
   const thanksList = learnPath ? (mats.length ? mats.map((m) => m.label) : ['Your selected materials']) : THANKS_ASSESS;
   const nextLabel = isContact ? (learnPath ? 'Send my materials' : 'Send my assessment') : screen === 'learn' ? 'Send me these' : screen === 'standards' && sel.length === 0 ? "Skip, I'm not sure" : 'Next';
-  const nextNodeBg = nextOn ? TEAL : P.offBg;
 
   const header = q ? { eb: q.learn ? q.eb : `Question ${q.step} · ${q.eb}`, title: q.title, hint: q.hint }
     : { eb: 'Last step · Your details', title: learnPath ? 'Where should we send your materials?' : 'Where should we send your assessment?', hint: 'Phone is optional. Everything else is required.' };
@@ -603,128 +595,135 @@ export default function LabAssessment() {
   return (
     <div className="la" style={rootStyle}>
       <style>{CSS}</style>
-      {/* top bar */}
-      <div style={{ height: topH, flex: 'none', padding: `0 ${padX}px`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      {/* top band */}
+      <div style={{ height: topH, flex: 'none', padding: `0 ${padX}px`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: BAND }}>
         <img src={LOGO} alt="LabsCubed" style={{ height: mobile ? 20 : 24 }} />
-        {noProg && <div style={{ fontSize: mobile ? 13 : 18, fontWeight: 600, letterSpacing: '.14em', textTransform: 'uppercase', color: 'rgba(255,255,255,.55)' }}>CubeTen · CubeOne</div>}
+        {noProg && <div style={{ fontSize: mobile ? 13 : 18, fontWeight: 600, letterSpacing: '.14em', textTransform: 'uppercase', color: 'rgba(255,255,255,.6)' }}>CubeTen · CubeOne</div>}
         {!noProg && (
           <div style={{ display: 'flex', alignItems: 'center', gap: mobile ? 12 : 18 }}>
-            <div style={{ display: 'flex', gap: mobile ? 4 : 6 }}>{segs.map((s, i) => <div key={i} style={{ width: segW, height: 6, borderRadius: 3, background: s.bg, boxShadow: s.glow }} />)}</div>
-            <div style={{ fontSize: mobile ? 14 : 18, fontWeight: 600, fontVariantNumeric: 'tabular-nums', color: '#fff', minWidth: mobile ? 32 : 44, textAlign: 'right' }}>{step} / 7</div>
+            <div style={{ display: 'flex', gap: 4 }}>{segs.map((bg, i) => <div key={i} style={{ width: segW, height: mobile ? 6 : 8, borderRadius: 2, background: bg }} />)}</div>
+            <div style={{ fontSize: mobile ? 14 : 18, fontWeight: 800, fontVariantNumeric: 'tabular-nums', color: '#fff', minWidth: mobile ? 32 : 44, textAlign: 'right' }}>{step} / 7</div>
           </div>
         )}
       </div>
 
       {/* header: full, or collapsed while the keyboard is up */}
       {!isThanks && !kb.open && (
-        <div style={{ flex: 'none', padding: mobile ? `4px ${padX}px 16px` : `8px ${padX}px 22px`, display: 'flex', flexDirection: 'column', gap: mobile ? 6 : 8 }}>
-          <div style={{ fontSize: mobile ? 13 : 18, fontWeight: 600, letterSpacing: mobile ? '.12em' : '.16em', textTransform: 'uppercase', color: TEAL }}>{header.eb}</div>
-          <div style={{ fontSize: titleSize, fontWeight: 300, letterSpacing: '-0.04em', lineHeight: 1.06, color: '#fff', textWrap: 'balance' as any }}>{header.title}</div>
-          <div style={{ fontSize: mobile ? 16 : 20, fontWeight: 500, color: 'rgba(255,255,255,.6)' }}>{header.hint}</div>
+        <div style={{ flex: 'none', padding: mobile ? `12px ${padX}px 14px` : `16px ${padX}px 18px`, display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <Eyebrow m={mobile}>{header.eb}</Eyebrow>
+          <div style={{ fontSize: titleSize, fontWeight: 800, letterSpacing: '-0.045em', lineHeight: 1.02, color: INK, textWrap: 'balance' as any }}>{header.title}</div>
+          <div style={{ fontSize: mobile ? 16 : 20, fontWeight: 500, color: MUTED }}>{header.hint}</div>
         </div>
       )}
       {!isThanks && kb.open && (
-        <div style={{ flex: 'none', padding: `4px ${padX}px 14px`, display: 'flex', flexDirection: 'column', gap: 4 }}>
-          <div style={{ fontSize: mobile ? 13 : 18, fontWeight: 600, letterSpacing: '.16em', textTransform: 'uppercase', color: TEAL }}>{header.eb}</div>
-          <div style={{ fontSize: mobile ? 22 : 28, fontWeight: 300, letterSpacing: '-0.03em', color: '#fff' }}>{header.title}</div>
+        <div style={{ flex: 'none', padding: `${mobile ? 10 : 16}px ${padX}px 12px`, display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <Eyebrow m={mobile}>{header.eb}</Eyebrow>
+          <div style={{ fontSize: mobile ? 22 : 28, fontWeight: 800, letterSpacing: '-0.03em', color: INK }}>{header.title}</div>
         </div>
       )}
 
       {/* tiles */}
       {q && (
-        <div className="la-scroll" style={{ flex: 1, minHeight: 0, position: 'relative', padding: `0 ${padX}px`, display: 'flex', flexWrap: 'wrap', alignContent: kb.open || mobile ? 'flex-start' : 'space-evenly', gap: `${kb.open ? 16 : rowGap}px ${mobile ? 12 : 16}px`, overflowY: 'auto', paddingBottom: mobile ? 12 : 0 }}>
+        <div className="la-scroll" style={{ flex: 1, minHeight: 0, position: 'relative', padding: `0 ${padX}px`, display: 'flex', flexWrap: 'wrap', alignContent: kb.open || mobile ? 'flex-start' : 'space-evenly', gap: `${kb.open ? 14 : rowGap}px ${mobile ? 12 : 14}px`, overflowY: 'auto', paddingBottom: mobile ? 12 : 0 }}>
           {opts.map((o) => (
             <Tile key={screen + o.id} o={o} on={sel.includes(o.id)} mediaW={mediaW} tileH={tileH} basis={basis}
               otherValue={other[key] || ''} onOther={(v) => setOther((p) => ({ ...p, [key]: v }))} onTap={() => tap(o)} m={mobile} />
           ))}
-          {kb.open && <div style={{ position: 'sticky', left: 0, right: 0, top: 0, height: 56, marginTop: -56, width: '100%', background: 'linear-gradient(#0c1617, rgba(12,22,23,0))', pointerEvents: 'none', order: -1 }} />}
+          {kb.open && <div style={{ position: 'sticky', left: 0, right: 0, top: 0, height: 56, marginTop: -56, width: '100%', background: `linear-gradient(${CANVAS}, rgba(242,242,244,0))`, pointerEvents: 'none', order: -1 }} />}
         </div>
       )}
 
       {/* contact */}
       {isContact && (
-        <div className="la-scroll" style={{ flex: 1, minHeight: 0, padding: `0 ${padX}px`, display: 'flex', flexWrap: 'wrap', alignContent: 'flex-start', gap: mobile ? '12px 12px' : '14px 16px', paddingBottom: mobile ? 12 : 0 }}>
+        <div className="la-scroll" style={{ flex: 1, minHeight: 0, padding: `0 ${padX}px`, display: 'flex', flexWrap: 'wrap', alignContent: 'flex-start', gap: mobile ? 12 : 14, paddingBottom: mobile ? 12 : 0 }}>
           {fields.map((f) => {
             const msg = showErr ? E[f.k] : '';
             const err = !!msg;
             return (
               <div key={f.k} style={{ flex: mobile ? '1 1 100%' : '1 1 440px', display: 'flex', flexDirection: 'column', gap: 6 }}>
                 <label style={{ height: mobile ? 68 : 88, borderRadius: mobile ? 14 : 18, background: err ? P.fieldErr : P.field, boxShadow: err ? P.errRing : P.fieldRing, padding: mobile ? '9px 16px 0' : '12px 22px 0', display: 'flex', flexDirection: 'column', gap: 2 }}>
-                  <span style={{ fontSize: mobile ? 13 : 18, fontWeight: 600, color: err ? P.labelErr : P.label }}>{f.label}</span>
+                  <span style={{ fontSize: mobile ? 13 : 18, fontWeight: 800, color: err ? P.labelErr : P.label }}>{f.label}</span>
                   <input value={contact[f.k]} placeholder={f.ph} type={f.type} inputMode={f.mode} autoComplete="off" autoCorrect="off" autoCapitalize={f.cap} spellCheck={false}
                     onChange={(e) => setContact((c) => ({ ...c, [f.k]: e.target.value }))}
                     onFocus={(e) => { const t = e.currentTarget; setTimeout(() => t.scrollIntoView({ block: 'center', behavior: 'smooth' }), 320); }}
-                    style={{ border: 'none', outline: 'none', background: 'transparent', padding: 0, font: mobile ? '500 18px Inter, sans-serif' : '500 24px Inter, sans-serif', color: '#fff', width: '100%' }} />
+                    style={{ border: 'none', outline: 'none', background: 'transparent', padding: 0, font: mobile ? '500 18px Inter, sans-serif' : '500 24px Inter, sans-serif', color: INK, width: '100%' }} />
                 </label>
-                {err && <span style={{ fontSize: mobile ? 14 : 18, fontWeight: 500, color: P.labelErr, paddingLeft: mobile ? 16 : 22 }}>{msg}</span>}
+                {err && <span style={{ fontSize: mobile ? 14 : 18, fontWeight: 600, color: P.labelErr, paddingLeft: mobile ? 16 : 22 }}>{msg}</span>}
               </div>
             );
           })}
-          <label style={{ flex: '1 1 100%', height: mobile ? 68 : 88, borderRadius: mobile ? 14 : 18, background: P.field, boxShadow: P.fieldRing, padding: mobile ? '9px 16px 0' : '12px 22px 0', display: 'flex', flexDirection: 'column', gap: 2, position: 'relative' }}>
-            <span style={{ fontSize: mobile ? 13 : 18, fontWeight: 600, color: P.label }}>Country</span>
+          <label style={{ flex: '1 1 100%', height: mobile ? 68 : 88, borderRadius: mobile ? 14 : 18, background: '#fff', padding: mobile ? '9px 16px 0' : '12px 22px 0', display: 'flex', flexDirection: 'column', gap: 2, position: 'relative' }}>
+            <span style={{ fontSize: mobile ? 13 : 18, fontWeight: 800, color: MUTED }}>Country</span>
             <select value={contact.country} onChange={(e) => setContact((c) => ({ ...c, country: e.target.value }))}
-              style={{ appearance: 'none', WebkitAppearance: 'none', border: 'none', outline: 'none', background: 'transparent', padding: 0, font: mobile ? '500 18px Inter, sans-serif' : '500 24px Inter, sans-serif', color: '#fff', width: '100%' }}>
+              style={{ appearance: 'none', WebkitAppearance: 'none', border: 'none', outline: 'none', background: 'transparent', padding: 0, font: mobile ? '500 18px Inter, sans-serif' : '500 24px Inter, sans-serif', color: INK, width: '100%' }}>
               {COUNTRY_LIST.map((c) => <option key={c.c} value={c.c}>{c.n}</option>)}
             </select>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={TEAL} strokeWidth="2.4" strokeLinecap="round" style={{ position: 'absolute', right: mobile ? 16 : 24, top: mobile ? 26 : 33, pointerEvents: 'none' }}><path d="M6 9l6 6 6-6" /></svg>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={INK} strokeWidth="2.4" strokeLinecap="round" style={{ position: 'absolute', right: mobile ? 16 : 24, top: mobile ? 26 : 33, pointerEvents: 'none' }}><path d="M6 9l6 6 6-6" /></svg>
           </label>
-          <div style={{ flex: '1 1 100%', fontSize: mobile ? 14 : 18, fontWeight: 500, color: 'rgba(255,255,255,.6)', lineHeight: 1.4 }}>
+          <div style={{ flex: '1 1 100%', fontSize: mobile ? 14 : 18, fontWeight: 500, color: MUTED, lineHeight: 1.4 }}>
             {learnPath ? "We'll email the materials you picked to this address." : "We'll email your personalized assessment to this address."}
           </div>
         </div>
       )}
 
-      {/* thank you */}
+      {/* thank you: photo panel and a white panel (landscape side by side, portrait and phone stacked) */}
       {isThanks && (
-        <div className="la-scroll" style={{ flex: 1, minHeight: 0, position: 'relative', padding: mobile ? `8px ${padX}px 24px` : `8px ${padX}px 56px`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: mobile ? 'flex-start' : 'space-between', textAlign: 'center', gap: mobile ? 24 : 32 }}>
-          <div style={{ position: 'absolute', left: '50%', top: '30%', width: 760, height: 760, transform: 'translate(-50%,-50%)', background: 'radial-gradient(closest-side, rgba(23,221,197,.18), rgba(23,221,197,0))', pointerEvents: 'none' }} />
-          <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 18 }}>
-            <div style={{ fontSize: mobile ? 13 : 18, fontWeight: 600, letterSpacing: '.2em', textTransform: 'uppercase', color: TEAL }}>Assessment requested</div>
-            <div style={{ fontSize: mobile ? 52 : 84, fontWeight: 800, letterSpacing: '-0.05em', lineHeight: 1, color: '#fff' }}>Thank you.</div>
-            <div style={{ fontSize: mobile ? 17 : 22, fontWeight: 300, lineHeight: 1.45, color: 'rgba(255,255,255,.82)', maxWidth: 620, textWrap: 'pretty' as any }}>
-              {learnPath ? "We'll email the materials you selected to you shortly:" : "We'll be in touch via email with your personalized assessment, including:"}
+        <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: port || mobile ? 'column' : 'row' }}>
+          <div style={{ flex: mobile ? '0 0 200px' : port ? '0 0 400px' : '0 0 46%', position: 'relative', overflow: 'hidden', background: BAND }}>
+            <img src={K('step4-cubeten-start.webp')} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: '60% 50%' }} />
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(0deg, rgba(5,10,11,.88) 0%, rgba(5,10,11,.2) 55%, rgba(5,10,11,0) 100%)' }} />
+            <div style={{ position: 'absolute', left: mobile ? 20 : 40, right: mobile ? 20 : 40, bottom: mobile ? 20 : 36, display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <div style={{ fontSize: mobile ? 13 : 18, fontWeight: 800, letterSpacing: '.2em', textTransform: 'uppercase', color: TEAL }}>Assessment requested</div>
+              <div style={{ fontSize: mobile ? 48 : narrow && !port ? 66 : 80, fontWeight: 800, letterSpacing: '-0.05em', lineHeight: 0.95, color: '#fff' }}>Thank you.</div>
             </div>
           </div>
-          <div style={{ position: 'relative', width: '100%', display: 'flex', flexWrap: 'wrap', gap: mobile ? 10 : 14 }}>
-            {thanksList.map((label) => (
-              <div key={label} style={{ flex: mobile ? '1 1 100%' : '1 1 440px', minHeight: mobile ? 60 : 96, borderRadius: mobile ? 16 : 22, background: 'rgba(255,255,255,.05)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,.1)', display: 'flex', alignItems: 'center', gap: mobile ? 14 : 20, padding: mobile ? '10px 18px' : '0 26px', textAlign: 'left' }}>
-                <span style={{ width: 12, height: 12, borderRadius: 99, background: TEAL, boxShadow: `0 0 14px ${TEAL}`, flex: 'none' }} />
-                <span style={{ fontSize: mobile ? 17 : 23, fontWeight: 500, color: '#fff' }}>{label}</span>
+          <div className="la-scroll" style={{ flex: 1, minWidth: 0, minHeight: 0, padding: mobile ? `20px ${padX}px 24px` : `44px ${padX}px 48px`, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: mobile ? 20 : 28, background: '#fff' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: mobile ? 14 : 18 }}>
+              <div style={{ fontSize: mobile ? 18 : 24, fontWeight: 500, lineHeight: 1.4, color: INK, textWrap: 'pretty' as any }}>
+                {learnPath ? "We'll email the materials you selected to you shortly:" : "We'll be in touch via email with your personalized assessment, including:"}
               </div>
-            ))}
-          </div>
-          <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14, width: mobile ? '100%' : undefined }}>
-            <div role="button" onClick={reset} style={{ height: mobile ? 68 : 104, width: mobile ? '100%' : undefined, padding: mobile ? '0 10px 0 24px' : '0 14px 0 40px', borderRadius: 999, background: '#fff', color: '#000', display: 'flex', alignItems: 'center', justifyContent: mobile ? 'space-between' : undefined, gap: 28, cursor: 'pointer' }}>
-              <span style={{ fontSize: mobile ? 18 : 24, fontWeight: 600 }}>Start a new assessment</span>
-              <span style={{ position: 'relative', width: mobile ? 50 : 76, height: mobile ? 50 : 76, borderRadius: 999, background: '#0b1213', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <svg width={mobile ? 50 : 76} height={mobile ? 50 : 76} viewBox="0 0 76 76" style={{ position: 'absolute', inset: 0, transform: 'rotate(-90deg)' }}>
-                  <circle cx="38" cy="38" r="32" fill="none" stroke="rgba(255,255,255,.14)" strokeWidth="5" />
-                  <circle cx="38" cy="38" r="32" fill="none" stroke={TEAL} strokeWidth="5" strokeLinecap="round" strokeDasharray="201.06" strokeDashoffset={201.06 * (1 - Math.max(count, 0) / THANKS_SECONDS)} style={{ transition: 'stroke-dashoffset 1s linear' }} />
-                </svg>
-                <span style={{ fontSize: mobile ? 17 : 24, fontWeight: 800, fontVariantNumeric: 'tabular-nums', color: '#fff' }}>{Math.max(count, 0)}</span>
-              </span>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {thanksList.map((label, i) => (
+                  <div key={label} style={{ display: 'flex', alignItems: 'center', gap: mobile ? 14 : 18, minHeight: mobile ? 56 : 64, borderRadius: 16, background: CANVAS, padding: mobile ? '10px 16px' : '10px 20px' }}>
+                    <span style={{ fontSize: mobile ? 16 : 20, fontWeight: 800, color: TEAL_D, fontVariantNumeric: 'tabular-nums', flex: 'none' }}>{'0' + (i + 1)}</span>
+                    <span style={{ fontSize: mobile ? 17 : 22, fontWeight: 600, lineHeight: 1.25, color: INK }}>{label}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div style={{ fontSize: mobile ? 14 : 18, fontWeight: 500, color: 'rgba(255,255,255,.55)' }}>{mobile ? 'Thanks for stopping by.' : 'The screen resets for the next visitor.'}</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div role="button" onClick={reset} style={{ height: mobile ? 68 : 104, padding: mobile ? '0 8px 0 24px' : '0 14px 0 36px', borderRadius: mobile ? 20 : 24, background: INK, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 24, cursor: 'pointer' }}>
+                <span style={{ fontSize: mobile ? 18 : 24, fontWeight: 800 }}>Start a new assessment</span>
+                <span style={{ position: 'relative', width: mobile ? 52 : 76, height: mobile ? 52 : 76, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <svg width={mobile ? 52 : 76} height={mobile ? 52 : 76} viewBox="0 0 76 76" style={{ position: 'absolute', inset: 0, transform: 'rotate(-90deg)' }}>
+                    <circle cx="38" cy="38" r="32" fill="none" stroke="rgba(255,255,255,.16)" strokeWidth="6" />
+                    <circle cx="38" cy="38" r="32" fill="none" stroke={TEAL} strokeWidth="6" strokeDasharray="201.06" strokeDashoffset={201.06 * (1 - Math.max(count, 0) / THANKS_SECONDS)} style={{ transition: 'stroke-dashoffset 1s linear' }} />
+                  </svg>
+                  <span style={{ fontSize: mobile ? 18 : 26, fontWeight: 800, fontVariantNumeric: 'tabular-nums' }}>{Math.max(count, 0)}</span>
+                </span>
+              </div>
+              <div style={{ fontSize: mobile ? 14 : 18, fontWeight: 500, color: MUTED }}>{mobile ? 'Thanks for stopping by.' : 'The screen resets for the next visitor.'}</div>
+            </div>
           </div>
         </div>
       )}
 
-      {/* footer */}
+      {/* footer: Back left and Next right on the iPad; stacked on a phone, Next on top */}
       {!isThanks && (
         <div style={mobile
-          ? { flex: 'none', padding: `10px ${padX}px calc(12px + env(safe-area-inset-bottom, 0px))`, display: 'flex', flexDirection: 'column-reverse', gap: 10, background: 'linear-gradient(rgba(11,18,19,0), rgba(11,18,19,.92) 30%)' }
-          : { height: 120, flex: 'none', padding: `8px ${padX}px 16px`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
-          <div role="button" onClick={back} style={{ cursor: 'pointer', height: mobile ? 52 : 96, width: mobile ? '100%' : 210, borderRadius: 999, boxShadow: 'inset 0 0 0 2px rgba(255,255,255,.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, fontSize: mobile ? 17 : 22, fontWeight: 600, color: '#fff' }}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6" /></svg>Back
+          ? { flex: 'none', padding: `10px ${padX}px calc(12px + env(safe-area-inset-bottom, 0px))`, display: 'flex', flexDirection: 'column-reverse', gap: 10, background: `linear-gradient(rgba(242,242,244,0), ${CANVAS} 30%)` }
+          : { height: 120, flex: 'none', padding: `12px ${padX}px`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 14 }}>
+          <div role="button" onClick={back} style={{ cursor: 'pointer', height: mobile ? 52 : 96, width: mobile ? '100%' : 200, borderRadius: mobile ? 16 : 24, boxShadow: `inset 0 0 0 ${mobile ? 2 : 2.5}px ${INK}`, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, fontSize: mobile ? 17 : 22, fontWeight: 800, color: INK }}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={INK} strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M11 6l-6 6 6 6" /></svg>Back
           </div>
           <div role="button" aria-disabled={!nextOn || sending} onClick={next}
-            style={{ cursor: 'pointer', height: mobile ? 60 : 96, width: mobile ? '100%' : undefined, minWidth: mobile ? 0 : 300, padding: mobile ? '0 8px 0 24px' : '0 12px 0 40px', borderRadius: 999, background: nextOn ? '#fff' : P.offBg, boxShadow: nextOn ? '0 10px 40px rgba(255,255,255,.12)' : 'inset 0 0 0 1px rgba(255,255,255,.08)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 24, transition: 'background .2s' }}>
-            <span style={{ fontSize: mobile ? 18 : 22, fontWeight: 600, color: nextOn ? '#000' : P.offFg }}>{sending ? 'Sending…' : nextLabel}</span>
-            <span style={{ width: mobile ? 44 : 72, height: mobile ? 44 : 72, borderRadius: 999, background: nextNodeBg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Arrow c={nextOn ? '#000' : P.offFg} /></span>
+            style={{ cursor: 'pointer', height: mobile ? 60 : 96, flex: mobile ? 'none' : 1, width: mobile ? '100%' : undefined, maxWidth: mobile ? undefined : 460, padding: mobile ? '0 24px' : '0 36px', borderRadius: mobile ? 16 : 24, background: nextOn ? P.nextBg : P.offBg, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 24, transition: 'background .2s' }}>
+            <span style={{ fontSize: mobile ? 18 : 22, fontWeight: 800, color: nextOn ? P.nextFg : P.offFg }}>{sending ? 'Sending…' : nextLabel}</span>
+            <ArrowR c={nextOn ? P.nextArrow : P.offArrow} s={mobile ? 24 : 30} />
           </div>
         </div>
       )}
-      {pending > 0 && !kb.open && <div style={mobile ? { position: 'absolute', left: 0, right: 0, bottom: 1, textAlign: 'center', fontSize: 11, color: 'rgba(255,255,255,.5)', pointerEvents: 'none' } : { position: 'absolute', left: '50%', top: 24, transform: 'translateX(-50%)', fontSize: 18, color: 'rgba(255,255,255,.5)', pointerEvents: 'none' }}>{pending} saved on this {mobile ? 'phone' : 'iPad'} · will send when online</div>}
+      {pending > 0 && !kb.open && <div style={mobile ? { position: 'absolute', left: 0, right: 0, bottom: 1, textAlign: 'center', fontSize: 11, color: MUTED, pointerEvents: 'none' } : { position: 'absolute', left: '50%', top: 24, transform: 'translateX(-50%)', fontSize: 18, color: 'rgba(255,255,255,.6)', pointerEvents: 'none' }}>{pending} saved · will send when online</div>}
     </div>
   );
 }
