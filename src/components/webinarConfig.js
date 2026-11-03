@@ -11,7 +11,7 @@
 // .ics in public/ics/ — no component changes.
 //
 // Times are stored as UTC instants because the Eastern offset moves: October 20
-// is still on DST (UTC-4) while November 18 is not (UTC-5). Both sessions start
+// is still on DST (UTC-4) while December 2 is not (UTC-5). Both sessions start
 // at 11:00 local Eastern, which is why their UTC times differ by an hour. The
 // visible labels say EST because that is how the audience reads it.
 
@@ -232,10 +232,10 @@ export const WEBINARS = {
   "automation-ai-nov-2026": build({
     slug: "automation-ai-nov-2026",
     title: "Automation, AI and Industry 4.0 in the Testing Lab",
-    dateLabel: "Wednesday, November 18, 2026",
+    dateLabel: "Wednesday, December 2, 2026",
     timeLabel: "11:00 AM EST · 50 minutes, including Q&A",
-    startUTC: "2026-11-18T16:00:00Z",
-    endUTC: "2026-11-18T16:50:00Z",
+    startUTC: "2026-12-02T16:00:00Z",
+    endUTC: "2026-12-02T16:50:00Z",
     heroCopy:
       "Making a lab \"smart\" isn't one purchase. It's automating the repetitive work, producing data clean enough to be worth analysing, and connecting the two. Here is what that actually takes.",
     seatsTotal: 200,
