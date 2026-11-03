@@ -146,7 +146,7 @@ export default async (request) => {
         console.error('Thank-you template unavailable, sending the plain fallback:', error);
       }
       if (!html) {
-        text = `Hi ${firstName || 'there'},\n\nThank you for completing the LabsCubed Lab Assessment! We’ll review your responses and get back to you soon with insights into your laboratory’s automation potential, opportunities for improvement, and how our solutions could help you achieve your goals.\n\nWant to get started sooner? Book a time with our team: https://calendar.google.com/calendar/appointments/schedules/AcZssZ3euIx4Mb9AXBsNaY8vTFD57jHKEK4d-KBw4OGjkYSAI7lWVJXEiSqrT7e1mPCI4fkDWzE_U-p2\n\nBest regards,\nThe LabsCubed Team\n\nLabsCubed Inc · Ontario, Canada · info@labscubed.com`;
+        text = `Hi ${firstName || 'there'},\n\nThank you for completing the LabsCubed Lab Assessment! We’ll review your responses and get back to you soon with insights into your laboratory’s automation potential, opportunities for improvement, and how our solutions could help you achieve your goals.\n\nWant to get started sooner? Book a time with our team: https://calendar.app.google/kZJV4YVer6ykzqYv8\n\nBest regards,\nThe LabsCubed Team\n\nLabsCubed Inc · Ontario, Canada · info@labscubed.com`;
         html = `<p style="font-family:Arial,sans-serif;font-size:16px;line-height:1.6">${esc(text).replace(/\n/g, '<br>')}</p>`;
       }
       // The tablet retries a failed POST, so the same submission can arrive more
