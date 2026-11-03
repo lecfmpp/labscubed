@@ -22,7 +22,7 @@
  * touching the backend. Question copy comes from Mo'min's "Lab Assessment
  * Questionnaire". */
 import React from 'react';
-import { COUNTRIES } from '../lib/countries';
+import { worldCountries } from '../lib/world-countries';
 import { track } from '../lib/track';
 // @ts-ignore  specimen drawings, ported as is from the design system
 import { Sample } from './kiosk/Sample.jsx';
@@ -142,11 +142,7 @@ type Contact = { name: string; email: string; web: string; phone: string; countr
 const BLANK_CONTACT: Contact = { name: '', email: '', web: '', phone: '', country: 'US' };
 const THANKS_ASSESS = ['Testing costs and technician time', 'Workflow bottlenecks and capacity gains', 'Impact on turnaround time and backlog', 'Estimated automation ROI and payback'];
 
-const COUNTRY_LIST = (() => {
-  const top = ['US', 'CA'];
-  const first = top.map((c) => COUNTRIES.find((x) => x.c === c)).filter(Boolean) as typeof COUNTRIES;
-  return [...first, ...COUNTRIES.filter((x) => !top.includes(x.c))];
-})();
+const COUNTRY_LIST = worldCountries(['US', 'CA']);
 
 const errsOf = (c: Contact) => ({
   name: c.name.trim() ? '' : 'Add your full name',
@@ -284,8 +280,8 @@ function Btn({ label, alt, onClick, bg, fg, spec, w, arrow, back, ring, right, r
   );
 }
 
-function Tile({ o, on, mediaW, tileH, basis, otherValue, onOther, onTap, m }: {
-  o: Opt; on: boolean; mediaW: number; tileH: number; basis: number; otherValue: string; onOther: (v: string) => void; onTap: () => void; m?: boolean;
+function Tile({ o, on, mediaW, tileH, basis, otherValue, onOther, onTap, m, plain }: {
+  o: Opt; on: boolean; mediaW: number; tileH: number; basis: number; otherValue: string; onOther: (v: string) => void; onTap: () => void; m?: boolean; plain?: boolean;
 }) {
   const inp = on && !!o.other;
   const ml = (o.mark || '').length;
@@ -302,18 +298,24 @@ function Tile({ o, on, mediaW, tileH, basis, otherValue, onOther, onTap, m }: {
   return (
     <div role="button" aria-pressed={on} onClick={onTap}
       style={{ flex: `1 1 ${basis}px`, height: tileH, display: 'flex', borderRadius: radius, overflow: 'hidden', cursor: 'pointer', position: 'relative', background: on ? P.tileOn : P.tileBg, boxShadow: on ? P.glowOn : P.ring, transition: 'box-shadow .2s ease, background .2s ease' }}>
-      <div style={{ width: mediaW, flex: 'none', position: 'relative', overflow: 'hidden', background: 'linear-gradient(140deg, #0b1213 0%, #11302c 100%)' }}>
-        {o.img && <img src={o.img} alt="" draggable={false} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', transform: zoom, transition: 'transform .45s ease' }} />}
-        {o.mark && <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: markFs, fontWeight: 800, letterSpacing: '-0.05em', color: on ? P.markOn : P.mark, transform: zoom, transition: 'transform .45s ease' }}>{o.mark}</div>}
-        {o.sample && (
-          <div style={{ position: 'absolute', inset: 0, background: '#eef0f2', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <div style={{ width: '76%', transform: zoom, transition: 'transform .45s ease' }}>
-              <Sample standard={o.sample} color={on ? TEAL_D : INK} />
+      {plain ? (
+        <div style={{ flex: 'none', alignSelf: 'center', width: m ? 26 : 30, height: m ? 26 : 30, marginLeft: m ? 16 : 24, borderRadius: '50%', background: on ? TEAL : 'transparent', boxShadow: on ? 'none' : 'inset 0 0 0 2.5px #c7c7cc', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background .2s ease, box-shadow .2s ease' }}>
+          {on && <svg width={m ? 15 : 18} height={m ? 15 : 18} viewBox="0 0 24 24" fill="none" stroke="#0b3b36" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>}
+        </div>
+      ) : (
+        <div style={{ width: mediaW, flex: 'none', position: 'relative', overflow: 'hidden', background: 'linear-gradient(140deg, #0b1213 0%, #11302c 100%)' }}>
+          {o.img && <img src={o.img} alt="" draggable={false} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', transform: zoom, transition: 'transform .45s ease' }} />}
+          {o.mark && <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: markFs, fontWeight: 800, letterSpacing: '-0.05em', color: on ? P.markOn : P.mark, transform: zoom, transition: 'transform .45s ease' }}>{o.mark}</div>}
+          {o.sample && (
+            <div style={{ position: 'absolute', inset: 0, background: '#eef0f2', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ width: '76%', transform: zoom, transition: 'transform .45s ease' }}>
+                <Sample standard={o.sample} color={on ? TEAL_D : INK} />
+              </div>
             </div>
-          </div>
-        )}
-      </div>
-      <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', padding: m ? '0 14px' : '0 24px' }}>
+          )}
+        </div>
+      )}
+      <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', padding: plain ? (m ? '0 14px' : '0 20px') : m ? '0 14px' : '0 24px' }}>
         {!inp && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             <span style={{ fontSize: m ? 18 : 23, fontWeight: 800, lineHeight: 1.15, letterSpacing: '-0.02em', color: on ? P.fgOn : P.fg, textWrap: 'pretty' as any }}>{o.label}</span>
@@ -322,10 +324,10 @@ function Tile({ o, on, mediaW, tileH, basis, otherValue, onOther, onTap, m }: {
         )}
         {inp && (
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <span style={{ fontSize: m ? 14 : 18, fontWeight: 800, color: TEAL_D }}>Other, please specify</span>
-            <input ref={ref} value={otherValue} placeholder="Type your answer" autoComplete="off" autoCapitalize="sentences" enterKeyHint="done"
+            {!plain && <span style={{ fontSize: m ? 14 : 18, fontWeight: 800, color: TEAL_D }}>Other, please specify</span>}
+            <input ref={ref} value={otherValue} placeholder={plain ? 'Other: type your answer' : 'Type your answer'} autoComplete="off" autoCapitalize="sentences" enterKeyHint="done"
               onClick={(e) => e.stopPropagation()} onChange={(e) => onOther(e.target.value)}
-              style={{ height: m ? 44 : 48, border: 'none', outline: 'none', borderRadius: 12, background: '#fff', boxShadow: 'inset 0 0 0 1.5px rgba(13,148,136,.45)', padding: '0 14px', font: m ? '500 17px Inter, sans-serif' : '500 21px Inter, sans-serif', color: INK, width: '100%' }} />
+              style={{ height: plain ? Math.max(36, tileH - 14) : m ? 44 : 48, border: 'none', outline: 'none', borderRadius: 12, background: '#fff', boxShadow: 'inset 0 0 0 1.5px rgba(13,148,136,.45)', padding: '0 14px', font: m ? '500 17px Inter, sans-serif' : '500 21px Inter, sans-serif', color: INK, width: '100%' }} />
           </div>
         )}
       </div>
@@ -497,7 +499,6 @@ export default function LabAssessment() {
   const padX = mobile ? 20 : port ? 44 : 52;
   const segW = mobile ? 20 : port ? 30 : 40;
   const vpH = kb.h ?? window.innerHeight;
-  const tileH = mobile ? (vpH < 700 ? 64 : 76) : port ? 96 : 105;
   const topH = mobile ? 56 : 72;
   /* Short phone screens (small iPhones, landscape phones) compact further so the answers,
      and above all the Next button, stay on screen without scrolling. */
@@ -508,13 +509,17 @@ export default function LabAssessment() {
   const BTN: BtnSpec = mobile
     ? compactBtn ? { h: 48, r: 14, px: 16, fs: 16, icon: 20, gap: 10 } : { h: 56, r: 16, px: 20, fs: 17, icon: 22, gap: 12 }
     : { h: 96, r: 24, px: 32, fs: 22, icon: 28, gap: 16 };
+  /* Pre-assessment questions are text only: the question, then the choices stacked one under
+     the other. The specimen standards keep their drawings, the materials list its photos. */
+  const plain = !!q && !q.learn && screen !== 'standards';
   /* The 10px row gap is part of the 1180x820 design; at 1024x768 four rows of 105px
      tiles (the machines list) only fit if the rows are spaced by space-evenly alone,
      the way the portrait layout already does. */
-  const rowGap = mobile ? 12 : port || window.innerHeight < 800 ? 0 : 10;
+  const rowGap = plain ? 8 : mobile ? 12 : port || window.innerHeight < 800 ? 0 : 10;
   const opts = optsFor();
-  const three = !mobile && !port && opts.length > 4 && opts.length <= 6;
-  const basis = mobile ? 280 : three ? 300 : 440;
+  const tileH = plain ? (mobile ? (vpH < 700 ? 50 : 58) : port ? 80 : opts.length <= 5 ? 68 : window.innerHeight < 800 ? 46 : 52) : mobile ? (vpH < 700 ? 64 : 76) : port ? 96 : 105;
+  const three = !plain && !mobile && !port && opts.length > 4 && opts.length <= 6;
+  const basis = plain ? 4000 : mobile ? 280 : three ? 300 : 440;
   const narrow = !port && window.innerWidth < 1100;
   /* The 200px photo panel leaves too little text width on the 1024px iPad (the materials
      tiles, with a title and a sub-line, clip), so it is 150px there like the 3-column layout. */
@@ -694,7 +699,7 @@ export default function LabAssessment() {
         <div className="la-scroll" style={{ flex: 1, minHeight: 0, position: 'relative', padding: `0 ${padX}px`, display: 'flex', flexWrap: 'wrap', alignContent: kb.open || mobile ? 'flex-start' : 'space-evenly', gap: `${kb.open ? 14 : rowGap}px ${mobile ? 12 : 14}px`, overflowY: 'auto', paddingBottom: mobile ? 12 : 0 }}>
           {opts.map((o) => (
             <Tile key={screen + o.id} o={o} on={sel.includes(o.id)} mediaW={mediaW} tileH={tileH} basis={basis}
-              otherValue={other[key] || ''} onOther={(v) => setOther((p) => ({ ...p, [key]: v }))} onTap={() => tap(o)} m={mobile} />
+              otherValue={other[key] || ''} onOther={(v) => setOther((p) => ({ ...p, [key]: v }))} onTap={() => tap(o)} m={mobile} plain={plain} />
           ))}
           {kb.open && <div style={{ position: 'sticky', left: 0, right: 0, top: 0, height: 56, marginTop: -56, width: '100%', background: `linear-gradient(${CANVAS}, rgba(242,242,244,0))`, pointerEvents: 'none', order: -1 }} />}
         </div>
