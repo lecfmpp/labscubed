@@ -515,9 +515,12 @@ export default function LabAssessment() {
   /* The 10px row gap is part of the 1180x820 design; at 1024x768 four rows of 105px
      tiles (the machines list) only fit if the rows are spaced by space-evenly alone,
      the way the portrait layout already does. */
-  const rowGap = plain ? 8 : mobile ? 12 : port || window.innerHeight < 800 ? 0 : 10;
+  /* Every answer tile on every screen shares one height and one gap per device, so the
+     buttons read as a set: nothing grows or shrinks with the number of choices. The rows
+     stack from the top (flex-start) instead of being spread over the free height. */
+  const rowGap = mobile ? 12 : port ? 14 : window.innerHeight < 800 ? 6 : 8;
   const opts = optsFor();
-  const tileH = plain ? (mobile ? (vpH < 700 ? 50 : 58) : port ? 80 : opts.length <= 5 ? 68 : window.innerHeight < 800 ? 46 : 52) : mobile ? (vpH < 700 ? 64 : 76) : port ? 96 : 105;
+  const tileH = mobile ? (vpH < 700 ? 50 : 58) : port ? 82 : window.innerHeight < 800 ? 44 : 48;
   const three = !plain && !mobile && !port && opts.length > 4 && opts.length <= 6;
   const basis = plain ? 4000 : mobile ? 280 : three ? 300 : 440;
   const narrow = !port && window.innerWidth < 1100;
@@ -696,7 +699,7 @@ export default function LabAssessment() {
 
       {/* tiles */}
       {q && (
-        <div className="la-scroll" style={{ flex: 1, minHeight: 0, position: 'relative', padding: `0 ${padX}px`, display: 'flex', flexWrap: 'wrap', alignContent: kb.open || mobile ? 'flex-start' : 'space-evenly', gap: `${kb.open ? 14 : rowGap}px ${mobile ? 12 : 14}px`, overflowY: 'auto', paddingBottom: mobile ? 12 : 0 }}>
+        <div className="la-scroll" style={{ flex: 1, minHeight: 0, position: 'relative', padding: `0 ${padX}px`, display: 'flex', flexWrap: 'wrap', alignContent: 'flex-start', gap: `${kb.open ? 14 : rowGap}px ${mobile ? 12 : 14}px`, overflowY: 'auto', paddingBottom: mobile ? 12 : 0 }}>
           {opts.map((o) => (
             <Tile key={screen + o.id} o={o} on={sel.includes(o.id)} mediaW={mediaW} tileH={tileH} basis={basis}
               otherValue={other[key] || ''} onOther={(v) => setOther((p) => ({ ...p, [key]: v }))} onTap={() => tap(o)} m={mobile} plain={plain} />
@@ -776,10 +779,10 @@ export default function LabAssessment() {
         <div style={mobile
           ? { flex: 'none', padding: `10px ${padX}px calc(12px + env(safe-area-inset-bottom, 0px))`, display: 'flex', flexDirection: short || wideMobile ? 'row' : 'column-reverse', gap: 10, background: `linear-gradient(rgba(242,242,244,0), ${CANVAS} 30%)` }
           : { height: 120, flex: 'none', padding: `12px ${padX}px`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 14 }}>
-          <Btn label="Back" onClick={back} fg={INK} back ring={`inset 0 0 0 ${mobile ? 2 : 2.5}px ${INK}`} spec={BTN} w={mobile ? (compactBtn ? 104 : W - 2 * padX) : 200}
-            style={{ width: mobile ? (compactBtn ? 104 : '100%') : 200, flex: 'none' }} />
-          <Btn label={sending ? 'Sending…' : nextLabel} alt={isContact || screen === 'learn' ? 'Send' : screen === 'standards' && sel.length === 0 ? 'Skip' : undefined} onClick={next} bg={nextOn ? P.nextBg : P.offBg} fg={nextOn ? P.nextFg : P.offFg} arrow={nextOn ? P.nextArrow : P.offArrow} spec={BTN} w={mobile ? (compactBtn ? W - 2 * padX - 114 : W - 2 * padX) : Math.min(460, W - 2 * padX - 214)} disabled={!nextOn || sending}
-            style={mobile ? (compactBtn ? { flex: 1 } : { width: '100%' }) : { flex: 1, maxWidth: 460 }} />
+          <Btn label="Back" onClick={back} fg={INK} back ring={`inset 0 0 0 ${mobile ? 2 : 2.5}px ${INK}`} spec={BTN} w={mobile ? (compactBtn ? 104 : W - 2 * padX) : Math.floor((W - 2 * padX - 14) / 2)}
+            style={mobile ? { width: compactBtn ? 104 : '100%', flex: 'none' } : { flex: 1 }} />
+          <Btn label={sending ? 'Sending…' : nextLabel} alt={isContact || screen === 'learn' ? 'Send' : screen === 'standards' && sel.length === 0 ? 'Skip' : undefined} onClick={next} bg={nextOn ? P.nextBg : P.offBg} fg={nextOn ? P.nextFg : P.offFg} arrow={nextOn ? P.nextArrow : P.offArrow} spec={BTN} w={mobile ? (compactBtn ? W - 2 * padX - 114 : W - 2 * padX) : Math.floor((W - 2 * padX - 14) / 2)} disabled={!nextOn || sending}
+            style={mobile ? (compactBtn ? { flex: 1 } : { width: '100%' }) : { flex: 1 }} />
         </div>
       )}
       {pending > 0 && !kb.open && <div style={mobile ? { position: 'absolute', left: 0, right: 0, bottom: 1, textAlign: 'center', fontSize: 11, color: MUTED, pointerEvents: 'none' } : { position: 'absolute', left: '50%', top: 24, transform: 'translateX(-50%)', fontSize: 18, color: 'rgba(255,255,255,.6)', pointerEvents: 'none' }}>{pending} saved · will send when online</div>}
