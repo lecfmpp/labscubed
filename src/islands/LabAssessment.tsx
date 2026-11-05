@@ -112,7 +112,7 @@ const STD_R: Opt[] = [
 const MATERIALS: Opt[] = [
   { id: 'cubeten-brochure', label: 'CubeTen brochure' },
   { id: 'cubeone-brochure', label: 'CubeOne brochure' },
-  { id: 'whitepaper', label: 'White paper: Beyond the Bottleneck' },
+  { id: 'whitepaper', label: 'White paper' },
   { id: 'spe-replay', label: 'SPE webinar replay' },
 ];
 
@@ -442,6 +442,8 @@ export default function LabAssessment() {
   };
 
   const isContact = screen === 'contact';
+  /* The 1024x768 iPad is short: slimmer fields keep the whole last step on one screen. */
+  const fieldH = mobile ? 68 : !port && window.innerHeight < 800 ? 76 : 88;
   const nextOn = isContact || screen === 'standards' || sel.length > 0;
   const E = errsOf(contact);
   const showErr = tried;
@@ -669,7 +671,7 @@ export default function LabAssessment() {
             const err = !!msg;
             return (
               <div key={f.k} style={{ flex: mobile ? '1 1 100%' : '1 1 440px', display: 'flex', flexDirection: 'column', gap: 6 }}>
-                <label style={{ height: mobile ? 68 : 88, borderRadius: mobile ? 14 : 18, background: err ? P.fieldErr : P.field, boxShadow: err ? P.errRing : P.fieldRing, padding: mobile ? '9px 16px 0' : '12px 22px 0', display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <label style={{ height: fieldH, borderRadius: mobile ? 14 : 18, background: err ? P.fieldErr : P.field, boxShadow: err ? P.errRing : P.fieldRing, padding: mobile ? '9px 16px 0' : '12px 22px 0', display: 'flex', flexDirection: 'column', gap: 2 }}>
                   <span style={{ fontSize: mobile ? 13 : 18, fontWeight: 800, color: err ? P.labelErr : P.label }}>{f.label}</span>
                   <input value={contact[f.k]} placeholder={f.ph} type={f.type} inputMode={f.mode} autoComplete="off" autoCorrect="off" autoCapitalize={f.cap} spellCheck={false}
                     onChange={(e) => setContact((c) => ({ ...c, [f.k]: e.target.value }))}
@@ -680,23 +682,23 @@ export default function LabAssessment() {
               </div>
             );
           })}
-          <label style={{ flex: '1 1 100%', height: mobile ? 68 : 88, borderRadius: mobile ? 14 : 18, background: '#fff', padding: mobile ? '9px 16px 0' : '12px 22px 0', display: 'flex', flexDirection: 'column', gap: 2, position: 'relative' }}>
+          <label style={{ flex: '1 1 100%', height: fieldH, borderRadius: mobile ? 14 : 18, background: '#fff', padding: mobile ? '9px 16px 0' : '12px 22px 0', display: 'flex', flexDirection: 'column', gap: 2, position: 'relative' }}>
             <span style={{ fontSize: mobile ? 13 : 18, fontWeight: 800, color: MUTED }}>Country</span>
             <select value={contact.country} onChange={(e) => setContact((c) => ({ ...c, country: e.target.value }))}
               style={{ appearance: 'none', WebkitAppearance: 'none', border: 'none', outline: 'none', background: 'transparent', padding: 0, font: mobile ? '500 18px Inter, sans-serif' : '500 24px Inter, sans-serif', color: INK, width: '100%' }}>
               {COUNTRY_LIST.map((c) => <option key={c.c} value={c.c}>{c.n}</option>)}
             </select>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={INK} strokeWidth="2.4" strokeLinecap="round" style={{ position: 'absolute', right: mobile ? 16 : 24, top: mobile ? 26 : 33, pointerEvents: 'none' }}><path d="M6 9l6 6 6-6" /></svg>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={INK} strokeWidth="2.4" strokeLinecap="round" style={{ position: 'absolute', right: mobile ? 16 : 24, top: mobile ? 26 : Math.round(fieldH * 0.375), pointerEvents: 'none' }}><path d="M6 9l6 6 6-6" /></svg>
           </label>
           <div style={{ flex: '1 1 100%', marginTop: mobile ? 4 : 8 }}>
             <Eyebrow m={mobile}>Also email me (optional)</Eyebrow>
           </div>
           {MATERIALS.map((o) => (
-            <Tile key={o.id} o={o} on={materials.includes(o.id)} mediaW={mediaW} tileH={tileH} basis={mobile ? 280 : 440}
+            <Tile key={o.id} o={o} on={materials.includes(o.id)} mediaW={mediaW} tileH={tileH} basis={mobile ? 280 : port ? 300 : 440}
               otherValue="" onOther={() => {}} onTap={() => setMaterials((p) => (p.includes(o.id) ? p.filter((x) => x !== o.id) : [...p, o.id]))} m={mobile} plain />
           ))}
           <div style={{ flex: '1 1 100%', fontSize: mobile ? 14 : 18, fontWeight: 500, color: MUTED, lineHeight: 1.4, paddingBottom: mobile ? 0 : 16 }}>
-            We'll email your personalized assessment, and any materials you tick below, to this address.
+            We'll email your assessment, and any materials you tick, to this address.
           </div>
         </div>
       )}
