@@ -84,7 +84,7 @@ export default async (request) => {
   if (!country) return json(400, { error: 'Missing country' });
   if (!answers.industry) return json(400, { error: 'Missing answers' });
 
-  const industry = LABELS.industry[answers.industry] || String(answers.industry);
+  const industry = String(answers.industry).split(',').map((id) => LABELS.industry[id.trim()] || id.trim()).join(', ');
   const volume = LABELS.volume[answers.volume] || String(answers.volume || '');
   const tests = list(answers.tests, answers.tests_other);
   const machines = list(answers.machines, answers.machines_other);

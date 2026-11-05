@@ -4,12 +4,10 @@
  * design review): light canvas, dark top band, heavy Inter 800 type. Landscape 1180x820 (holds at 1024x768) and portrait 820x1180,
  * touch only: tap targets 96px+, nothing relies on hover, text never below 18px.
  *
- * Two paths from the first screen:
- *   assess  free lab assessment: cover, six questions, contact, thank you.
- *           Submits to netlify/functions/booth-assessment.mjs.
- *   learn   explore materials: pick brochures / white paper / webinar replay,
- *           contact, thank you. Submits to netlify/functions/booth-capture.mjs,
- *           the same endpoint the earlier brochure tablet used.
+ * One path: cover, six questions, contact (with the materials the visitor wants by
+ * email), thank you. The assessment goes to netlify/functions/booth-assessment.mjs;
+ * any ticked materials go to netlify/functions/booth-capture.mjs, the same endpoint
+ * the earlier brochure tablet used.
  *
  * It is a shared device, so nothing is kept after a visitor finishes: answers are
  * wiped on the thank-you countdown and after a stretch of inactivity. The only
@@ -35,7 +33,7 @@ const IDLE_MS = 90_000;
 const THANKS_SECONDS = 15;
 
 const K = (n: string) => `/assets/img/assessment/kiosk/${n}`;
-const COVER = '/assets/img/assessment/cover-lab-office.webp';
+const COVER = K('cubeten-loading-tray.webp');
 const LOGO = K('logo.png');
 
 /* ---------- design tokens (README, "Design tokens" and "Answer tiles") ---------- */
@@ -60,7 +58,6 @@ type Opt = { id: string; label: string; sub?: string; img?: string; mark?: strin
 const INDUSTRY: Opt[] = [
   { id: 'plastics', label: 'Plastics', img: K('hero-plastic.webp') },
   { id: 'rubber', label: 'Rubber', img: K('rubber-testing-large.webp') },
-  { id: 'both', label: 'Plastics and rubber', img: K('cubeten-loading-tray.webp') },
   { id: 'other', label: 'Other', mark: '+' },
 ];
 const TESTS: Opt[] = [
@@ -109,33 +106,33 @@ const STD_R: Opt[] = [
   { id: 'iso-37', label: 'ISO 37', sub: 'Type 2 · tensile · rubber', sample: 'iso-37-2' },
   { id: 'astm-d624', label: 'ASTM D624', sub: 'Die C · tear · rubber', sample: 'astm-d624-c' },
 ];
-/* Materials. `id` is what booth-capture.mjs sends (cubeten-brochure, cubeone-brochure,
-   whitepaper go through the download-request edge function; spe-replay is a link). */
+/* Materials the visitor can tick on the last step. `id` is what booth-capture.mjs
+   takes (cubeten-brochure, cubeone-brochure, whitepaper go through the download-request
+   edge function; spe-replay is a link). */
 const MATERIALS: Opt[] = [
-  { id: 'cubeten-brochure', label: 'CubeTen brochure', sub: 'Plastics · ASTM D638, ISO 527', img: K('hero-plastic.webp') },
-  { id: 'spe-replay', label: 'SPE webinar replay', sub: 'The Hidden Cost of Manual Plastics Testing', img: K('step2-cubeten-measurement.webp') },
-  { id: 'cubeone-brochure', label: 'CubeOne brochure', sub: 'Rubber · ASTM D412, ISO 37', img: K('hero-rubber.webp') },
-  { id: 'whitepaper', label: 'White paper: Beyond the Bottleneck', sub: 'Automation business case', img: K('stats-bg.webp') },
+  { id: 'cubeten-brochure', label: 'CubeTen brochure' },
+  { id: 'cubeone-brochure', label: 'CubeOne brochure' },
+  { id: 'whitepaper', label: 'White paper: Beyond the Bottleneck' },
+  { id: 'spe-replay', label: 'SPE webinar replay' },
 ];
 
-type QKey = 'industry' | 'tests' | 'machines' | 'volume' | 'priority' | 'standards' | 'learn';
-type QDef = { step: number; eb: string; title: string; hint: string; single?: boolean; learn?: boolean };
+type QKey = 'industry' | 'tests' | 'machines' | 'volume' | 'priority' | 'standards';
+type QDef = { step: number; eb: string; title: string; hint: string; single?: boolean };
 const Q: Record<QKey, QDef> = {
-  industry: { step: 1, eb: 'Industry', title: 'Which industry do you work in?', hint: 'Tap one to continue', single: true },
+  industry: { step: 1, eb: 'Industry', title: 'Which industry do you work in?', hint: 'Select all that apply' },
   tests: { step: 2, eb: 'Test types', title: 'What types of tests does your laboratory perform?', hint: 'Select all that apply' },
   machines: { step: 3, eb: 'Equipment', title: 'What testing machines do you currently use?', hint: 'Select all that apply' },
   volume: { step: 4, eb: 'Daily volume', title: 'How many specimens do you test daily?', hint: 'Tap one to continue', single: true },
   priority: { step: 5, eb: 'Priorities', title: "What is your laboratory's main priority?", hint: 'Select all that apply' },
   standards: { step: 6, eb: 'Standards', title: 'Which specimens and testing standards do you use?', hint: "Optional. Select all that apply, or skip if you're not sure." },
-  learn: { step: 0, eb: 'Product materials', title: 'Choose what we send you.', hint: "Select all that apply. We'll email them to you.", learn: true },
 };
 
-type Screen = 'choose' | 'cover' | QKey | 'contact' | 'thanks';
-type Path = 'assess' | 'learn';
-const ORD: Record<Path, Screen[]> = {
-  assess: ['choose', 'cover', 'industry', 'tests', 'machines', 'volume', 'priority', 'standards', 'contact', 'thanks'],
-  learn: ['choose', 'learn', 'contact', 'thanks'],
-};
+type Screen = 'cover' | QKey | 'contact' | 'thanks';
+const ORD: Screen[] = ['cover', 'industry', 'tests', 'machines', 'volume', 'priority', 'standards', 'contact', 'thanks'];
+
+/* Industry is multiple choice; the backend still takes one value, so plastics + rubber
+   is its existing 'both', and anything else is the ids joined by commas. */
+const industryValue = (ids: string[]) => (ids.includes('plastics') && ids.includes('rubber') && ids.length === 2 ? 'both' : ids.join(','));
 
 type Ans = Partial<Record<QKey, string[]>>;
 type Contact = { name: string; email: string; web: string; phone: string; country: string };
@@ -297,7 +294,7 @@ function Tile({ o, on, mediaW, tileH, basis, otherValue, onOther, onTap, m, plai
   }, [inp]);
   return (
     <div role="button" aria-pressed={on} onClick={onTap}
-      style={{ flex: `1 1 ${basis}px`, height: tileH, display: 'flex', borderRadius: radius, overflow: 'hidden', cursor: 'pointer', position: 'relative', background: on ? P.tileOn : P.tileBg, boxShadow: on ? P.glowOn : P.ring, transition: 'box-shadow .2s ease, background .2s ease' }}>
+      style={{ flex: inp ? '1 1 100%' : `1 1 ${basis}px`, height: inp ? tileH + (m ? 20 : 28) : tileH, display: 'flex', borderRadius: radius, overflow: 'hidden', cursor: 'pointer', position: 'relative', background: on ? P.tileOn : P.tileBg, boxShadow: on ? P.glowOn : P.ring, transition: 'box-shadow .2s ease, background .2s ease' }}>
       {plain ? (
         <div style={{ flex: 'none', alignSelf: 'center', width: m ? 26 : 30, height: m ? 26 : 30, marginLeft: m ? 16 : 24, borderRadius: '50%', background: on ? TEAL : 'transparent', boxShadow: on ? 'none' : 'inset 0 0 0 2.5px #c7c7cc', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background .2s ease, box-shadow .2s ease' }}>
           {on && <svg width={m ? 15 : 18} height={m ? 15 : 18} viewBox="0 0 24 24" fill="none" stroke="#0b3b36" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>}
@@ -315,7 +312,7 @@ function Tile({ o, on, mediaW, tileH, basis, otherValue, onOther, onTap, m, plai
           )}
         </div>
       )}
-      <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', padding: plain ? (m ? '0 14px' : '0 20px') : m ? '0 14px' : '0 24px' }}>
+      <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', padding: inp ? (m ? '0 14px 0 8px' : '0 24px 0 12px') : plain ? (m ? '0 14px' : '0 20px') : m ? '0 14px' : '0 24px' }}>
         {!inp && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             <span style={{ fontSize: m ? 18 : 23, fontWeight: 800, lineHeight: 1.15, letterSpacing: '-0.02em', color: on ? P.fgOn : P.fg, textWrap: 'pretty' as any }}>{o.label}</span>
@@ -324,10 +321,9 @@ function Tile({ o, on, mediaW, tileH, basis, otherValue, onOther, onTap, m, plai
         )}
         {inp && (
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
-            {!plain && <span style={{ fontSize: m ? 14 : 18, fontWeight: 800, color: TEAL_D }}>Other, please specify</span>}
-            <input ref={ref} value={otherValue} placeholder={plain ? 'Other: type your answer' : 'Type your answer'} autoComplete="off" autoCapitalize="sentences" enterKeyHint="done"
+            <input ref={ref} value={otherValue} placeholder="Other: type your answer" autoComplete="off" autoCapitalize="sentences" enterKeyHint="done"
               onClick={(e) => e.stopPropagation()} onChange={(e) => onOther(e.target.value)}
-              style={{ height: plain ? Math.max(36, tileH - 14) : m ? 44 : 48, border: 'none', outline: 'none', borderRadius: 12, background: '#fff', boxShadow: 'inset 0 0 0 1.5px rgba(13,148,136,.45)', padding: '0 14px', font: m ? '500 17px Inter, sans-serif' : '500 21px Inter, sans-serif', color: INK, width: '100%' }} />
+              style={{ height: tileH - 2, border: 'none', outline: 'none', borderRadius: 12, background: '#fff', boxShadow: 'inset 0 0 0 1.5px rgba(13,148,136,.45)', padding: '0 18px', font: m ? '500 17px Inter, sans-serif' : '500 21px Inter, sans-serif', color: INK, width: '100%' }} />
           </div>
         )}
       </div>
@@ -338,9 +334,9 @@ function Tile({ o, on, mediaW, tileH, basis, otherValue, onOther, onTap, m, plai
 }
 
 export default function LabAssessment() {
-  const [screen, setScreen] = React.useState<Screen>('choose');
-  const [path, setPath] = React.useState<Path>('assess');
+  const [screen, setScreen] = React.useState<Screen>('cover');
   const [ans, setAns] = React.useState<Ans>({});
+  const [materials, setMaterials] = React.useState<string[]>([]);
   const [other, setOther] = React.useState<Partial<Record<QKey, string>>>({});
   const [contact, setContact] = React.useState<Contact>(BLANK_CONTACT);
   const [tried, setTried] = React.useState(false);
@@ -384,14 +380,14 @@ export default function LabAssessment() {
 
   const reset = React.useCallback(() => {
     clearTimeout(advance.current);
-    setScreen('choose'); setPath('assess'); setAns({}); setOther({}); setContact(BLANK_CONTACT);
+    setScreen('cover'); setAns({}); setMaterials([]); setOther({}); setContact(BLANK_CONTACT);
     setTried(false); setSending(false); setCount(THANKS_SECONDS);
   }, []);
 
   /* A visitor who walks away mid-flow: wipe after a stretch with no touch (not on the
-     entry screen, which holds nothing, nor the thank-you screen, which has its own countdown). */
+     cover, which holds nothing, nor the thank-you screen, which has its own countdown). */
   React.useEffect(() => {
-    if (screen === 'choose' || screen === 'thanks') return;
+    if (screen === 'cover' || screen === 'thanks') return;
     const bump = () => { clearTimeout(idleRef.current); idleRef.current = window.setTimeout(() => { if (!sending) reset(); }, window.innerWidth <= 640 ? 300_000 : IDLE_MS); };
     bump();
     const evs = ['pointerdown', 'keydown', 'input'];
@@ -408,9 +404,8 @@ export default function LabAssessment() {
   React.useEffect(() => { if (screen === 'thanks' && count <= 0) reset(); }, [count, screen, reset]);
 
   const go = (d: number) => {
-    setScreen((cur) => { const o = ORD[path]; return o[Math.max(0, Math.min(o.length - 1, o.indexOf(cur) + d))]; });
+    setScreen((cur) => ORD[Math.max(0, Math.min(ORD.length - 1, ORD.indexOf(cur) + d))]);
   };
-  const goTo = (s: Screen, p: Path) => { clearTimeout(advance.current); setPath(p); setTried(false); setScreen(s); };
 
   const q = (screen in Q ? Q[screen as QKey] : null) as QDef | null;
   const key = screen as QKey;
@@ -423,10 +418,10 @@ export default function LabAssessment() {
       case 'machines': return MACHINES;
       case 'volume': return VOLUME;
       case 'priority': return PRIORITY;
-      case 'learn': return MATERIALS;
       case 'standards': {
-        const ind = (ans.industry || [])[0];
-        return [...(ind === 'plastics' ? STD_P : ind === 'rubber' ? STD_R : [...STD_P, ...STD_R]), { id: 'other', label: 'Other', mark: '+', other: true }];
+        const ind = ans.industry || [];
+        const plastics = ind.includes('plastics'), rubber = ind.includes('rubber');
+        return [...(plastics && !rubber ? STD_P : rubber && !plastics ? STD_R : [...STD_P, ...STD_R]), { id: 'other', label: 'Other', mark: '+', other: true }];
       }
       default: return [];
     }
@@ -447,7 +442,6 @@ export default function LabAssessment() {
   };
 
   const isContact = screen === 'contact';
-  const learnPath = path === 'learn';
   const nextOn = isContact || screen === 'standards' || sel.length > 0;
   const E = errsOf(contact);
   const showErr = tried;
@@ -456,29 +450,31 @@ export default function LabAssessment() {
     setSending(true);
     const client_id = (crypto as any).randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random();
     const ct = { name: contact.name.trim(), email: contact.email.trim().toLowerCase(), website: contact.web.trim(), phone: contact.phone.trim(), country: contact.country };
-    let ep: string; let body: any;
-    if (learnPath) {
-      ep = CAPTURE_ENDPOINT;
-      body = { client_id, event_slug: EVENT_SLUG, path: 'learn', name: ct.name, email: ct.email, company: siteHost(ct.website), website: ct.website, phone: ct.phone, country: ct.country,
-        assets: ans.learn || [], source: window.location.pathname, submitted_at: new Date().toISOString() };
-    } else {
-      ep = ASSESS_ENDPOINT;
-      body = {
-        client_id, event_slug: EVENT_SLUG, path: 'assess', page: window.location.pathname, submitted_at: new Date().toISOString(),
-        answers: {
-          industry: (ans.industry || [])[0] || '',
-          tests: ans.tests || [], tests_other: (other.tests || '').trim(),
-          machines: ans.machines || [], machines_other: (other.machines || '').trim(),
-          volume: (ans.volume || [])[0] || '',
-          priorities: ans.priority || [], priorities_other: (other.priority || '').trim(),
-          standards: ans.standards || [], standards_other: (other.standards || '').trim(),
-        },
-        contact: ct,
-      };
+    const body = {
+      client_id, event_slug: EVENT_SLUG, path: 'assess', page: window.location.pathname, submitted_at: new Date().toISOString(),
+      answers: {
+        industry: industryValue(ans.industry || []),
+        tests: ans.tests || [], tests_other: (other.tests || '').trim(),
+        machines: ans.machines || [], machines_other: (other.machines || '').trim(),
+        volume: (ans.volume || [])[0] || '',
+        priorities: ans.priority || [], priorities_other: (other.priority || '').trim(),
+        standards: ans.standards || [], standards_other: (other.standards || '').trim(),
+      },
+      contact: ct,
+    };
+    const jobs: Queued[] = [{ ep: ASSESS_ENDPOINT, body }];
+    /* Materials ticked on the last step go to the capture endpoint as their own request,
+       so a failure there never costs the assessment (each is queued and retried alone). */
+    if (materials.length) {
+      jobs.push({ ep: CAPTURE_ENDPOINT, body: { client_id: `${client_id}-materials`, event_slug: EVENT_SLUG, path: 'assess', name: ct.name, email: ct.email, company: siteHost(ct.website), website: ct.website, phone: ct.phone, country: ct.country,
+        assets: materials, source: window.location.pathname, submitted_at: new Date().toISOString() } });
     }
-    const ok = await post(ep, body);
-    if (!ok) { const qd = readQueue(); qd.push({ ep, body }); writeQueue(qd); setPending(qd.length); }
-    track(learnPath ? 'booth_materials_submit' : 'booth_assessment_submit', { event: EVENT_SLUG, delivered: ok });
+    let ok = true;
+    for (const job of jobs) {
+      const sent = await post(job.ep, job.body);
+      if (!sent) { ok = false; const qd = readQueue(); qd.push(job); writeQueue(qd); setPending(qd.length); }
+    }
+    track('booth_assessment_submit', { event: EVENT_SLUG, delivered: ok, materials: materials.length });
     setSending(false);
     setTried(false);
     setScreen('thanks');
@@ -511,7 +507,7 @@ export default function LabAssessment() {
     : { h: 96, r: 24, px: 32, fs: 22, icon: 28, gap: 16 };
   /* Pre-assessment questions are text only: the question, then the choices stacked one under
      the other. The specimen standards keep their drawings, the materials list its photos. */
-  const plain = !!q && !q.learn && screen !== 'standards';
+  const plain = !!q && screen !== 'standards';
   /* The 10px row gap is part of the 1180x820 design; at 1024x768 four rows of 105px
      tiles (the machines list) only fit if the rows are spaced by space-evenly alone,
      the way the portrait layout already does. */
@@ -520,7 +516,9 @@ export default function LabAssessment() {
      stack from the top (flex-start) instead of being spread over the free height. */
   const rowGap = mobile ? 12 : port ? 14 : window.innerHeight < 800 ? 6 : 8;
   const opts = optsFor();
-  const tileH = mobile ? (vpH < 700 ? 50 : 58) : port ? 82 : window.innerHeight < 800 ? 44 : 48;
+  /* Standards tiles carry a title and a sub-line, which need more than the 44-48px of a one-line answer. */
+  const two = screen === 'standards';
+  const tileH = mobile ? (two ? 66 : vpH < 700 ? 50 : 58) : port ? 82 : two ? 64 : window.innerHeight < 800 ? 44 : 48;
   const three = !plain && !mobile && !port && opts.length > 4 && opts.length <= 6;
   const basis = plain ? 4000 : mobile ? 280 : three ? 300 : 440;
   const narrow = !port && window.innerWidth < 1100;
@@ -535,7 +533,6 @@ export default function LabAssessment() {
   const titleSize = mobile ? (vpH < 700 ? (titleLong ? 21 : 24) : titleLong ? 24 : 28) : port ? 44 : titleLong || narrow ? 38 : 46;
   const rootStyle: React.CSSProperties = { top: kb.top, height: kb.h ?? '100dvh' };
   const step = q ? q.step : 7;
-  const noProg = screen === 'learn' || (learnPath && (isContact || screen === 'thanks'));
 
   /* ---------- screens ---------- */
   if (screen === 'cover') {
@@ -585,49 +582,7 @@ export default function LabAssessment() {
             </div>
           </div>
         )}
-      </div>
-    );
-  }
-
-  if (screen === 'choose') {
-    /* Width the button will really have, so its label can be fitted to one line. */
-    const cardInner = mobile ? (wideMobile ? (W - 2 * padX - 12) / 2 : W - 2 * padX) - (short ? 28 : 32) : (port ? W - 2 * padX : (W - 2 * padX - 16) / 2) - 56;
-    const slabBtn = (label: string, bg: string, arrow: string, onClick: () => void) => (
-      <Btn label={label} onClick={onClick} bg={bg} fg="#000" arrow={arrow} spec={BTN} w={cardInner} />
-    );
-    /* Phone: both buttons must fit without scrolling, so the photo takes whatever height is
-       left after the text (the description line is dropped on a phone for the same reason). */
-    const choosePhoto = Math.max(0, Math.min(150, Math.round((vpH - 560) / 2)));
-    const card = (img: string, eb: string, title: string, line: string, btn: React.ReactNode, onClick: () => void) => (
-      <div role="button" onClick={onClick} style={{ flex: mobile ? (wideMobile ? '1 1 0' : 'none') : '1 1 440px', minHeight: 0, position: 'relative', borderRadius: mobile ? 20 : 22, overflow: 'hidden', cursor: 'pointer', background: BAND, display: 'flex', flexDirection: 'column' }}>
-        <div style={mobile ? { height: choosePhoto, flex: 'none', position: 'relative', display: choosePhoto < 40 ? 'none' : undefined } : { flex: 1, minHeight: 0, position: 'relative' }}>
-          <img src={img} alt="" style={{ position: 'absolute', top: mobile ? 16 : 24, left: mobile ? 16 : 24, width: mobile ? 'calc(100% - 32px)' : 'calc(100% - 48px)', height: mobile ? 'calc(100% - 16px)' : 'calc(100% - 24px)', objectFit: 'contain' }} />
-        </div>
-        <div style={{ flex: 'none', padding: mobile ? (short ? '12px 14px 14px' : '14px 16px 16px') : '22px 28px 28px', display: 'flex', flexDirection: 'column', gap: mobile ? (short ? 6 : 8) : 10 }}>
-          <div style={{ fontSize: mobile ? 13 : 18, fontWeight: 800, letterSpacing: '.16em', textTransform: 'uppercase', color: TEAL }}>{eb}</div>
-          <div style={{ fontSize: mobile ? (short ? 22 : 26) : 36, fontWeight: 800, letterSpacing: '-0.045em', lineHeight: 1.02, color: '#fff', textWrap: 'balance' as any }}>{title}</div>
-          {!mobile && <div style={{ fontSize: 18, fontWeight: 500, lineHeight: 1.4, color: 'rgba(255,255,255,.82)', textWrap: 'pretty' as any, marginBottom: 8 }}>{line}</div>}
-          {btn}
-        </div>
-      </div>
-    );
-    return (
-      <div className="la" style={rootStyle}>
-        <style>{CSS}</style>
-        <div className={mobile ? 'la-scroll' : undefined} style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column' }}>
-          <div style={{ height: mobile ? (short ? 52 : 64) : 84, flex: 'none', padding: `0 ${padX}px`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: BAND }}>
-            <img src={LOGO} alt="LabsCubed" style={{ height: mobile ? 22 : 26 }} /><Chips m={mobile} />
-          </div>
-          <div style={{ flex: 'none', padding: mobile ? `${short ? 12 : 18}px ${padX}px ${short ? 10 : 14}px` : `24px ${padX}px 22px`, display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <Eyebrow m={mobile}>Welcome to LabsCubed</Eyebrow>
-            <div style={{ fontSize: mobile ? (short ? 26 : 32) : 54, fontWeight: 800, letterSpacing: '-0.05em', lineHeight: 1, color: INK }}>What brings you to the booth?</div>
-          </div>
-          <div style={mobile ? { flex: 'none', padding: `0 ${padX}px calc(${short ? 14 : 24}px + env(safe-area-inset-bottom, 0px))`, display: 'flex', flexDirection: wideMobile ? 'row' : 'column', alignItems: 'stretch', gap: short ? 12 : 16 } : { flex: 1, minHeight: 0, padding: `0 ${padX}px 36px`, display: 'flex', flexWrap: 'wrap', gap: 16 }}>
-            {card(K('step-load-hand.webp'), 'Free lab assessment · 2 minutes', 'See what automation could save your lab.', 'Your testing costs, bottlenecks and automation ROI, sent to you by email.', slabBtn('Start the assessment', TEAL, '#000', () => goTo('cover', 'assess')), () => goTo('cover', 'assess'))}
-            {card(K('hero-plastic.webp'), 'CubeTen and CubeOne', 'Explore our machines.', 'Brochures and white papers for plastics and rubber testing, sent to your inbox.', slabBtn('Get the materials', '#fff', TEAL_D, () => goTo('learn', 'learn')), () => goTo('learn', 'learn'))}
-          </div>
-        </div>
-        {pending > 0 && <div style={{ position: 'absolute', right: 14, bottom: 6, fontSize: mobile ? 11 : 18, color: MUTED, pointerEvents: 'none' }}>{pending} saved on this {mobile ? 'phone' : 'iPad'} · will send when online</div>}
+        {pending > 0 && <div style={{ position: 'absolute', right: 14, bottom: 6, fontSize: mobile ? 11 : 18, color: 'rgba(255,255,255,.6)', pointerEvents: 'none' }}>{pending} saved on this {mobile ? 'phone' : 'iPad'} · will send when online</div>}
       </div>
     );
   }
@@ -635,12 +590,11 @@ export default function LabAssessment() {
   /* Question, contact and thank-you screens share the dark top band. */
   const isThanks = screen === 'thanks';
   const segs = Array.from({ length: 7 }, (_, i) => (isThanks || i < step - 1 ? P.segDone : i === step - 1 ? P.segCur : P.segOff));
-  const mats = MATERIALS.filter((m) => (ans.learn || []).includes(m.id));
-  const thanksList = learnPath ? (mats.length ? mats.map((m) => m.label) : ['Your selected materials']) : THANKS_ASSESS;
-  const nextLabel = isContact ? (learnPath ? 'Send my materials' : 'Send my assessment') : screen === 'learn' ? 'Send me these' : screen === 'standards' && sel.length === 0 ? "Skip, I'm not sure" : 'Next';
+  const thanksList = [...THANKS_ASSESS, ...MATERIALS.filter((m) => materials.includes(m.id)).map((m) => m.label)];
+  const nextLabel = isContact ? 'Send my assessment' : screen === 'standards' && sel.length === 0 ? "Skip, I'm not sure" : 'Next';
 
-  const header = q ? { eb: q.learn ? q.eb : `Question ${q.step} · ${q.eb}`, title: q.title, hint: q.hint }
-    : { eb: 'Last step · Your details', title: learnPath ? 'Where should we send your materials?' : 'Where should we send your assessment?', hint: 'Phone is optional. Everything else is required.' };
+  const header = q ? { eb: `Question ${q.step} · ${q.eb}`, title: q.title, hint: q.hint }
+    : { eb: 'Last step · Your details', title: 'Where should we send your assessment?', hint: 'Phone is optional. Everything else is required.' };
 
   const fields = [
     { k: 'name', label: 'Full name', type: 'text', ph: 'First and last name', mode: undefined as any, cap: 'words' },
@@ -673,8 +627,7 @@ export default function LabAssessment() {
       {/* top band */}
       <div style={{ height: topH, flex: 'none', padding: `0 ${padX}px`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: BAND }}>
         <img src={LOGO} alt="LabsCubed" style={{ height: mobile ? 20 : 24 }} />
-        {noProg && <div style={{ fontSize: mobile ? 13 : 18, fontWeight: 600, letterSpacing: '.14em', textTransform: 'uppercase', color: 'rgba(255,255,255,.6)' }}>CubeTen · CubeOne</div>}
-        {!noProg && (
+        {(
           <div style={{ display: 'flex', alignItems: 'center', gap: mobile ? 12 : 18 }}>
             <div style={{ display: 'flex', gap: 4 }}>{segs.map((bg, i) => <div key={i} style={{ width: segW, height: mobile ? 6 : 8, borderRadius: 2, background: bg }} />)}</div>
             <div style={{ fontSize: mobile ? 14 : 18, fontWeight: 800, fontVariantNumeric: 'tabular-nums', color: '#fff', minWidth: mobile ? 32 : 44, textAlign: 'right' }}>{step} / 7</div>
@@ -735,8 +688,15 @@ export default function LabAssessment() {
             </select>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={INK} strokeWidth="2.4" strokeLinecap="round" style={{ position: 'absolute', right: mobile ? 16 : 24, top: mobile ? 26 : 33, pointerEvents: 'none' }}><path d="M6 9l6 6 6-6" /></svg>
           </label>
-          <div style={{ flex: '1 1 100%', fontSize: mobile ? 14 : 18, fontWeight: 500, color: MUTED, lineHeight: 1.4 }}>
-            {learnPath ? "We'll email the materials you picked to this address." : "We'll email your personalized assessment to this address."}
+          <div style={{ flex: '1 1 100%', marginTop: mobile ? 4 : 8 }}>
+            <Eyebrow m={mobile}>Also email me (optional)</Eyebrow>
+          </div>
+          {MATERIALS.map((o) => (
+            <Tile key={o.id} o={o} on={materials.includes(o.id)} mediaW={mediaW} tileH={tileH} basis={mobile ? 280 : 440}
+              otherValue="" onOther={() => {}} onTap={() => setMaterials((p) => (p.includes(o.id) ? p.filter((x) => x !== o.id) : [...p, o.id]))} m={mobile} plain />
+          ))}
+          <div style={{ flex: '1 1 100%', fontSize: mobile ? 14 : 18, fontWeight: 500, color: MUTED, lineHeight: 1.4, paddingBottom: mobile ? 0 : 16 }}>
+            We'll email your personalized assessment, and any materials you tick below, to this address.
           </div>
         </div>
       )}
@@ -756,7 +716,7 @@ export default function LabAssessment() {
           <div className="la-scroll" style={{ flex: 1, minWidth: 0, minHeight: 0, padding: mobile ? `18px ${padX}px 12px` : `44px ${padX}px 48px`, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: mobile ? 20 : 28 }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: mobile ? 14 : 18 }}>
               <div style={{ fontSize: mobile ? 18 : 24, fontWeight: 500, lineHeight: 1.4, color: INK, textWrap: 'pretty' as any }}>
-                {learnPath ? "We'll email the materials you selected to you shortly:" : "We'll be in touch via email with your personalized assessment, including:"}
+                We'll be in touch via email with your personalized assessment, including:
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 {thanksList.map((label, i) => (
@@ -781,7 +741,7 @@ export default function LabAssessment() {
           : { height: 120, flex: 'none', padding: `12px ${padX}px`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 14 }}>
           <Btn label="Back" onClick={back} fg={INK} back ring={`inset 0 0 0 ${mobile ? 2 : 2.5}px ${INK}`} spec={BTN} w={mobile ? (compactBtn ? 104 : W - 2 * padX) : Math.floor((W - 2 * padX - 14) / 2)}
             style={mobile ? { width: compactBtn ? 104 : '100%', flex: 'none' } : { flex: 1 }} />
-          <Btn label={sending ? 'Sending…' : nextLabel} alt={isContact || screen === 'learn' ? 'Send' : screen === 'standards' && sel.length === 0 ? 'Skip' : undefined} onClick={next} bg={nextOn ? P.nextBg : P.offBg} fg={nextOn ? P.nextFg : P.offFg} arrow={nextOn ? P.nextArrow : P.offArrow} spec={BTN} w={mobile ? (compactBtn ? W - 2 * padX - 114 : W - 2 * padX) : Math.floor((W - 2 * padX - 14) / 2)} disabled={!nextOn || sending}
+          <Btn label={sending ? 'Sending…' : nextLabel} alt={isContact ? 'Send' : screen === 'standards' && sel.length === 0 ? 'Skip' : undefined} onClick={next} bg={nextOn ? P.nextBg : P.offBg} fg={nextOn ? P.nextFg : P.offFg} arrow={nextOn ? P.nextArrow : P.offArrow} spec={BTN} w={mobile ? (compactBtn ? W - 2 * padX - 114 : W - 2 * padX) : Math.floor((W - 2 * padX - 14) / 2)} disabled={!nextOn || sending}
             style={mobile ? (compactBtn ? { flex: 1 } : { width: '100%' }) : { flex: 1 }} />
         </div>
       )}
