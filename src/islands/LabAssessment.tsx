@@ -112,8 +112,8 @@ const STD_R: Opt[] = [
 const MATERIALS: Opt[] = [
   { id: 'cubeten-brochure', label: 'CubeTen brochure' },
   { id: 'cubeone-brochure', label: 'CubeOne brochure' },
-  { id: 'whitepaper', label: 'White paper' },
-  { id: 'spe-replay', label: 'SPE webinar replay' },
+  { id: 'whitepaper', label: 'White paper', sub: 'Beyond the Bottleneck: a data-backed case for testing automation' },
+  { id: 'spe-replay', label: 'SPE webinar replay', sub: 'The Hidden Cost of Manual Plastics Testing' },
 ];
 
 type QKey = 'industry' | 'tests' | 'machines' | 'volume' | 'priority' | 'standards';
@@ -277,8 +277,8 @@ function Btn({ label, alt, onClick, bg, fg, spec, w, arrow, back, ring, right, r
   );
 }
 
-function Tile({ o, on, mediaW, tileH, basis, otherValue, onOther, onTap, m, plain }: {
-  o: Opt; on: boolean; mediaW: number; tileH: number; basis: number; otherValue: string; onOther: (v: string) => void; onTap: () => void; m?: boolean; plain?: boolean;
+function Tile({ o, on, mediaW, tileH, basis, otherValue, onOther, onTap, m, plain, grow }: {
+  o: Opt; on: boolean; mediaW: number; tileH: number; basis: number; otherValue: string; onOther: (v: string) => void; onTap: () => void; m?: boolean; plain?: boolean; grow?: boolean;
 }) {
   const inp = on && !!o.other;
   const ml = (o.mark || '').length;
@@ -294,7 +294,7 @@ function Tile({ o, on, mediaW, tileH, basis, otherValue, onOther, onTap, m, plai
   }, [inp]);
   return (
     <div role="button" aria-pressed={on} onClick={onTap}
-      style={{ flex: inp ? '1 1 100%' : `1 1 ${basis}px`, height: inp ? tileH + (m ? 20 : 28) : tileH, display: 'flex', borderRadius: radius, overflow: 'hidden', cursor: 'pointer', position: 'relative', background: on ? P.tileOn : P.tileBg, boxShadow: on ? P.glowOn : P.ring, transition: 'box-shadow .2s ease, background .2s ease' }}>
+      style={{ flex: inp ? '1 1 100%' : `1 1 ${basis}px`, height: grow ? 'auto' : inp ? tileH + (m ? 20 : 28) : tileH, minHeight: grow ? tileH : undefined, padding: grow ? '8px 0' : undefined, display: 'flex', borderRadius: radius, overflow: 'hidden', cursor: 'pointer', position: 'relative', background: on ? P.tileOn : P.tileBg, boxShadow: on ? P.glowOn : P.ring, transition: 'box-shadow .2s ease, background .2s ease' }}>
       {plain ? (
         <div style={{ flex: 'none', alignSelf: 'center', width: m ? 26 : 30, height: m ? 26 : 30, marginLeft: m ? 16 : 24, borderRadius: '50%', background: on ? TEAL : 'transparent', boxShadow: on ? 'none' : 'inset 0 0 0 2.5px #c7c7cc', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background .2s ease, box-shadow .2s ease' }}>
           {on && <svg width={m ? 15 : 18} height={m ? 15 : 18} viewBox="0 0 24 24" fill="none" stroke="#0b3b36" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>}
@@ -316,7 +316,7 @@ function Tile({ o, on, mediaW, tileH, basis, otherValue, onOther, onTap, m, plai
         {!inp && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             <span style={{ fontSize: m ? 18 : 23, fontWeight: 800, lineHeight: 1.15, letterSpacing: '-0.02em', color: on ? P.fgOn : P.fg, textWrap: 'pretty' as any }}>{o.label}</span>
-            {o.sub && <span style={{ fontSize: m ? 14 : 18, fontWeight: 500, color: MUTED }}>{o.sub}</span>}
+            {o.sub && <span style={{ fontSize: grow ? (m ? 13 : 15) : m ? 14 : 18, fontWeight: 500, lineHeight: 1.25, color: MUTED }}>{o.sub}</span>}
           </div>
         )}
         {inp && (
@@ -442,7 +442,7 @@ export default function LabAssessment() {
   };
 
   const isContact = screen === 'contact';
-  /* The 1024x768 iPad is short: slimmer fields keep the whole last step on one screen. */
+  /* The 1024x768 iPad is short: slimmer fields, and three to a row on landscape, keep the whole last step on one screen. */
   const fieldH = mobile ? 68 : !port && window.innerHeight < 800 ? 76 : 88;
   const nextOn = isContact || screen === 'standards' || sel.length > 0;
   const E = errsOf(contact);
@@ -670,7 +670,7 @@ export default function LabAssessment() {
             const msg = showErr ? E[f.k] : '';
             const err = !!msg;
             return (
-              <div key={f.k} style={{ flex: mobile ? '1 1 100%' : '1 1 440px', display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <div key={f.k} style={{ flex: mobile ? '1 1 100%' : `1 1 ${port ? 440 : 280}px`, display: 'flex', flexDirection: 'column', gap: 6 }}>
                 <label style={{ height: fieldH, borderRadius: mobile ? 14 : 18, background: err ? P.fieldErr : P.field, boxShadow: err ? P.errRing : P.fieldRing, padding: mobile ? '9px 16px 0' : '12px 22px 0', display: 'flex', flexDirection: 'column', gap: 2 }}>
                   <span style={{ fontSize: mobile ? 13 : 18, fontWeight: 800, color: err ? P.labelErr : P.label }}>{f.label}</span>
                   <input value={contact[f.k]} placeholder={f.ph} type={f.type} inputMode={f.mode} autoComplete="off" autoCorrect="off" autoCapitalize={f.cap} spellCheck={false}
@@ -682,7 +682,7 @@ export default function LabAssessment() {
               </div>
             );
           })}
-          <label style={{ flex: '1 1 100%', height: fieldH, borderRadius: mobile ? 14 : 18, background: '#fff', padding: mobile ? '9px 16px 0' : '12px 22px 0', display: 'flex', flexDirection: 'column', gap: 2, position: 'relative' }}>
+          <label style={{ flex: mobile || port ? '1 1 100%' : '1 1 280px', height: fieldH, borderRadius: mobile ? 14 : 18, background: '#fff', padding: mobile ? '9px 16px 0' : '12px 22px 0', display: 'flex', flexDirection: 'column', gap: 2, position: 'relative' }}>
             <span style={{ fontSize: mobile ? 13 : 18, fontWeight: 800, color: MUTED }}>Country</span>
             <select value={contact.country} onChange={(e) => setContact((c) => ({ ...c, country: e.target.value }))}
               style={{ appearance: 'none', WebkitAppearance: 'none', border: 'none', outline: 'none', background: 'transparent', padding: 0, font: mobile ? '500 18px Inter, sans-serif' : '500 24px Inter, sans-serif', color: INK, width: '100%' }}>
@@ -695,7 +695,7 @@ export default function LabAssessment() {
           </div>
           {MATERIALS.map((o) => (
             <Tile key={o.id} o={o} on={materials.includes(o.id)} mediaW={mediaW} tileH={tileH} basis={mobile ? 280 : port ? 300 : 440}
-              otherValue="" onOther={() => {}} onTap={() => setMaterials((p) => (p.includes(o.id) ? p.filter((x) => x !== o.id) : [...p, o.id]))} m={mobile} plain />
+              otherValue="" onOther={() => {}} onTap={() => setMaterials((p) => (p.includes(o.id) ? p.filter((x) => x !== o.id) : [...p, o.id]))} m={mobile} plain grow />
           ))}
           <div style={{ flex: '1 1 100%', fontSize: mobile ? 14 : 18, fontWeight: 500, color: MUTED, lineHeight: 1.4, paddingBottom: mobile ? 0 : 16 }}>
             We'll email your assessment, and any materials you tick, to this address.
