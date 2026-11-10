@@ -82,6 +82,9 @@ const jsonLd = jsonLdProp ?? buildJsonLd(SITE_URL);
     {noindex && <meta name="robots" content="noindex, nofollow" />}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <Analytics />
+    <!-- Visiflow: session recordings, heatmaps, funnels -->
+    <script is:inline>window.rastro=window.rastro||function(){(rastro.q=rastro.q||[]).push(arguments)};</script>
+    <script is:inline async src="https://upgmfqoichsowzqlrive.supabase.co/functions/v1/rastro-ingest/s.js?k=rs_14220197087120b281"></script>
     <link rel="ai-catalog" href="/.well-known/ai-catalog.json" />
     <link rel="api-catalog" href="/.well-known/api-catalog" />
     {!noindex && <link rel="alternate" type="text/markdown" href={pagePath === '/' ? '/index.md' : `${pagePath}.md`} />}
