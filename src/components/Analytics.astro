@@ -33,6 +33,16 @@
       // A conversion must reach Google Ads even if the tag has not loaded yet.
       try { if (window._lcLoadAds) window._lcLoadAds(); } catch (e) {}
       try { window.gtag('event', event, params || {}); } catch (e) {}
+      // Mirror to Visiflow (rastro): up to 3 short string props, no personal data.
+      try {
+        if (typeof window.rastro === 'function') {
+          var rp = {}, n = 0;
+          ['form', 'asset', 'recommended_machine'].forEach(function (k) {
+            if (params && typeof params[k] === 'string' && n < 3) { rp[k] = params[k]; n++; }
+          });
+          window.rastro('track', event, rp);
+        }
+      } catch (e) {}
       if (linkedinId) {
         try {
           if (typeof window.lintrk === 'function') window.lintrk('track', { conversion_id: linkedinId });
