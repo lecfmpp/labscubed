@@ -78,6 +78,7 @@ export default async (request) => {
   const email = String(c.email ?? '').trim().toLowerCase();
   const website = String(c.website ?? '').trim();
   const phone = String(c.phone ?? '').trim();
+  const company = String(c.company ?? '').trim();
   if (!name) return json(400, { error: 'Missing name' });
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return json(400, { error: 'Invalid email' });
   if (!answers.industry) return json(400, { error: 'Missing answers' });
@@ -167,7 +168,7 @@ export default async (request) => {
     try {
       const to = process.env.BOOTH_ASSESSMENT_TO || 'info@labscubed.com';
       const rows = [
-        ['Name', name], ['Email', email], ['Website', website], ['Phone', phone || '—'],
+        ['Name', name], ['Email', email], ['Website', website], ['Phone', phone || '—'], ...(company ? [['Company', company]] : []),
         ['Industry', industry], ['Tests', tests], ['Machines', machines], ['Specimens / day', volume],
         ['Main priority', priorities], ['Standards', standards],
       ];
@@ -211,8 +212,9 @@ export default async (request) => {
           event_slug: slug,
           client_id: data.client_id ?? null,
           page: data.page || null,
+          scanned: data.scanned === true,
           submitted_at: data.submitted_at || new Date().toISOString(),
-          contact: { name, email, website, phone },
+          contact: { name, email, website, phone, company },
           answers,
           resend_synced: resendSynced,
           sync_error: syncError,

@@ -1,0 +1,18 @@
+---
+/* Lab assessment, version 2 — the same kiosk as ../pre-assessment plus a "Scan your
+   badge or business card" button on the last step (the photo is read by
+   netlify/functions/booth-scan.mjs). A separate URL so the scan can be tested on a
+   tablet without touching version 1, which keeps running unchanged. Noindex and out
+   of the sitemap (astro.config.mjs). */
+import Base from '../../../../layouts/Base.astro';
+import LabAssessment from '../../../../islands/LabAssessment.tsx';
+---
+
+<Base
+  title="Lab assessment — LabsCubed at AMI Plastics World Expos"
+  description="A few quick questions about your laboratory, so we can show you where automation could help."
+  preloadHero={false}
+  noindex
+>
+  <LabAssessment scan client:only="react" />
+</Base>

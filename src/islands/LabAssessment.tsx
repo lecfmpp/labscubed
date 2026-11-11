@@ -25,6 +25,7 @@ import { track } from '../lib/track';
 import { Sample } from './kiosk/Sample.jsx';
 
 const ASSESS_ENDPOINT = '/api/booth/assessment';
+const SCAN_ENDPOINT = '/api/booth/scan';
 const CAPTURE_ENDPOINT = '/api/booth/capture';
 const EVENT_SLUG = 'ami-nov-2026';
 const QUEUE_KEY = 'lc-assessment-queue-v1';
@@ -136,8 +137,8 @@ const ORD: Screen[] = ['cover', 'industry', 'tests', 'machines', 'volume', 'prio
 const industryValue = (ids: string[]) => (ids.includes('plastics') && ids.includes('rubber') && ids.length === 2 ? 'both' : ids.join(','));
 
 type Ans = Partial<Record<QKey, string[]>>;
-type Contact = { name: string; email: string; phone: string };
-const BLANK_CONTACT: Contact = { name: '', email: '', phone: '' };
+type Contact = { name: string; email: string; phone: string; company: string };
+const BLANK_CONTACT: Contact = { name: '', email: '', phone: '', company: '' };
 const THANKS_ASSESS = ['Testing costs and technician time', 'Workflow bottlenecks and capacity gains', 'Impact on turnaround time and backlog', 'Estimated automation ROI and payback'];
 
 const errsOf = (c: Contact) => ({
@@ -386,7 +387,25 @@ function Tile({ o, on, mediaW, tileH, basis, otherValue, onOther, onTap, m, plai
   );
 }
 
-export default function LabAssessment() {
+/* Scan (version 2 of the kiosk): photograph a badge or business card and let the server read the
+   contact details off it. The photo is shrunk first (a tablet camera shot is several MB) and is never
+   kept; see netlify/functions/booth-scan.mjs. */
+async function shrink(file: File): Promise<string> {
+  const url = URL.createObjectURL(file);
+  try {
+    const img = await new Promise<HTMLImageElement>((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => no(new Error('image')); i.src = url; });
+    const k = Math.min(1, 1600 / Math.max(img.width, img.height));
+    const c = document.createElement('canvas');
+    c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+    c.getContext('2d')!.drawImage(img, 0, 0, c.width, c.height);
+    return c.toDataURL('image/jpeg', 0.82).split(',')[1];
+  } finally { URL.revokeObjectURL(url); }
+}
+const CameraIcon = ({ c, s = 30 }: { c: string; s?: number }) => (
+  <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z" /><circle cx="12" cy="13" r="3.6" /></svg>
+);
+
+export default function LabAssessment({ scan = false }: { scan?: boolean } = {}) {
   const [screen, setScreen] = React.useState<Screen>('cover');
   const [ans, setAns] = React.useState<Ans>({});
   const [materials, setMaterials] = React.useState<string[]>([]);
@@ -399,6 +418,9 @@ export default function LabAssessment() {
   const idleRef = React.useRef<number>(0);
   const advance = React.useRef<number>(0);
   const emailRef = React.useRef<HTMLInputElement>(null);
+  const fileRef = React.useRef<HTMLInputElement>(null);
+  const [scanState, setScanState] = React.useState<'idle' | 'busy' | 'ok' | 'fail'>('idle');
+  const scanned = React.useRef(false);
   const port = usePortrait();
   const mobile = useMobile();
   const kb = useKeyboard();
@@ -434,7 +456,7 @@ export default function LabAssessment() {
 
   const reset = React.useCallback(() => {
     clearTimeout(advance.current);
-    setScreen('cover'); setAns({}); setMaterials([]); setOther({}); setContact(BLANK_CONTACT);
+    setScreen('cover'); setAns({}); setMaterials([]); setOther({}); setContact(BLANK_CONTACT); setScanState('idle'); scanned.current = false;
     setTried(false); setSending(false); setCount(THANKS_SECONDS);
   }, []);
 
@@ -504,6 +526,24 @@ export default function LabAssessment() {
      typed an @ and a domain name with no dot yet, and one tap finishes the address. */
   const emailDomain = contact.email.split('@')[1] ?? '';
   const showCom = contact.email.includes('@') && emailDomain.length > 0 && !emailDomain.includes('.');
+  async function onPhoto(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    setScanState('busy');
+    try {
+      const image = await shrink(file);
+      const r = await fetch(SCAN_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ image, media_type: 'image/jpeg' }) });
+      if (!r.ok) throw new Error(String(r.status));
+      const { found, contact: f } = await r.json();
+      if (!found) { setScanState('fail'); return; }
+      scanned.current = true;
+      /* Only fill what was read; anything the visitor already typed stays unless the card has it. */
+      setContact((c) => ({ ...c, name: f.name || c.name, email: f.email || c.email, phone: f.phone ? formatPhone(f.phone) : c.phone, company: f.company || c.company }));
+      setScanState('ok');
+      setTimeout(() => emailRef.current?.focus(), 250);
+    } catch { setScanState('fail'); }
+  }
   const addCom = () => {
     setContact((c) => ({ ...c, email: c.email.trim() + '.com' }));
     emailRef.current?.focus();
@@ -512,9 +552,9 @@ export default function LabAssessment() {
   async function submit() {
     setSending(true);
     const client_id = (crypto as any).randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random();
-    const ct = { name: contact.name.trim(), email: contact.email.trim().toLowerCase(), website: domainOfEmail(contact.email.trim()), phone: fullPhone(contact.phone) };
+    const ct = { name: contact.name.trim(), email: contact.email.trim().toLowerCase(), website: domainOfEmail(contact.email.trim()), phone: fullPhone(contact.phone), company: contact.company.trim() };
     const body = {
-      client_id, event_slug: EVENT_SLUG, path: 'assess', page: window.location.pathname, submitted_at: new Date().toISOString(),
+      client_id, event_slug: EVENT_SLUG, path: 'assess', scanned: scanned.current, page: window.location.pathname, submitted_at: new Date().toISOString(),
       answers: {
         industry: industryValue(ans.industry || []),
         tests: ans.tests || [], tests_other: (other.tests || '').trim(),
@@ -529,7 +569,7 @@ export default function LabAssessment() {
     /* Materials ticked on the last step go to the capture endpoint as their own request,
        so a failure there never costs the assessment (each is queued and retried alone). */
     if (materials.length) {
-      jobs.push({ ep: CAPTURE_ENDPOINT, body: { client_id: `${client_id}-materials`, event_slug: EVENT_SLUG, path: 'assess', name: ct.name, email: ct.email, company: siteHost(ct.website), website: ct.website, phone: ct.phone,
+      jobs.push({ ep: CAPTURE_ENDPOINT, body: { client_id: `${client_id}-materials`, event_slug: EVENT_SLUG, path: 'assess', name: ct.name, email: ct.email, company: ct.company || siteHost(ct.website), website: ct.website, phone: ct.phone,
         assets: materials, source: window.location.pathname, submitted_at: new Date().toISOString() } });
     }
     let ok = true;
@@ -727,6 +767,18 @@ export default function LabAssessment() {
       {/* contact */}
       {isContact && (
         <div className="la-scroll" style={{ flex: 1, minHeight: 0, padding: `0 ${padX}px`, display: 'flex', flexWrap: 'wrap', alignContent: 'flex-start', gap: mobile ? 12 : 14, paddingBottom: mobile ? 12 : 0 }}>
+          {scan && (
+            <div style={{ flex: '1 1 100%', display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <input ref={fileRef} type="file" accept="image/*" capture="environment" onChange={onPhoto} style={{ display: 'none' }} />
+              <div role="button" aria-disabled={scanState === 'busy'} onClick={() => { if (scanState !== 'busy') fileRef.current?.click(); }}
+                style={{ height: mobile ? 64 : 84, borderRadius: mobile ? 16 : 20, background: scanState === 'ok' ? P.tileOn : TEAL, boxShadow: scanState === 'ok' ? P.ringOnIn : 'none', color: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 14, cursor: 'pointer', fontSize: mobile ? 18 : 24, fontWeight: 800, letterSpacing: '-0.01em' }}>
+                <CameraIcon c="#000" s={mobile ? 26 : 34} />
+                {scanState === 'busy' ? 'Reading…' : scanState === 'ok' ? 'Scanned. Scan again' : 'Scan your badge or business card'}
+              </div>
+              {scanState === 'ok' && <span style={{ fontSize: mobile ? 14 : 18, fontWeight: 600, color: TEAL_D }}>Check your details below{contact.email ? '' : ', then add your email'}.</span>}
+              {scanState === 'fail' && <span style={{ fontSize: mobile ? 14 : 18, fontWeight: 600, color: P.labelErr }}>We couldn't read that one. Try again in better light, or type your details.</span>}
+            </div>
+          )}
           {fields.map((f) => {
             const msg = showErr ? E[f.k] : '';
             const err = !!msg;
