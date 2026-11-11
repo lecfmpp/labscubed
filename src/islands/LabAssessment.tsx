@@ -168,6 +168,13 @@ const formatPhone = (raw: string, cc: string) => {
   return d.replace(/(\d{3})(?=\d)/g, '$1 ').trim();
 };
 const fullPhone = (p: string, cc: string) => { const d = p.replace(/\D/g, ''); return d ? `${dialOf(cc) ? '+' + dialOf(cc) + ' ' : ''}${p.trim()}` : ''; };
+/* Website follows the email's domain until the visitor edits it themselves. Personal mailbox
+   providers are skipped: gmail.com is not their company site. */
+const FREE_MAIL = new Set(['gmail.com', 'googlemail.com', 'yahoo.com', 'ymail.com', 'hotmail.com', 'outlook.com', 'live.com', 'msn.com', 'icloud.com', 'me.com', 'aol.com', 'proton.me', 'protonmail.com', 'gmx.com', 'gmx.net', 'qq.com', '163.com', 'mail.com', 'yandex.com', 'zoho.com']);
+const domainOfEmail = (e: string) => {
+  const d = (e.split('@')[1] || '').trim().toLowerCase();
+  return /^[a-z0-9-]+(\.[a-z0-9-]+)+$/.test(d) && !FREE_MAIL.has(d) ? d : '';
+};
 const siteHost = (w: string) => w.trim().replace(/^https?:\/\//i, '').replace(/^www\./i, '').split('/')[0];
 
 /* ---------- offline queue: {ep, body}; older entries had no ep and were assessments ---------- */
@@ -366,6 +373,7 @@ export default function LabAssessment() {
   const [pending, setPending] = React.useState(0);
   const idleRef = React.useRef<number>(0);
   const advance = React.useRef<number>(0);
+  const webEdited = React.useRef(false);
   const port = usePortrait();
   const mobile = useMobile();
   const kb = useKeyboard();
@@ -401,7 +409,7 @@ export default function LabAssessment() {
 
   const reset = React.useCallback(() => {
     clearTimeout(advance.current);
-    setScreen('cover'); setAns({}); setMaterials([]); setOther({}); setContact(BLANK_CONTACT);
+    setScreen('cover'); setAns({}); setMaterials([]); setOther({}); setContact(BLANK_CONTACT); webEdited.current = false;
     setTried(false); setSending(false); setCount(THANKS_SECONDS);
   }, []);
 
@@ -694,7 +702,12 @@ export default function LabAssessment() {
                 <label style={{ height: fieldH, borderRadius: mobile ? 14 : 18, background: err ? P.fieldErr : P.field, boxShadow: err ? P.errRing : P.fieldRing, padding: mobile ? '9px 16px 0' : '12px 22px 0', display: 'flex', flexDirection: 'column', gap: 2 }}>
                   <span style={{ fontSize: mobile ? 13 : 18, fontWeight: 800, color: err ? P.labelErr : P.label }}>{f.label}{f.k === 'phone' && dialOf(contact.country) ? ` · +${dialOf(contact.country)}` : ''}</span>
                   <input value={contact[f.k]} placeholder={f.ph} type={f.type} inputMode={f.mode} autoComplete="off" autoCorrect="off" autoCapitalize={f.cap} spellCheck={false}
-                    onChange={(e) => setContact((c) => ({ ...c, [f.k]: f.k === 'phone' ? formatPhone(e.target.value, c.country) : e.target.value }))}
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      if (f.k === 'web') webEdited.current = v.trim() !== '';
+                      setContact((c) => ({ ...c, [f.k]: f.k === 'phone' ? formatPhone(v, c.country) : v,
+                        ...(f.k === 'email' && !webEdited.current ? { web: domainOfEmail(v) } : {}) }));
+                    }}
                     onFocus={(e) => { const t = e.currentTarget; setTimeout(() => t.scrollIntoView({ block: 'center', behavior: 'smooth' }), 320); }}
                     style={{ border: 'none', outline: 'none', background: 'transparent', padding: 0, font: mobile ? '500 18px Inter, sans-serif' : '500 24px Inter, sans-serif', color: INK, width: '100%' }} />
                 </label>
