@@ -442,7 +442,7 @@ export default function LabAssessment() {
       case 'standards': {
         const ind = ans.industry || [];
         const plastics = ind.includes('plastics'), rubber = ind.includes('rubber');
-        return [...(plastics ? STD_P : rubber ? STD_R : [...STD_P, ...STD_R]), { id: 'other', label: 'Other', mark: '+', other: true }];
+        return [...(plastics && !rubber ? STD_P : rubber && !plastics ? STD_R : [...STD_P, ...STD_R]), { id: 'other', label: 'Other', mark: '+', other: true }];
       }
       default: return [];
     }
