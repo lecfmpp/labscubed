@@ -78,10 +78,8 @@ export default async (request) => {
   const email = String(c.email ?? '').trim().toLowerCase();
   const website = String(c.website ?? '').trim();
   const phone = String(c.phone ?? '').trim();
-  const country = String(c.country ?? '').trim();
   if (!name) return json(400, { error: 'Missing name' });
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return json(400, { error: 'Invalid email' });
-  if (!country) return json(400, { error: 'Missing country' });
   if (!answers.industry) return json(400, { error: 'Missing answers' });
 
   const industry = String(answers.industry).split(',').map((id) => LABELS.industry[id.trim()] || id.trim()).join(', ');
@@ -169,7 +167,7 @@ export default async (request) => {
     try {
       const to = process.env.BOOTH_ASSESSMENT_TO || 'info@labscubed.com';
       const rows = [
-        ['Name', name], ['Email', email], ['Website', website], ['Phone', phone || '—'], ['Country', country],
+        ['Name', name], ['Email', email], ['Website', website], ['Phone', phone || '—'],
         ['Industry', industry], ['Tests', tests], ['Machines', machines], ['Specimens / day', volume],
         ['Main priority', priorities], ['Standards', standards],
       ];
@@ -214,7 +212,7 @@ export default async (request) => {
           client_id: data.client_id ?? null,
           page: data.page || null,
           submitted_at: data.submitted_at || new Date().toISOString(),
-          contact: { name, email, website, phone, country },
+          contact: { name, email, website, phone },
           answers,
           resend_synced: resendSynced,
           sync_error: syncError,
@@ -228,7 +226,7 @@ export default async (request) => {
   } catch (error) {
     // Both stores down is the one case the page cannot recover from by itself,
     // so the whole submission goes to the logs to be replayed by hand.
-    console.error('Assessment write failed:', error, JSON.stringify({ name, email, website, country, answers }));
+    console.error('Assessment write failed:', error, JSON.stringify({ name, email, website, answers }));
   }
 
   // A 5xx makes the tablet keep the submission in its offline queue and retry,
