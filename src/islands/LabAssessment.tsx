@@ -136,14 +136,13 @@ const ORD: Screen[] = ['cover', 'industry', 'tests', 'machines', 'volume', 'prio
 const industryValue = (ids: string[]) => (ids.includes('plastics') && ids.includes('rubber') && ids.length === 2 ? 'both' : ids.join(','));
 
 type Ans = Partial<Record<QKey, string[]>>;
-type Contact = { name: string; email: string; web: string; phone: string };
-const BLANK_CONTACT: Contact = { name: '', email: '', web: '', phone: '' };
+type Contact = { name: string; email: string; phone: string };
+const BLANK_CONTACT: Contact = { name: '', email: '', phone: '' };
 const THANKS_ASSESS = ['Testing costs and technician time', 'Workflow bottlenecks and capacity gains', 'Impact on turnaround time and backlog', 'Estimated automation ROI and payback'];
 
 const errsOf = (c: Contact) => ({
   name: c.name.trim() ? '' : 'Add your full name',
   email: !c.email.trim() ? 'Add your email' : /^\S+@\S+\.\S+$/.test(c.email.trim()) ? '' : 'Enter a valid email, like name@company.com',
-  web: '',
   phone: '',
 });
 /* Phone numbers are formatted as the visitor types, digits only, so nobody has to type spaces or
@@ -160,7 +159,7 @@ const formatPhone = (raw: string) => {
   return d;
 };
 const fullPhone = (p: string) => { const d = p.replace(/\D/g, ''); return d ? (p.trim().startsWith('+') ? p.trim() : `+1 ${p.trim()}`) : ''; };
-/* Website follows the email's domain until the visitor edits it themselves. Personal mailbox
+/* There is no website field: the company site is read from the email's domain. Personal mailbox
    providers are skipped: gmail.com is not their company site. */
 const FREE_MAIL = new Set(['gmail.com', 'googlemail.com', 'yahoo.com', 'ymail.com', 'hotmail.com', 'outlook.com', 'live.com', 'msn.com', 'icloud.com', 'me.com', 'aol.com', 'proton.me', 'protonmail.com', 'gmx.com', 'gmx.net', 'qq.com', '163.com', 'mail.com', 'yandex.com', 'zoho.com']);
 const domainOfEmail = (e: string) => {
@@ -399,7 +398,6 @@ export default function LabAssessment() {
   const [pending, setPending] = React.useState(0);
   const idleRef = React.useRef<number>(0);
   const advance = React.useRef<number>(0);
-  const webEdited = React.useRef(false);
   const emailRef = React.useRef<HTMLInputElement>(null);
   const port = usePortrait();
   const mobile = useMobile();
@@ -436,7 +434,7 @@ export default function LabAssessment() {
 
   const reset = React.useCallback(() => {
     clearTimeout(advance.current);
-    setScreen('cover'); setAns({}); setMaterials([]); setOther({}); setContact(BLANK_CONTACT); webEdited.current = false;
+    setScreen('cover'); setAns({}); setMaterials([]); setOther({}); setContact(BLANK_CONTACT);
     setTried(false); setSending(false); setCount(THANKS_SECONDS);
   }, []);
 
@@ -507,14 +505,14 @@ export default function LabAssessment() {
   const emailDomain = contact.email.split('@')[1] ?? '';
   const showCom = contact.email.includes('@') && emailDomain.length > 0 && !emailDomain.includes('.');
   const addCom = () => {
-    setContact((c) => { const e = c.email.trim() + '.com'; return { ...c, email: e, ...(!webEdited.current ? { web: domainOfEmail(e) } : {}) }; });
+    setContact((c) => ({ ...c, email: c.email.trim() + '.com' }));
     emailRef.current?.focus();
   };
 
   async function submit() {
     setSending(true);
     const client_id = (crypto as any).randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random();
-    const ct = { name: contact.name.trim(), email: contact.email.trim().toLowerCase(), website: contact.web.trim(), phone: fullPhone(contact.phone) };
+    const ct = { name: contact.name.trim(), email: contact.email.trim().toLowerCase(), website: domainOfEmail(contact.email.trim()), phone: fullPhone(contact.phone) };
     const body = {
       client_id, event_slug: EVENT_SLUG, path: 'assess', page: window.location.pathname, submitted_at: new Date().toISOString(),
       answers: {
@@ -659,12 +657,11 @@ export default function LabAssessment() {
   const nextLabel = isContact ? 'Send my assessment' : screen === 'standards' && sel.length === 0 ? "Skip, I'm not sure" : 'Next';
 
   const header = q ? { eb: `Question ${q.step} · ${q.eb}`, title: q.title, hint: q.hint }
-    : { eb: 'Last step · Your details', title: 'Where should we send your assessment?', hint: 'Website and phone are optional. Pick at least one item to email to you.' };
+    : { eb: 'Last step · Your details', title: 'Where should we send your assessment?', hint: 'Phone is optional. Pick at least one item to email to you.' };
 
   const fields = [
     { k: 'name', label: 'Full name', type: 'text', ph: 'First and last name', mode: undefined as any, cap: 'words' },
     { k: 'email', label: 'Email', type: 'email', ph: 'name@company.com', mode: 'email', cap: 'off' },
-    { k: 'web', label: 'Website (optional)', type: 'url', ph: 'yourcompany.com', mode: 'url', cap: 'off' },
     { k: 'phone', label: 'Phone (optional)', type: 'tel', ph: '(555) 000-0000', mode: 'tel', cap: 'off' },
   ] as const;
 
@@ -740,9 +737,7 @@ export default function LabAssessment() {
                   <input ref={f.k === 'email' ? emailRef : undefined} value={contact[f.k]} placeholder={f.ph} type={f.type} inputMode={f.mode} autoComplete="off" autoCorrect="off" autoCapitalize={f.cap} spellCheck={false}
                     onChange={(e) => {
                       const v = e.target.value;
-                      if (f.k === 'web') webEdited.current = v.trim() !== '';
-                      setContact((c) => ({ ...c, [f.k]: f.k === 'phone' ? formatPhone(v) : v,
-                        ...(f.k === 'email' && !webEdited.current ? { web: domainOfEmail(v) } : {}) }));
+                      setContact((c) => ({ ...c, [f.k]: f.k === 'phone' ? formatPhone(v) : v }));
                     }}
                     onFocus={(e) => { const t = e.currentTarget; setTimeout(() => t.scrollIntoView({ block: 'center', behavior: 'smooth' }), 320); }}
                     style={{ border: 'none', outline: 'none', background: 'transparent', padding: 0, font: mobile ? '500 18px Inter, sans-serif' : '500 24px Inter, sans-serif', color: INK, width: '100%' }} />
