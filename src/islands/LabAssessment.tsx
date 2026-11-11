@@ -72,6 +72,7 @@ const MACHINES: Opt[] = [
   { id: 'zwickroell', label: 'ZwickRoell', mark: 'ZR' },
   { id: 'mts', label: 'MTS', mark: 'MTS' },
   { id: 'shimadzu', label: 'Shimadzu', mark: 'SH' },
+  { id: 'tinius-olsen', label: 'Tinius Olsen', mark: 'TO' },
   { id: 'other', label: 'Other', mark: '+', other: true },
   { id: 'unsure', label: "I'm not sure", mark: '?', exclusive: true },
   { id: 'none', label: "We don't currently have a testing machine", mark: '0', exclusive: true },
@@ -105,6 +106,7 @@ const STD_R: Opt[] = [
   { id: 'astm-d412', label: 'ASTM D412', sub: 'Die C · tensile · rubber', sample: 'astm-d412-c' },
   { id: 'iso-37', label: 'ISO 37', sub: 'Type 2 · tensile · rubber', sample: 'iso-37-2' },
   { id: 'astm-d624', label: 'ASTM D624', sub: 'Die C · tear · rubber', sample: 'astm-d624-c' },
+  { id: 'astm-d624-b', label: 'ASTM D624', sub: 'Die B · tear · rubber', sample: 'astm-d624-b' },
 ];
 /* Materials the visitor can tick on the last step. `id` is what booth-capture.mjs
    takes (cubeten-brochure, cubeone-brochure, whitepaper go through the download-request
@@ -121,8 +123,8 @@ type QDef = { step: number; eb: string; title: string; hint: string; single?: bo
 const Q: Record<QKey, QDef> = {
   industry: { step: 1, eb: 'Industry', title: 'Which industry do you work in?', hint: 'Select all that apply' },
   tests: { step: 2, eb: 'Test types', title: 'What types of tests does your laboratory perform?', hint: 'Select all that apply' },
-  machines: { step: 3, eb: 'Equipment', title: 'What testing machines do you currently use?', hint: 'Select all that apply' },
-  volume: { step: 4, eb: 'Daily volume', title: 'How many specimens do you test daily?', hint: 'Tap one to continue', single: true },
+  machines: { step: 3, eb: 'Brands', title: 'What brands of testing machines do you currently use?', hint: 'Select all that apply' },
+  volume: { step: 4, eb: 'Daily volume', title: 'How many specimens do you test daily?', hint: 'Tap one, then press Next', single: true },
   priority: { step: 5, eb: 'Priorities', title: "What is your laboratory's main priority?", hint: 'Select all that apply' },
   standards: { step: 6, eb: 'Standards', title: 'Which specimens and testing standards do you use?', hint: "Optional. Select all that apply, or skip if you're not sure." },
 };
@@ -147,6 +149,25 @@ const errsOf = (c: Contact) => ({
   web: c.web.trim() ? '' : 'Add your company website',
   phone: '',
 });
+/* Phone numbers are shown in the national style of the chosen country (US/CA: (555) 000-0000,
+   others grouped by their usual pattern) with the dial code as a prefix. Digits only are kept
+   while typing, so the visitor never has to type spaces or brackets. */
+const DIAL: Record<string, string> = { US: '1', CA: '1', GB: '44', DE: '49', FR: '33', IT: '39', ES: '34', NL: '31', BE: '32', CH: '41', AT: '43', SE: '46', NO: '47', DK: '45', FI: '358', IE: '353', PT: '351', PL: '48', CZ: '420', MX: '52', BR: '55', AR: '54', CL: '56', CO: '57', IN: '91', CN: '86', JP: '81', KR: '82', TW: '886', SG: '65', MY: '60', TH: '66', VN: '84', ID: '62', PH: '63', AU: '61', NZ: '64', AE: '971', SA: '966', IL: '972', TR: '90', ZA: '27', EG: '20', HK: '852' };
+const dialOf = (cc: string) => DIAL[cc] || '';
+const formatPhone = (raw: string, cc: string) => {
+  let d = raw.replace(/\D/g, '');
+  const dial = dialOf(cc);
+  if (dial && d.startsWith(dial) && raw.trim().startsWith('+')) d = d.slice(dial.length);
+  if (cc === 'US' || cc === 'CA') {
+    d = d.slice(0, 10);
+    if (d.length > 6) return `(${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6)}`;
+    if (d.length > 3) return `(${d.slice(0, 3)}) ${d.slice(3)}`;
+    return d;
+  }
+  d = d.slice(0, 12);
+  return d.replace(/(\d{3})(?=\d)/g, '$1 ').trim();
+};
+const fullPhone = (p: string, cc: string) => { const d = p.replace(/\D/g, ''); return d ? `${dialOf(cc) ? '+' + dialOf(cc) + ' ' : ''}${p.trim()}` : ''; };
 const siteHost = (w: string) => w.trim().replace(/^https?:\/\//i, '').replace(/^www\./i, '').split('/')[0];
 
 /* ---------- offline queue: {ep, body}; older entries had no ep and were assessments ---------- */
@@ -421,7 +442,7 @@ export default function LabAssessment() {
       case 'standards': {
         const ind = ans.industry || [];
         const plastics = ind.includes('plastics'), rubber = ind.includes('rubber');
-        return [...(plastics && !rubber ? STD_P : rubber && !plastics ? STD_R : [...STD_P, ...STD_R]), { id: 'other', label: 'Other', mark: '+', other: true }];
+        return [...(plastics ? STD_P : rubber ? STD_R : [...STD_P, ...STD_R]), { id: 'other', label: 'Other', mark: '+', other: true }];
       }
       default: return [];
     }
@@ -438,7 +459,6 @@ export default function LabAssessment() {
       else { const b = cur.filter((x) => !(optsFor().find((z) => z.id === x)?.exclusive)); nv = b.includes(o.id) ? b.filter((x) => x !== o.id) : [...b, o.id]; }
       return { ...p, [key]: nv };
     });
-    if (single) { clearTimeout(advance.current); advance.current = window.setTimeout(() => go(1), 450); }
   };
 
   const isContact = screen === 'contact';
@@ -451,7 +471,7 @@ export default function LabAssessment() {
   async function submit() {
     setSending(true);
     const client_id = (crypto as any).randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random();
-    const ct = { name: contact.name.trim(), email: contact.email.trim().toLowerCase(), website: contact.web.trim(), phone: contact.phone.trim(), country: contact.country };
+    const ct = { name: contact.name.trim(), email: contact.email.trim().toLowerCase(), website: contact.web.trim(), phone: fullPhone(contact.phone, contact.country), country: contact.country };
     const body = {
       client_id, event_slug: EVENT_SLUG, path: 'assess', page: window.location.pathname, submitted_at: new Date().toISOString(),
       answers: {
@@ -602,7 +622,7 @@ export default function LabAssessment() {
     { k: 'name', label: 'Full name', type: 'text', ph: 'First and last name', mode: undefined as any, cap: 'words' },
     { k: 'email', label: 'Email', type: 'email', ph: 'name@company.com', mode: 'email', cap: 'off' },
     { k: 'web', label: 'Website', type: 'url', ph: 'yourcompany.com', mode: 'url', cap: 'off' },
-    { k: 'phone', label: 'Phone (optional)', type: 'tel', ph: '+1 555 000 0000', mode: 'tel', cap: 'off' },
+    { k: 'phone', label: 'Phone (optional)', type: 'tel', ph: '(555) 000-0000', mode: 'tel', cap: 'off' },
   ] as const;
 
   const resetW = port || mobile ? W - 2 * padX : Math.round(W * 0.54) - 2 * padX;
@@ -672,9 +692,9 @@ export default function LabAssessment() {
             return (
               <div key={f.k} style={{ flex: mobile ? '1 1 100%' : `1 1 ${port ? 440 : 280}px`, display: 'flex', flexDirection: 'column', gap: 6 }}>
                 <label style={{ height: fieldH, borderRadius: mobile ? 14 : 18, background: err ? P.fieldErr : P.field, boxShadow: err ? P.errRing : P.fieldRing, padding: mobile ? '9px 16px 0' : '12px 22px 0', display: 'flex', flexDirection: 'column', gap: 2 }}>
-                  <span style={{ fontSize: mobile ? 13 : 18, fontWeight: 800, color: err ? P.labelErr : P.label }}>{f.label}</span>
+                  <span style={{ fontSize: mobile ? 13 : 18, fontWeight: 800, color: err ? P.labelErr : P.label }}>{f.label}{f.k === 'phone' && dialOf(contact.country) ? ` · +${dialOf(contact.country)}` : ''}</span>
                   <input value={contact[f.k]} placeholder={f.ph} type={f.type} inputMode={f.mode} autoComplete="off" autoCorrect="off" autoCapitalize={f.cap} spellCheck={false}
-                    onChange={(e) => setContact((c) => ({ ...c, [f.k]: e.target.value }))}
+                    onChange={(e) => setContact((c) => ({ ...c, [f.k]: f.k === 'phone' ? formatPhone(e.target.value, c.country) : e.target.value }))}
                     onFocus={(e) => { const t = e.currentTarget; setTimeout(() => t.scrollIntoView({ block: 'center', behavior: 'smooth' }), 320); }}
                     style={{ border: 'none', outline: 'none', background: 'transparent', padding: 0, font: mobile ? '500 18px Inter, sans-serif' : '500 24px Inter, sans-serif', color: INK, width: '100%' }} />
                 </label>
@@ -684,7 +704,7 @@ export default function LabAssessment() {
           })}
           <label style={{ flex: mobile || port ? '1 1 100%' : '1 1 280px', height: fieldH, borderRadius: mobile ? 14 : 18, background: '#fff', padding: mobile ? '9px 16px 0' : '12px 22px 0', display: 'flex', flexDirection: 'column', gap: 2, position: 'relative' }}>
             <span style={{ fontSize: mobile ? 13 : 18, fontWeight: 800, color: MUTED }}>Country</span>
-            <select value={contact.country} onChange={(e) => setContact((c) => ({ ...c, country: e.target.value }))}
+            <select value={contact.country} onChange={(e) => setContact((c) => ({ ...c, country: e.target.value, phone: formatPhone(c.phone, e.target.value) }))}
               style={{ appearance: 'none', WebkitAppearance: 'none', border: 'none', outline: 'none', background: 'transparent', padding: 0, font: mobile ? '500 18px Inter, sans-serif' : '500 24px Inter, sans-serif', color: INK, width: '100%' }}>
               {COUNTRY_LIST.map((c) => <option key={c.c} value={c.c}>{c.n}</option>)}
             </select>
