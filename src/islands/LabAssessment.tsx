@@ -146,7 +146,7 @@ const COUNTRY_LIST = worldCountries(['US', 'CA']);
 const errsOf = (c: Contact) => ({
   name: c.name.trim() ? '' : 'Add your full name',
   email: !c.email.trim() ? 'Add your email' : /^\S+@\S+\.\S+$/.test(c.email.trim()) ? '' : 'Enter a valid email, like name@company.com',
-  web: c.web.trim() ? '' : 'Add your company website',
+  web: '',
   phone: '',
 });
 /* Phone numbers are shown in the national style of the chosen country (US/CA: (555) 000-0000,
@@ -616,12 +616,12 @@ export default function LabAssessment() {
   const nextLabel = isContact ? 'Send my assessment' : screen === 'standards' && sel.length === 0 ? "Skip, I'm not sure" : 'Next';
 
   const header = q ? { eb: `Question ${q.step} · ${q.eb}`, title: q.title, hint: q.hint }
-    : { eb: 'Last step · Your details', title: 'Where should we send your assessment?', hint: 'Phone is optional. Everything else is required.' };
+    : { eb: 'Last step · Your details', title: 'Where should we send your assessment?', hint: 'Website and phone are optional. Everything else is required.' };
 
   const fields = [
     { k: 'name', label: 'Full name', type: 'text', ph: 'First and last name', mode: undefined as any, cap: 'words' },
     { k: 'email', label: 'Email', type: 'email', ph: 'name@company.com', mode: 'email', cap: 'off' },
-    { k: 'web', label: 'Website', type: 'url', ph: 'yourcompany.com', mode: 'url', cap: 'off' },
+    { k: 'web', label: 'Website (optional)', type: 'url', ph: 'yourcompany.com', mode: 'url', cap: 'off' },
     { k: 'phone', label: 'Phone (optional)', type: 'tel', ph: '(555) 000-0000', mode: 'tel', cap: 'off' },
   ] as const;
 
