@@ -30,7 +30,7 @@ const CAPTURE_ENDPOINT = '/api/booth/capture';
 const EVENT_SLUG = 'ami-nov-2026';
 const QUEUE_KEY = 'lc-assessment-queue-v1';
 const IDLE_MS = 90_000;
-const THANKS_SECONDS = 15;
+const THANKS_SECONDS = 30;
 
 const K = (n: string) => `/assets/img/assessment/kiosk/${n}`;
 const COVER = K('cubeten-loading-tray.webp');
