@@ -547,7 +547,7 @@ export default function LabAssessment() {
   const next = () => {
     clearTimeout(advance.current);
     if (isContact) {
-      if (Object.values(E).some(Boolean)) { setTried(true); return; }
+      if (Object.values(E).some(Boolean) || materials.length === 0) { setTried(true); return; }
       if (!sending) void submit();
       return;
     }
@@ -658,7 +658,7 @@ export default function LabAssessment() {
   const nextLabel = isContact ? 'Send my assessment' : screen === 'standards' && sel.length === 0 ? "Skip, I'm not sure" : 'Next';
 
   const header = q ? { eb: `Question ${q.step} · ${q.eb}`, title: q.title, hint: q.hint }
-    : { eb: 'Last step · Your details', title: 'Where should we send your assessment?', hint: 'Website and phone are optional. Everything else is required.' };
+    : { eb: 'Last step · Your details', title: 'Where should we send your assessment?', hint: 'Website and phone are optional. Pick at least one item to email to you.' };
 
   const fields = [
     { k: 'name', label: 'Full name', type: 'text', ph: 'First and last name', mode: undefined as any, cap: 'words' },
@@ -759,14 +759,15 @@ export default function LabAssessment() {
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={INK} strokeWidth="2.4" strokeLinecap="round" style={{ position: 'absolute', right: mobile ? 16 : 24, top: mobile ? 26 : Math.round(fieldH * 0.375), pointerEvents: 'none' }}><path d="M6 9l6 6 6-6" /></svg>
           </label>
           <div style={{ flex: '1 1 100%', marginTop: mobile ? 4 : 8 }}>
-            <Eyebrow m={mobile}>Also email me (optional)</Eyebrow>
+            <Eyebrow m={mobile} color={showErr && materials.length === 0 ? P.labelErr : INK}>Email me · pick at least one</Eyebrow>
+            {showErr && materials.length === 0 && <div style={{ fontSize: mobile ? 14 : 18, fontWeight: 600, color: P.labelErr, paddingTop: 6 }}>Choose at least one item to email to you</div>}
           </div>
           {MATERIALS.map((o) => (
             <Tile key={o.id} o={o} on={materials.includes(o.id)} mediaW={mediaW} tileH={tileH} basis={mobile ? 280 : port ? 300 : 440}
               otherValue="" onOther={() => {}} onTap={() => setMaterials((p) => (p.includes(o.id) ? p.filter((x) => x !== o.id) : [...p, o.id]))} m={mobile} plain grow />
           ))}
           <div style={{ flex: '1 1 100%', fontSize: mobile ? 14 : 18, fontWeight: 500, color: MUTED, lineHeight: 1.4, paddingBottom: mobile ? 0 : 16 }}>
-            We'll email your assessment, and any materials you tick, to this address.
+            We'll email your assessment, and the materials you tick, to this address.
           </div>
         </div>
       )}
