@@ -267,6 +267,40 @@ const Chips = ({ m }: { m?: boolean }) => {
   const base: React.CSSProperties = { height: m ? 30 : 44, padding: m ? (tiny ? '0 9px' : '0 12px') : '0 18px', borderRadius: 999, display: 'flex', alignItems: 'center', fontSize: m ? (tiny ? 11 : 13) : 18, fontWeight: 800, letterSpacing: m ? '.04em' : '.1em', color: '#000', whiteSpace: 'nowrap' };
   return <div style={{ display: 'flex', gap: m ? 6 : 10 }}><div style={{ ...base, background: TEAL }}>NOV 11-12</div><div style={{ ...base, background: '#fff' }}>BOOTH C819</div></div>;
 };
+/* Full-screen toggle for the booth tablet: hides the browser bars. It needs a tap (browsers refuse
+   to go full screen on their own), so the visitor-facing staff taps it once. Hidden where the
+   browser has no Fullscreen API, or when the page is already installed / full screen. */
+const fsEl = () => (document as any).fullscreenElement || (document as any).webkitFullscreenElement || null;
+const fsOK = () => !!(document.fullscreenEnabled || (document as any).webkitFullscreenEnabled);
+function FullscreenBtn({ dark }: { dark?: boolean }) {
+  const [on, setOn] = React.useState(false);
+  const [ok, setOk] = React.useState(false);
+  React.useEffect(() => {
+    const sync = () => setOn(!!fsEl());
+    setOk(fsOK() && !window.matchMedia('(display-mode: standalone)').matches);
+    sync();
+    document.addEventListener('fullscreenchange', sync);
+    document.addEventListener('webkitfullscreenchange', sync);
+    return () => { document.removeEventListener('fullscreenchange', sync); document.removeEventListener('webkitfullscreenchange', sync); };
+  }, []);
+  if (!ok) return null;
+  const toggle = () => {
+    const d: any = document, el: any = document.documentElement;
+    try {
+      if (fsEl()) (d.exitFullscreen || d.webkitExitFullscreen).call(d);
+      else (el.requestFullscreen || el.webkitRequestFullscreen).call(el, { navigationUI: 'hide' });
+    } catch { /* refused: nothing to do */ }
+  };
+  const fg = dark ? '#fff' : INK;
+  return (
+    <button type="button" onClick={toggle} aria-label={on ? 'Exit full screen' : 'Enter full screen'}
+      style={{ width: 52, height: 52, flex: 'none', borderRadius: 14, border: 'none', cursor: 'pointer', background: dark ? 'rgba(255,255,255,.14)' : '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={fg} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+        {on ? <path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5" /> : <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />}
+      </svg>
+    </button>
+  );
+}
 const Eyebrow = ({ children, m, color = INK }: { children: React.ReactNode; m?: boolean; color?: string }) => (
   <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: m ? 13 : 18, fontWeight: 800, letterSpacing: m ? '.1em' : '.14em', textTransform: 'uppercase', color }}>
     <span style={{ width: m ? 8 : 10, height: m ? 8 : 10, background: TEAL, borderRadius: 2, flex: 'none' }} />{children}
@@ -585,7 +619,7 @@ export default function LabAssessment() {
         {!mobile && (
           <div style={{ position: 'absolute', inset: 0 }}>
             <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 96, padding: `0 ${padX}px`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <img src={LOGO} alt="LabsCubed" style={{ height: 30 }} /><Chips />
+              <img src={LOGO} alt="LabsCubed" style={{ height: 30 }} /><div style={{ display: 'flex', alignItems: 'center', gap: 14 }}><Chips /><FullscreenBtn dark /></div>
             </div>
             <div style={{ position: 'absolute', left: padX, right: padX, bottom: 'calc(50% + 96px)', display: 'flex', flexDirection: 'column', gap: 16 }}>
               <div style={{ fontSize: 18, fontWeight: 800, letterSpacing: '.2em', textTransform: 'uppercase', color: TEAL }}>Free lab assessment</div>
@@ -659,6 +693,7 @@ export default function LabAssessment() {
         <img src={LOGO} alt="LabsCubed" style={{ height: mobile ? 20 : 24 }} />
         {(
           <div style={{ display: 'flex', alignItems: 'center', gap: mobile ? 12 : 18 }}>
+            {!mobile && <FullscreenBtn dark />}
             <div style={{ display: 'flex', gap: 4 }}>{segs.map((bg, i) => <div key={i} style={{ width: segW, height: mobile ? 6 : 8, borderRadius: 2, background: bg }} />)}</div>
             <div style={{ fontSize: mobile ? 14 : 18, fontWeight: 800, fontVariantNumeric: 'tabular-nums', color: '#fff', minWidth: mobile ? 32 : 44, textAlign: 'right' }}>{step} / 7</div>
           </div>
