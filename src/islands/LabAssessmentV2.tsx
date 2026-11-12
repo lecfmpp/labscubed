@@ -142,14 +142,16 @@ const ORD: Screen[] = ['cover', 'industry', 'tests', 'machines', 'volume', 'prio
 const industryValue = (ids: string[]) => (ids.includes('plastics') && ids.includes('rubber') && ids.length === 2 ? 'both' : ids.join(','));
 
 type Ans = Partial<Record<QKey, string[]>>;
-type Contact = { name: string; email: string; phone: string; company: string };
-const BLANK_CONTACT: Contact = { name: '', email: '', phone: '', company: '' };
+type Contact = { name: string; email: string; phone: string; company: string; role: string };
+const BLANK_CONTACT: Contact = { name: '', email: '', phone: '', company: '', role: '' };
 const THANKS_ASSESS = ['Testing costs and technician time', 'Workflow bottlenecks and capacity gains', 'Impact on turnaround time and backlog', 'Estimated automation ROI and payback'];
 
 const errsOf = (c: Contact) => ({
   name: c.name.trim() ? '' : 'Add your full name',
   email: !c.email.trim() ? 'Add your email' : /^\S+@\S+\.\S+$/.test(c.email.trim()) ? '' : 'Enter a valid email, like name@company.com',
   phone: '',
+  company: '',
+  role: '',
 });
 /* Phone numbers are formatted as the visitor types, digits only, so nobody has to type spaces or
    brackets. There is no country field: a number typed with a leading + is an international one and
@@ -544,8 +546,9 @@ export default function LabAssessmentV2() {
       const { found, contact: f } = await r.json();
       if (!found) { setScanState('fail'); return; }
       scanned.current = true;
-      /* Only fill what was read; anything the visitor already typed stays unless the card has it. */
-      setContact((c) => ({ ...c, name: f.name || c.name, email: f.email || c.email, phone: f.phone ? formatPhone(f.phone) : c.phone, company: f.company || c.company }));
+      /* Every successful scan replaces all the fields, so a second card (a badge after a business
+         card) never inherits the first one's details. */
+      setContact({ name: f.name || '', email: f.email || '', phone: f.phone ? formatPhone(f.phone) : '', company: f.company || '', role: f.job_title || '' });
       setScanState('ok');
       setTimeout(() => emailRef.current?.focus(), 250);
     } catch { setScanState('fail'); }
@@ -558,7 +561,7 @@ export default function LabAssessmentV2() {
   async function submit() {
     setSending(true);
     const client_id = (crypto as any).randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random();
-    const ct = { name: contact.name.trim(), email: contact.email.trim().toLowerCase(), website: domainOfEmail(contact.email.trim()), phone: fullPhone(contact.phone), company: contact.company.trim() };
+    const ct = { name: contact.name.trim(), email: contact.email.trim().toLowerCase(), website: domainOfEmail(contact.email.trim()), phone: fullPhone(contact.phone), company: contact.company.trim(), role: contact.role.trim() };
     const body = {
       client_id, event_slug: EVENT_SLUG, path: 'assess', scanned: scanned.current, page: window.location.pathname, submitted_at: new Date().toISOString(),
       answers: {
@@ -703,11 +706,13 @@ export default function LabAssessmentV2() {
   const nextLabel = isContact ? 'Send my assessment' : screen === 'standards' && sel.length === 0 ? "Skip, I'm not sure" : 'Next';
 
   const header = q ? { eb: `Question ${q.step} · ${q.eb}`, title: q.title, hint: q.hint }
-    : { eb: 'Last step · Your details', title: 'Where should we send your assessment?', hint: 'Phone is optional. Pick at least one item to email to you.' };
+    : { eb: 'Last step · Your details', title: 'Where should we send your assessment?', hint: 'Company, role and phone are optional. Pick at least one item to email to you.' };
 
   const fields = [
     { k: 'name', label: 'Full name', type: 'text', ph: 'First and last name', mode: undefined as any, cap: 'words' },
     { k: 'email', label: 'Email', type: 'email', ph: 'name@company.com', mode: 'email', cap: 'off' },
+    { k: 'company', label: 'Company (optional)', type: 'text', ph: 'Company name', mode: undefined as any, cap: 'words' },
+    { k: 'role', label: 'Role (optional)', type: 'text', ph: 'Job title', mode: undefined as any, cap: 'words' },
     { k: 'phone', label: 'Phone (optional)', type: 'tel', ph: '(555) 000-0000', mode: 'tel', cap: 'off' },
   ] as const;
 
