@@ -1,11 +1,12 @@
 ---
-/* Lab assessment, version 2 — the same kiosk as ../pre-assessment plus a "Scan your
-   badge or business card" button on the last step (the photo is read by
-   netlify/functions/booth-scan.mjs). A separate URL so the scan can be tested on a
+/* Lab assessment, version 2 — the ../pre-assessment kiosk with a "Scan your badge or
+   business card" button on the last step (the photo is read by
+   netlify/functions/booth-scan.mjs), a .com key on the email field, and no country or
+   website fields. It has its own island (LabAssessmentV2.tsx). A separate URL so the scan can be tested on a
    tablet without touching version 1, which keeps running unchanged. Noindex and out
    of the sitemap (astro.config.mjs). */
 import Base from '../../../../layouts/Base.astro';
-import LabAssessment from '../../../../islands/LabAssessment.tsx';
+import LabAssessment from '../../../../islands/LabAssessmentV2.tsx';
 ---
 
 <Base
@@ -14,5 +15,5 @@ import LabAssessment from '../../../../islands/LabAssessment.tsx';
   preloadHero={false}
   noindex
 >
-  <LabAssessment scan client:only="react" />
+  <LabAssessment client:only="react" />
 </Base>

@@ -20,12 +20,12 @@
  * touching the backend. Question copy comes from Mo'min's "Lab Assessment
  * Questionnaire". */
 import React from 'react';
+import { worldCountries } from '../lib/world-countries';
 import { track } from '../lib/track';
 // @ts-ignore  specimen drawings, ported as is from the design system
 import { Sample } from './kiosk/Sample.jsx';
 
 const ASSESS_ENDPOINT = '/api/booth/assessment';
-const SCAN_ENDPOINT = '/api/booth/scan';
 const CAPTURE_ENDPOINT = '/api/booth/capture';
 const EVENT_SLUG = 'ami-nov-2026';
 const QUEUE_KEY = 'lc-assessment-queue-v1';
@@ -137,30 +137,38 @@ const ORD: Screen[] = ['cover', 'industry', 'tests', 'machines', 'volume', 'prio
 const industryValue = (ids: string[]) => (ids.includes('plastics') && ids.includes('rubber') && ids.length === 2 ? 'both' : ids.join(','));
 
 type Ans = Partial<Record<QKey, string[]>>;
-type Contact = { name: string; email: string; phone: string; company: string };
-const BLANK_CONTACT: Contact = { name: '', email: '', phone: '', company: '' };
+type Contact = { name: string; email: string; web: string; phone: string; country: string };
+const BLANK_CONTACT: Contact = { name: '', email: '', web: '', phone: '', country: 'US' };
 const THANKS_ASSESS = ['Testing costs and technician time', 'Workflow bottlenecks and capacity gains', 'Impact on turnaround time and backlog', 'Estimated automation ROI and payback'];
+
+const COUNTRY_LIST = worldCountries(['US', 'CA']);
 
 const errsOf = (c: Contact) => ({
   name: c.name.trim() ? '' : 'Add your full name',
   email: !c.email.trim() ? 'Add your email' : /^\S+@\S+\.\S+$/.test(c.email.trim()) ? '' : 'Enter a valid email, like name@company.com',
+  web: '',
   phone: '',
 });
-/* Phone numbers are formatted as the visitor types, digits only, so nobody has to type spaces or
-   brackets. There is no country field: a number typed with a leading + is an international one and
-   is grouped in threes; anything else is read as US/CA, (555) 000-0000. */
-const formatPhone = (raw: string) => {
-  const intl = raw.trim().startsWith('+');
+/* Phone numbers are shown in the national style of the chosen country (US/CA: (555) 000-0000,
+   others grouped by their usual pattern) with the dial code as a prefix. Digits only are kept
+   while typing, so the visitor never has to type spaces or brackets. */
+const DIAL: Record<string, string> = { US: '1', CA: '1', GB: '44', DE: '49', FR: '33', IT: '39', ES: '34', NL: '31', BE: '32', CH: '41', AT: '43', SE: '46', NO: '47', DK: '45', FI: '358', IE: '353', PT: '351', PL: '48', CZ: '420', MX: '52', BR: '55', AR: '54', CL: '56', CO: '57', IN: '91', CN: '86', JP: '81', KR: '82', TW: '886', SG: '65', MY: '60', TH: '66', VN: '84', ID: '62', PH: '63', AU: '61', NZ: '64', AE: '971', SA: '966', IL: '972', TR: '90', ZA: '27', EG: '20', HK: '852' };
+const dialOf = (cc: string) => DIAL[cc] || '';
+const formatPhone = (raw: string, cc: string) => {
   let d = raw.replace(/\D/g, '');
-  if (intl) return d ? `+${d.slice(0, 15).replace(/(\d{3})(?=\d)/g, '$1 ').trim()}` : '+';
-  if (d.length === 11 && d.startsWith('1')) d = d.slice(1);
-  d = d.slice(0, 10);
-  if (d.length > 6) return `(${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6)}`;
-  if (d.length > 3) return `(${d.slice(0, 3)}) ${d.slice(3)}`;
-  return d;
+  const dial = dialOf(cc);
+  if (dial && d.startsWith(dial) && raw.trim().startsWith('+')) d = d.slice(dial.length);
+  if (cc === 'US' || cc === 'CA') {
+    d = d.slice(0, 10);
+    if (d.length > 6) return `(${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6)}`;
+    if (d.length > 3) return `(${d.slice(0, 3)}) ${d.slice(3)}`;
+    return d;
+  }
+  d = d.slice(0, 12);
+  return d.replace(/(\d{3})(?=\d)/g, '$1 ').trim();
 };
-const fullPhone = (p: string) => { const d = p.replace(/\D/g, ''); return d ? (p.trim().startsWith('+') ? p.trim() : `+1 ${p.trim()}`) : ''; };
-/* There is no website field: the company site is read from the email's domain. Personal mailbox
+const fullPhone = (p: string, cc: string) => { const d = p.replace(/\D/g, ''); return d ? `${dialOf(cc) ? '+' + dialOf(cc) + ' ' : ''}${p.trim()}` : ''; };
+/* Website follows the email's domain until the visitor edits it themselves. Personal mailbox
    providers are skipped: gmail.com is not their company site. */
 const FREE_MAIL = new Set(['gmail.com', 'googlemail.com', 'yahoo.com', 'ymail.com', 'hotmail.com', 'outlook.com', 'live.com', 'msn.com', 'icloud.com', 'me.com', 'aol.com', 'proton.me', 'protonmail.com', 'gmx.com', 'gmx.net', 'qq.com', '163.com', 'mail.com', 'yandex.com', 'zoho.com']);
 const domainOfEmail = (e: string) => {
@@ -387,25 +395,7 @@ function Tile({ o, on, mediaW, tileH, basis, otherValue, onOther, onTap, m, plai
   );
 }
 
-/* Scan (version 2 of the kiosk): photograph a badge or business card and let the server read the
-   contact details off it. The photo is shrunk first (a tablet camera shot is several MB) and is never
-   kept; see netlify/functions/booth-scan.mjs. */
-async function shrink(file: File): Promise<string> {
-  const url = URL.createObjectURL(file);
-  try {
-    const img = await new Promise<HTMLImageElement>((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => no(new Error('image')); i.src = url; });
-    const k = Math.min(1, 1600 / Math.max(img.width, img.height));
-    const c = document.createElement('canvas');
-    c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
-    c.getContext('2d')!.drawImage(img, 0, 0, c.width, c.height);
-    return c.toDataURL('image/jpeg', 0.82).split(',')[1];
-  } finally { URL.revokeObjectURL(url); }
-}
-const CameraIcon = ({ c, s = 30 }: { c: string; s?: number }) => (
-  <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z" /><circle cx="12" cy="13" r="3.6" /></svg>
-);
-
-export default function LabAssessment({ scan = false }: { scan?: boolean } = {}) {
+export default function LabAssessment() {
   const [screen, setScreen] = React.useState<Screen>('cover');
   const [ans, setAns] = React.useState<Ans>({});
   const [materials, setMaterials] = React.useState<string[]>([]);
@@ -417,10 +407,7 @@ export default function LabAssessment({ scan = false }: { scan?: boolean } = {})
   const [pending, setPending] = React.useState(0);
   const idleRef = React.useRef<number>(0);
   const advance = React.useRef<number>(0);
-  const emailRef = React.useRef<HTMLInputElement>(null);
-  const fileRef = React.useRef<HTMLInputElement>(null);
-  const [scanState, setScanState] = React.useState<'idle' | 'busy' | 'ok' | 'fail'>('idle');
-  const scanned = React.useRef(false);
+  const webEdited = React.useRef(false);
   const port = usePortrait();
   const mobile = useMobile();
   const kb = useKeyboard();
@@ -456,7 +443,7 @@ export default function LabAssessment({ scan = false }: { scan?: boolean } = {})
 
   const reset = React.useCallback(() => {
     clearTimeout(advance.current);
-    setScreen('cover'); setAns({}); setMaterials([]); setOther({}); setContact(BLANK_CONTACT); setScanState('idle'); scanned.current = false;
+    setScreen('cover'); setAns({}); setMaterials([]); setOther({}); setContact(BLANK_CONTACT); webEdited.current = false;
     setTried(false); setSending(false); setCount(THANKS_SECONDS);
   }, []);
 
@@ -522,39 +509,13 @@ export default function LabAssessment({ scan = false }: { scan?: boolean } = {})
   const nextOn = isContact || screen === 'standards' || sel.length > 0;
   const E = errsOf(contact);
   const showErr = tried;
-  /* Typing on the tablet is slow, so the email field offers a ".com" key: it shows once the visitor has
-     typed an @ and a domain name with no dot yet, and one tap finishes the address. */
-  const emailDomain = contact.email.split('@')[1] ?? '';
-  const showCom = contact.email.includes('@') && emailDomain.length > 0 && !emailDomain.includes('.');
-  async function onPhoto(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    e.target.value = '';
-    if (!file) return;
-    setScanState('busy');
-    try {
-      const image = await shrink(file);
-      const r = await fetch(SCAN_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ image, media_type: 'image/jpeg' }) });
-      if (!r.ok) throw new Error(String(r.status));
-      const { found, contact: f } = await r.json();
-      if (!found) { setScanState('fail'); return; }
-      scanned.current = true;
-      /* Only fill what was read; anything the visitor already typed stays unless the card has it. */
-      setContact((c) => ({ ...c, name: f.name || c.name, email: f.email || c.email, phone: f.phone ? formatPhone(f.phone) : c.phone, company: f.company || c.company }));
-      setScanState('ok');
-      setTimeout(() => emailRef.current?.focus(), 250);
-    } catch { setScanState('fail'); }
-  }
-  const addCom = () => {
-    setContact((c) => ({ ...c, email: c.email.trim() + '.com' }));
-    emailRef.current?.focus();
-  };
 
   async function submit() {
     setSending(true);
     const client_id = (crypto as any).randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random();
-    const ct = { name: contact.name.trim(), email: contact.email.trim().toLowerCase(), website: domainOfEmail(contact.email.trim()), phone: fullPhone(contact.phone), company: contact.company.trim() };
+    const ct = { name: contact.name.trim(), email: contact.email.trim().toLowerCase(), website: contact.web.trim(), phone: fullPhone(contact.phone, contact.country), country: contact.country };
     const body = {
-      client_id, event_slug: EVENT_SLUG, path: 'assess', scanned: scanned.current, page: window.location.pathname, submitted_at: new Date().toISOString(),
+      client_id, event_slug: EVENT_SLUG, path: 'assess', page: window.location.pathname, submitted_at: new Date().toISOString(),
       answers: {
         industry: industryValue(ans.industry || []),
         tests: ans.tests || [], tests_other: (other.tests || '').trim(),
@@ -569,7 +530,7 @@ export default function LabAssessment({ scan = false }: { scan?: boolean } = {})
     /* Materials ticked on the last step go to the capture endpoint as their own request,
        so a failure there never costs the assessment (each is queued and retried alone). */
     if (materials.length) {
-      jobs.push({ ep: CAPTURE_ENDPOINT, body: { client_id: `${client_id}-materials`, event_slug: EVENT_SLUG, path: 'assess', name: ct.name, email: ct.email, company: ct.company || siteHost(ct.website), website: ct.website, phone: ct.phone,
+      jobs.push({ ep: CAPTURE_ENDPOINT, body: { client_id: `${client_id}-materials`, event_slug: EVENT_SLUG, path: 'assess', name: ct.name, email: ct.email, company: siteHost(ct.website), website: ct.website, phone: ct.phone, country: ct.country,
         assets: materials, source: window.location.pathname, submitted_at: new Date().toISOString() } });
     }
     let ok = true;
@@ -697,11 +658,12 @@ export default function LabAssessment({ scan = false }: { scan?: boolean } = {})
   const nextLabel = isContact ? 'Send my assessment' : screen === 'standards' && sel.length === 0 ? "Skip, I'm not sure" : 'Next';
 
   const header = q ? { eb: `Question ${q.step} · ${q.eb}`, title: q.title, hint: q.hint }
-    : { eb: 'Last step · Your details', title: 'Where should we send your assessment?', hint: 'Phone is optional. Pick at least one item to email to you.' };
+    : { eb: 'Last step · Your details', title: 'Where should we send your assessment?', hint: 'Website and phone are optional. Pick at least one item to email to you.' };
 
   const fields = [
     { k: 'name', label: 'Full name', type: 'text', ph: 'First and last name', mode: undefined as any, cap: 'words' },
     { k: 'email', label: 'Email', type: 'email', ph: 'name@company.com', mode: 'email', cap: 'off' },
+    { k: 'web', label: 'Website (optional)', type: 'url', ph: 'yourcompany.com', mode: 'url', cap: 'off' },
     { k: 'phone', label: 'Phone (optional)', type: 'tel', ph: '(555) 000-0000', mode: 'tel', cap: 'off' },
   ] as const;
 
@@ -767,42 +729,35 @@ export default function LabAssessment({ scan = false }: { scan?: boolean } = {})
       {/* contact */}
       {isContact && (
         <div className="la-scroll" style={{ flex: 1, minHeight: 0, padding: `0 ${padX}px`, display: 'flex', flexWrap: 'wrap', alignContent: 'flex-start', gap: mobile ? 12 : 14, paddingBottom: mobile ? 12 : 0 }}>
-          {scan && (
-            <div style={{ flex: '1 1 100%', display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <input ref={fileRef} type="file" accept="image/*" capture="environment" onChange={onPhoto} style={{ display: 'none' }} />
-              <div role="button" aria-disabled={scanState === 'busy'} onClick={() => { if (scanState !== 'busy') fileRef.current?.click(); }}
-                style={{ height: mobile ? 64 : 84, borderRadius: mobile ? 16 : 20, background: scanState === 'ok' ? P.tileOn : TEAL, boxShadow: scanState === 'ok' ? P.ringOnIn : 'none', color: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 14, cursor: 'pointer', fontSize: mobile ? 18 : 24, fontWeight: 800, letterSpacing: '-0.01em' }}>
-                <CameraIcon c="#000" s={mobile ? 26 : 34} />
-                {scanState === 'busy' ? 'Reading…' : scanState === 'ok' ? 'Scanned. Scan again' : 'Scan your badge or business card'}
-              </div>
-              {scanState === 'ok' && <span style={{ fontSize: mobile ? 14 : 18, fontWeight: 600, color: TEAL_D }}>Check your details below{contact.email ? '' : ', then add your email'}.</span>}
-              {scanState === 'fail' && <span style={{ fontSize: mobile ? 14 : 18, fontWeight: 600, color: P.labelErr }}>We couldn't read that one. Try again in better light, or type your details.</span>}
-            </div>
-          )}
           {fields.map((f) => {
             const msg = showErr ? E[f.k] : '';
             const err = !!msg;
             return (
               <div key={f.k} style={{ flex: mobile ? '1 1 100%' : `1 1 ${port ? 440 : 280}px`, display: 'flex', flexDirection: 'column', gap: 6 }}>
-                <label style={{ height: fieldH, borderRadius: mobile ? 14 : 18, background: err ? P.fieldErr : P.field, boxShadow: err ? P.errRing : P.fieldRing, padding: mobile ? '9px 16px 0' : '12px 22px 0', display: 'flex', flexDirection: 'column', gap: 2, position: 'relative' }}>
-                  <span style={{ fontSize: mobile ? 13 : 18, fontWeight: 800, color: err ? P.labelErr : P.label }}>{f.label}</span>
-                  <input ref={f.k === 'email' ? emailRef : undefined} value={contact[f.k]} placeholder={f.ph} type={f.type} inputMode={f.mode} autoComplete="off" autoCorrect="off" autoCapitalize={f.cap} spellCheck={false}
+                <label style={{ height: fieldH, borderRadius: mobile ? 14 : 18, background: err ? P.fieldErr : P.field, boxShadow: err ? P.errRing : P.fieldRing, padding: mobile ? '9px 16px 0' : '12px 22px 0', display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  <span style={{ fontSize: mobile ? 13 : 18, fontWeight: 800, color: err ? P.labelErr : P.label }}>{f.label}{f.k === 'phone' && dialOf(contact.country) ? ` · +${dialOf(contact.country)}` : ''}</span>
+                  <input value={contact[f.k]} placeholder={f.ph} type={f.type} inputMode={f.mode} autoComplete="off" autoCorrect="off" autoCapitalize={f.cap} spellCheck={false}
                     onChange={(e) => {
                       const v = e.target.value;
-                      setContact((c) => ({ ...c, [f.k]: f.k === 'phone' ? formatPhone(v) : v }));
+                      if (f.k === 'web') webEdited.current = v.trim() !== '';
+                      setContact((c) => ({ ...c, [f.k]: f.k === 'phone' ? formatPhone(v, c.country) : v,
+                        ...(f.k === 'email' && !webEdited.current ? { web: domainOfEmail(v) } : {}) }));
                     }}
                     onFocus={(e) => { const t = e.currentTarget; setTimeout(() => t.scrollIntoView({ block: 'center', behavior: 'smooth' }), 320); }}
                     style={{ border: 'none', outline: 'none', background: 'transparent', padding: 0, font: mobile ? '500 18px Inter, sans-serif' : '500 24px Inter, sans-serif', color: INK, width: '100%' }} />
-                  {f.k === 'email' && showCom && (
-                    <button type="button" aria-label="Add .com to the email"
-                      onPointerDown={(e) => e.preventDefault()} onClick={addCom}
-                      style={{ position: 'absolute', right: mobile ? 10 : 14, top: '50%', transform: 'translateY(-50%)', height: mobile ? 46 : 60, minWidth: mobile ? 84 : 112, padding: '0 18px', border: 'none', borderRadius: 14, background: TEAL, color: '#000', font: mobile ? '800 20px Inter, sans-serif' : '800 26px Inter, sans-serif', cursor: 'pointer' }}>.com</button>
-                  )}
                 </label>
                 {err && <span style={{ fontSize: mobile ? 14 : 18, fontWeight: 600, color: P.labelErr, paddingLeft: mobile ? 16 : 22 }}>{msg}</span>}
               </div>
             );
           })}
+          <label style={{ flex: mobile || port ? '1 1 100%' : '1 1 280px', height: fieldH, borderRadius: mobile ? 14 : 18, background: '#fff', padding: mobile ? '9px 16px 0' : '12px 22px 0', display: 'flex', flexDirection: 'column', gap: 2, position: 'relative' }}>
+            <span style={{ fontSize: mobile ? 13 : 18, fontWeight: 800, color: MUTED }}>Country</span>
+            <select value={contact.country} onChange={(e) => setContact((c) => ({ ...c, country: e.target.value, phone: formatPhone(c.phone, e.target.value) }))}
+              style={{ appearance: 'none', WebkitAppearance: 'none', border: 'none', outline: 'none', background: 'transparent', padding: 0, font: mobile ? '500 18px Inter, sans-serif' : '500 24px Inter, sans-serif', color: INK, width: '100%' }}>
+              {COUNTRY_LIST.map((c) => <option key={c.c} value={c.c}>{c.n}</option>)}
+            </select>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={INK} strokeWidth="2.4" strokeLinecap="round" style={{ position: 'absolute', right: mobile ? 16 : 24, top: mobile ? 26 : Math.round(fieldH * 0.375), pointerEvents: 'none' }}><path d="M6 9l6 6 6-6" /></svg>
+          </label>
           <div style={{ flex: '1 1 100%', marginTop: mobile ? 4 : 8 }}>
             <Eyebrow m={mobile} color={showErr && materials.length === 0 ? P.labelErr : INK}>Email me · pick at least one</Eyebrow>
             {showErr && materials.length === 0 && <div style={{ fontSize: mobile ? 14 : 18, fontWeight: 600, color: P.labelErr, paddingTop: 6 }}>Choose at least one item to email to you</div>}
