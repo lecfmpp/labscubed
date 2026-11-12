@@ -408,6 +408,112 @@ async function shrink(file: File): Promise<string> {
     return c.toDataURL('image/jpeg', 0.82).split(',')[1];
   } finally { URL.revokeObjectURL(url); }
 }
+/* ---------- live camera for the scanner ----------
+   The browser's own camera sheet (<input capture>) saves whatever the sensor sees: on a tablet whose
+   camera sits on the side, or a front camera that mirrors, the badge comes back sideways or mirrored
+   and the reader mixes its words up. So the scan opens its own camera view instead. The picture is
+   drawn through a canvas, which is also what gets sent: what the visitor sees is exactly what is read.
+   Rotate and Flip fix the picture once and are remembered on this tablet (localStorage), so staff set
+   them up a single time. If the camera cannot be opened, the visitor can pick a photo instead. */
+const CAM_KEY = 'lc-scan-cam-v1';
+type CamPrefs = { facing: 'user' | 'environment'; rot: number; flip: boolean };
+function readCamPrefs(): CamPrefs {
+  try {
+    const x = JSON.parse(localStorage.getItem(CAM_KEY) || '{}');
+    return { facing: x.facing === 'user' ? 'user' : 'environment', rot: [0, 90, 180, 270].includes(x.rot) ? x.rot : 0, flip: !!x.flip };
+  } catch { return { facing: 'environment', rot: 0, flip: false }; }
+}
+function CameraSheet({ mobile, onShot, onFile, onClose }: { mobile: boolean; onShot: (b64: string) => void; onFile: () => void; onClose: () => void }) {
+  const [prefs, setPrefs] = React.useState<CamPrefs>(readCamPrefs);
+  const [err, setErr] = React.useState('');
+  /* After Take photo the picture is frozen for review: the visitor sees what will be read and either uses it or retakes it. */
+  const [shot, setShot] = React.useState<string | null>(null);
+  const vref = React.useRef<HTMLVideoElement>(null);
+  const cref = React.useRef<HTMLCanvasElement>(null);
+  const live = React.useRef(prefs);
+  live.current = prefs;
+  const save = (p: CamPrefs) => { setPrefs(p); try { localStorage.setItem(CAM_KEY, JSON.stringify(p)); } catch { /* private mode */ } };
+
+  React.useEffect(() => {
+    let stop = false;
+    let raf = 0;
+    let stream: MediaStream | null = null;
+    const draw = () => {
+      const v = vref.current, c = cref.current;
+      if (v && c && v.videoWidth) {
+        const { rot, flip } = live.current;
+        const k = Math.min(1, 1600 / Math.max(v.videoWidth, v.videoHeight));
+        const w = Math.round(v.videoWidth * k), h = Math.round(v.videoHeight * k);
+        const sw = rot % 180 !== 0;
+        if (c.width !== (sw ? h : w) || c.height !== (sw ? w : h)) { c.width = sw ? h : w; c.height = sw ? w : h; }
+        const ctx = c.getContext('2d')!;
+        ctx.save();
+        ctx.translate(c.width / 2, c.height / 2);
+        ctx.rotate((rot * Math.PI) / 180);
+        if (flip) ctx.scale(-1, 1);
+        ctx.drawImage(v, -w / 2, -h / 2, w, h);
+        ctx.restore();
+      }
+      raf = requestAnimationFrame(draw);
+    };
+    (async () => {
+      setErr('');
+      try {
+        if (!navigator.mediaDevices?.getUserMedia) throw new Error('no camera api');
+        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: prefs.facing }, width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false });
+        if (stop) { stream.getTracks().forEach((t) => t.stop()); return; }
+        const v = vref.current!;
+        v.srcObject = stream;
+        await v.play();
+        draw();
+      } catch { if (!stop) setErr('The camera could not be opened. Allow camera access for this page, or choose a photo instead.'); }
+    })();
+    return () => { stop = true; cancelAnimationFrame(raf); stream?.getTracks().forEach((t) => t.stop()); };
+  }, [prefs.facing]);
+
+  const shoot = () => {
+    const c = cref.current;
+    if (!c || !c.width) return;
+    setShot(c.toDataURL('image/jpeg', 0.88));
+  };
+  const bh = mobile ? 56 : 80;
+  const btn: React.CSSProperties = { height: bh, minWidth: bh, padding: '0 22px', borderRadius: 20, border: 'none', background: 'rgba(255,255,255,.16)', color: '#fff', font: `800 ${mobile ? 16 : 20}px Inter, sans-serif`, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 };
+  return (
+    <div style={{ position: 'absolute', inset: 0, zIndex: 60, background: '#000', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ flex: 'none', padding: mobile ? '14px 16px 8px' : '24px 40px 12px', color: '#fff', fontSize: mobile ? 16 : 24, fontWeight: 700, lineHeight: 1.3 }}>
+        {shot ? (
+          <>Is the text sharp and the right way up? <span style={{ color: 'rgba(255,255,255,.6)', fontWeight: 500 }}>Use this photo, or retake it if it is blurry, cut off or sideways.</span></>
+        ) : (
+          <>Hold your badge or card in front of the camera. The text must read the right way, not sideways or mirrored.
+            <span style={{ color: 'rgba(255,255,255,.6)', fontWeight: 500 }}> If it doesn't, tap Rotate or Flip.</span></>
+        )}
+      </div>
+      <div style={{ flex: 1, minHeight: 0, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: mobile ? 8 : 16 }}>
+        <video ref={vref} playsInline muted autoPlay style={{ position: 'absolute', width: 2, height: 2, opacity: 0, pointerEvents: 'none' }} />
+        <canvas ref={cref} style={{ maxWidth: '100%', maxHeight: '100%', borderRadius: 16, background: '#111', visibility: shot ? 'hidden' : 'visible' }} />
+        {shot && <img src={shot} alt="Your photo" style={{ position: 'absolute', maxWidth: 'calc(100% - 16px)', maxHeight: 'calc(100% - 16px)', borderRadius: 16, boxShadow: `0 0 0 4px ${TEAL}` }} />}
+        {err && <div style={{ position: 'absolute', left: 24, right: 24, textAlign: 'center', color: '#fff', fontSize: mobile ? 17 : 24, fontWeight: 600 }}>{err}</div>}
+      </div>
+      <div style={{ flex: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap', gap: mobile ? 8 : 14, padding: mobile ? '10px 12px calc(14px + env(safe-area-inset-bottom, 0px))' : '14px 40px 32px' }}>
+        {shot ? (
+          <>
+            <div role="button" onClick={() => setShot(null)} style={btn}>Retake photo</div>
+            <div role="button" aria-label="Use this photo" onClick={() => onShot(shot.split(',')[1])} style={{ ...btn, background: TEAL, color: '#000', minWidth: mobile ? 170 : 260, fontSize: mobile ? 18 : 24 }}>Use this photo</div>
+          </>
+        ) : (
+          <>
+            <div role="button" onClick={onClose} style={btn}>Close</div>
+            <div role="button" onClick={() => save({ ...prefs, rot: (prefs.rot + 90) % 360 })} style={btn}>↻ Rotate</div>
+            <div role="button" onClick={() => save({ ...prefs, flip: !prefs.flip })} style={btn}>⇋ Flip</div>
+            <div role="button" onClick={() => save({ ...prefs, facing: prefs.facing === 'user' ? 'environment' : 'user' })} style={btn}>Switch camera</div>
+            <div role="button" onClick={onFile} style={btn}>Choose photo</div>
+            <div role="button" aria-label="Take photo" onClick={shoot} style={{ ...btn, background: TEAL, color: '#000', minWidth: mobile ? 140 : 220, fontSize: mobile ? 18 : 24 }}>Take photo</div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
 const CameraIcon = ({ c, s = 30 }: { c: string; s?: number }) => (
   <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z" /><circle cx="12" cy="13" r="3.6" /></svg>
 );
@@ -429,6 +535,7 @@ export default function LabAssessmentV2() {
   const fileRef = React.useRef<HTMLInputElement>(null);
   const [scanState, setScanState] = React.useState<'idle' | 'busy' | 'ok' | 'fail'>('idle');
   const scanned = React.useRef(false);
+  const [camOpen, setCamOpen] = React.useState(false);
   /* Company and Role are not part of the form by default: they show only when the last scan read them off the photo. */
   const [scanFields, setScanFields] = React.useState({ company: false, role: false });
   const port = usePortrait();
@@ -540,9 +647,14 @@ export default function LabAssessmentV2() {
     const file = e.target.files?.[0];
     e.target.value = '';
     if (!file) return;
+    setCamOpen(false);
+    setScanState('busy');
+    try { await readCard(await shrink(file)); } catch { setScanState('fail'); }
+  }
+  async function readCard(image: string) {
+    setCamOpen(false);
     setScanState('busy');
     try {
-      const image = await shrink(file);
       const r = await fetch(SCAN_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ image, media_type: 'image/jpeg' }) });
       if (!r.ok) throw new Error(String(r.status));
       const { found, contact: f } = await r.json();
@@ -783,8 +895,8 @@ export default function LabAssessmentV2() {
         <div className="la-scroll" style={{ flex: 1, minHeight: 0, padding: `0 ${padX}px`, display: 'flex', flexWrap: 'wrap', alignContent: 'flex-start', gap: mobile ? 12 : 14, paddingBottom: mobile ? 12 : 0 }}>
           {scan && (
             <div style={{ flex: '1 1 100%', display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <input ref={fileRef} type="file" accept="image/*" capture="environment" onChange={onPhoto} style={{ display: 'none' }} />
-              <div role="button" aria-disabled={scanState === 'busy'} onClick={() => { if (scanState !== 'busy') fileRef.current?.click(); }}
+              <input ref={fileRef} type="file" accept="image/*" onChange={onPhoto} style={{ display: 'none' }} />
+              <div role="button" aria-disabled={scanState === 'busy'} onClick={() => { if (scanState !== 'busy') setCamOpen(true); }}
                 style={{ height: mobile ? 64 : 84, borderRadius: mobile ? 16 : 20, background: scanState === 'ok' ? P.tileOn : TEAL, boxShadow: scanState === 'ok' ? P.ringOnIn : 'none', color: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 14, cursor: 'pointer', fontSize: mobile ? 18 : 24, fontWeight: 800, letterSpacing: '-0.01em' }}>
                 <CameraIcon c="#000" s={mobile ? 26 : 34} />
                 {scanState === 'busy' ? 'Reading…' : scanState === 'ok' ? 'Scanned. Scan again' : 'Scan your badge or business card'}
@@ -875,6 +987,7 @@ export default function LabAssessmentV2() {
             style={mobile ? (compactBtn ? { flex: 1 } : { width: '100%' }) : { flex: 1 }} />
         </div>
       )}
+      {camOpen && <CameraSheet mobile={mobile} onShot={(b) => void readCard(b)} onFile={() => fileRef.current?.click()} onClose={() => setCamOpen(false)} />}
       {pending > 0 && !kb.open && <div style={mobile ? { position: 'absolute', left: 0, right: 0, bottom: 1, textAlign: 'center', fontSize: 11, color: MUTED, pointerEvents: 'none' } : { position: 'absolute', left: '50%', top: 24, transform: 'translateX(-50%)', fontSize: 18, color: 'rgba(255,255,255,.6)', pointerEvents: 'none' }}>{pending} saved · will send when online</div>}
     </div>
   );
