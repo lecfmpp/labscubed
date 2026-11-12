@@ -2,9 +2,13 @@
 /* Lab assessment — the iPad questionnaire at the AMI booth. A kiosk page, not
    something anyone should reach from search: noindex, out of the sitemap
    (astro.config.mjs), and no site nav/footer so it can fill the whole tablet
-   screen. */
+   screen.
+
+   Serves the version 2 kiosk (LabAssessmentV2: badge/card scan, .com key, no country or
+   website fields). The previous island, LabAssessment.tsx, is kept unused so this can be
+   rolled back by switching the import. ../pre-assessment-v2 stays reachable and is identical. */
 import Base from '../../../../layouts/Base.astro';
-import LabAssessment from '../../../../islands/LabAssessment.tsx';
+import LabAssessment from '../../../../islands/LabAssessmentV2.tsx';
 ---
 
 <Base
