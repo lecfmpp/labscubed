@@ -426,6 +426,8 @@ function readCamPrefs(): CamPrefs {
 function CameraSheet({ mobile, onShot, onFile, onClose }: { mobile: boolean; onShot: (b64: string) => void; onFile: () => void; onClose: () => void }) {
   const [prefs, setPrefs] = React.useState<CamPrefs>(readCamPrefs);
   const [err, setErr] = React.useState('');
+  /* After Take photo the picture is frozen for review: the visitor sees what will be read and either uses it or retakes it. */
+  const [shot, setShot] = React.useState<string | null>(null);
   const vref = React.useRef<HTMLVideoElement>(null);
   const cref = React.useRef<HTMLCanvasElement>(null);
   const live = React.useRef(prefs);
@@ -472,28 +474,42 @@ function CameraSheet({ mobile, onShot, onFile, onClose }: { mobile: boolean; onS
   const shoot = () => {
     const c = cref.current;
     if (!c || !c.width) return;
-    onShot(c.toDataURL('image/jpeg', 0.88).split(',')[1]);
+    setShot(c.toDataURL('image/jpeg', 0.88));
   };
   const bh = mobile ? 56 : 80;
   const btn: React.CSSProperties = { height: bh, minWidth: bh, padding: '0 22px', borderRadius: 20, border: 'none', background: 'rgba(255,255,255,.16)', color: '#fff', font: `800 ${mobile ? 16 : 20}px Inter, sans-serif`, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 };
   return (
     <div style={{ position: 'absolute', inset: 0, zIndex: 60, background: '#000', display: 'flex', flexDirection: 'column' }}>
       <div style={{ flex: 'none', padding: mobile ? '14px 16px 8px' : '24px 40px 12px', color: '#fff', fontSize: mobile ? 16 : 24, fontWeight: 700, lineHeight: 1.3 }}>
-        Hold your badge or card in front of the camera. The text must read the right way, not sideways or mirrored.
-        <span style={{ color: 'rgba(255,255,255,.6)', fontWeight: 500 }}> If it doesn't, tap Rotate or Flip.</span>
+        {shot ? (
+          <>Is the text sharp and the right way up? <span style={{ color: 'rgba(255,255,255,.6)', fontWeight: 500 }}>Use this photo, or retake it if it is blurry, cut off or sideways.</span></>
+        ) : (
+          <>Hold your badge or card in front of the camera. The text must read the right way, not sideways or mirrored.
+            <span style={{ color: 'rgba(255,255,255,.6)', fontWeight: 500 }}> If it doesn't, tap Rotate or Flip.</span></>
+        )}
       </div>
       <div style={{ flex: 1, minHeight: 0, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: mobile ? 8 : 16 }}>
         <video ref={vref} playsInline muted autoPlay style={{ position: 'absolute', width: 2, height: 2, opacity: 0, pointerEvents: 'none' }} />
-        <canvas ref={cref} style={{ maxWidth: '100%', maxHeight: '100%', borderRadius: 16, background: '#111' }} />
+        <canvas ref={cref} style={{ maxWidth: '100%', maxHeight: '100%', borderRadius: 16, background: '#111', visibility: shot ? 'hidden' : 'visible' }} />
+        {shot && <img src={shot} alt="Your photo" style={{ position: 'absolute', maxWidth: 'calc(100% - 16px)', maxHeight: 'calc(100% - 16px)', borderRadius: 16, boxShadow: `0 0 0 4px ${TEAL}` }} />}
         {err && <div style={{ position: 'absolute', left: 24, right: 24, textAlign: 'center', color: '#fff', fontSize: mobile ? 17 : 24, fontWeight: 600 }}>{err}</div>}
       </div>
       <div style={{ flex: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap', gap: mobile ? 8 : 14, padding: mobile ? '10px 12px calc(14px + env(safe-area-inset-bottom, 0px))' : '14px 40px 32px' }}>
-        <div role="button" onClick={onClose} style={btn}>Close</div>
-        <div role="button" onClick={() => save({ ...prefs, rot: (prefs.rot + 90) % 360 })} style={btn}>↻ Rotate</div>
-        <div role="button" onClick={() => save({ ...prefs, flip: !prefs.flip })} style={btn}>⇋ Flip</div>
-        <div role="button" onClick={() => save({ ...prefs, facing: prefs.facing === 'user' ? 'environment' : 'user' })} style={btn}>Switch camera</div>
-        <div role="button" onClick={onFile} style={btn}>Choose photo</div>
-        <div role="button" aria-label="Take photo" onClick={shoot} style={{ ...btn, background: TEAL, color: '#000', minWidth: mobile ? 140 : 220, fontSize: mobile ? 18 : 24 }}>Take photo</div>
+        {shot ? (
+          <>
+            <div role="button" onClick={() => setShot(null)} style={btn}>Retake photo</div>
+            <div role="button" aria-label="Use this photo" onClick={() => onShot(shot.split(',')[1])} style={{ ...btn, background: TEAL, color: '#000', minWidth: mobile ? 170 : 260, fontSize: mobile ? 18 : 24 }}>Use this photo</div>
+          </>
+        ) : (
+          <>
+            <div role="button" onClick={onClose} style={btn}>Close</div>
+            <div role="button" onClick={() => save({ ...prefs, rot: (prefs.rot + 90) % 360 })} style={btn}>↻ Rotate</div>
+            <div role="button" onClick={() => save({ ...prefs, flip: !prefs.flip })} style={btn}>⇋ Flip</div>
+            <div role="button" onClick={() => save({ ...prefs, facing: prefs.facing === 'user' ? 'environment' : 'user' })} style={btn}>Switch camera</div>
+            <div role="button" onClick={onFile} style={btn}>Choose photo</div>
+            <div role="button" aria-label="Take photo" onClick={shoot} style={{ ...btn, background: TEAL, color: '#000', minWidth: mobile ? 140 : 220, fontSize: mobile ? 18 : 24 }}>Take photo</div>
+          </>
+        )}
       </div>
     </div>
   );
