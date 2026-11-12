@@ -429,6 +429,8 @@ export default function LabAssessmentV2() {
   const fileRef = React.useRef<HTMLInputElement>(null);
   const [scanState, setScanState] = React.useState<'idle' | 'busy' | 'ok' | 'fail'>('idle');
   const scanned = React.useRef(false);
+  /* Company and Role are not part of the form by default: they show only when the last scan read them off the photo. */
+  const [scanFields, setScanFields] = React.useState({ company: false, role: false });
   const port = usePortrait();
   const mobile = useMobile();
   const kb = useKeyboard();
@@ -464,7 +466,7 @@ export default function LabAssessmentV2() {
 
   const reset = React.useCallback(() => {
     clearTimeout(advance.current);
-    setScreen('cover'); setAns({}); setMaterials([]); setOther({}); setContact(BLANK_CONTACT); setScanState('idle'); scanned.current = false;
+    setScreen('cover'); setAns({}); setMaterials([]); setOther({}); setContact(BLANK_CONTACT); setScanState('idle'); scanned.current = false; setScanFields({ company: false, role: false });
     setTried(false); setSending(false); setCount(THANKS_SECONDS);
   }, []);
 
@@ -549,6 +551,7 @@ export default function LabAssessmentV2() {
       /* Every successful scan replaces all the fields, so a second card (a badge after a business
          card) never inherits the first one's details. */
       setContact({ name: f.name || '', email: f.email || '', phone: f.phone ? formatPhone(f.phone) : '', company: f.company || '', role: f.job_title || '' });
+      setScanFields({ company: !!f.company, role: !!f.job_title });
       setScanState('ok');
       setTimeout(() => emailRef.current?.focus(), 250);
     } catch { setScanState('fail'); }
@@ -706,13 +709,13 @@ export default function LabAssessmentV2() {
   const nextLabel = isContact ? 'Send my assessment' : screen === 'standards' && sel.length === 0 ? "Skip, I'm not sure" : 'Next';
 
   const header = q ? { eb: `Question ${q.step} · ${q.eb}`, title: q.title, hint: q.hint }
-    : { eb: 'Last step · Your details', title: 'Where should we send your assessment?', hint: 'Company, role and phone are optional. Pick at least one item to email to you.' };
+    : { eb: 'Last step · Your details', title: 'Where should we send your assessment?', hint: 'Phone is optional. Pick at least one item to email to you.' };
 
   const fields = [
     { k: 'name', label: 'Full name', type: 'text', ph: 'First and last name', mode: undefined as any, cap: 'words' },
     { k: 'email', label: 'Email', type: 'email', ph: 'name@company.com', mode: 'email', cap: 'off' },
-    { k: 'company', label: 'Company (optional)', type: 'text', ph: 'Company name', mode: undefined as any, cap: 'words' },
-    { k: 'role', label: 'Role (optional)', type: 'text', ph: 'Job title', mode: undefined as any, cap: 'words' },
+    { k: 'company', label: 'Company', type: 'text', ph: 'Company name', mode: undefined as any, cap: 'words' },
+    { k: 'role', label: 'Role', type: 'text', ph: 'Job title', mode: undefined as any, cap: 'words' },
     { k: 'phone', label: 'Phone (optional)', type: 'tel', ph: '(555) 000-0000', mode: 'tel', cap: 'off' },
   ] as const;
 
@@ -790,7 +793,7 @@ export default function LabAssessmentV2() {
               {scanState === 'fail' && <span style={{ fontSize: mobile ? 14 : 18, fontWeight: 600, color: P.labelErr }}>We couldn't read that one. Try again in better light, or type your details.</span>}
             </div>
           )}
-          {fields.map((f) => {
+          {fields.filter((f) => (f.k === 'company' ? scanFields.company : f.k === 'role' ? scanFields.role : true)).map((f) => {
             const msg = showErr ? E[f.k] : '';
             const err = !!msg;
             return (
