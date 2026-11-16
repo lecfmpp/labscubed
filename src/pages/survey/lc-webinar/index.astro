@@ -1,0 +1,16 @@
+---
+/* LC Webinar client survey (Client Survey 1.2). Sent by link to clients and contacts who
+   already know us, so: noindex, out of the sitemap, no site header or footer, and no link to
+   the webinar page — the page has one job. Prefill via ?email=&name=&company=&src=. */
+import Base from '../../../layouts/Base.astro';
+import LcWebinarSurvey from '../../../islands/LcWebinarSurvey.tsx';
+---
+
+<Base
+  title="LC Webinar survey — LabsCubed"
+  description="Three minutes to tell us where you stand on AI in material testing."
+  preloadHero={false}
+  noindex
+>
+  <LcWebinarSurvey client:only="react" />
+</Base>
