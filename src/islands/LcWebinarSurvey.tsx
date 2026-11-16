@@ -1,8 +1,8 @@
-/* LcWebinarSurvey — the LC Webinar client survey (client:only), served at /survey/lc-webinar/.
+/* LcWebinarSurvey — the LabsCubed Webinar client survey (client:only), served at /survey/lc-webinar/.
  *
  * Copy is Client Survey 1.2 (Mo'min). It goes to clients and contacts who already know
  * LabsCubed, so the page is built for no friction:
- *   - one question per screen, single-choice questions advance on tap;
+ *   - one question per screen, every question moves on with Continue;
  *   - no contact form: name/email/company arrive in the link Mo'min sends
  *     (?email=&name=&company=&src=), and are only asked for on the last screen if missing
  *     AND the person wants us to follow up;
@@ -147,7 +147,6 @@ export default function LcWebinarSurvey() {
     if (!q) return;
     if (!q.multi) {
       setAns((a) => ({ ...a, [q.key]: o.id }));
-      if (!o.other) setTimeout(() => setStep((s) => s + 1), 220);
       return;
     }
     setAns((a) => {
@@ -195,7 +194,7 @@ export default function LcWebinarSurvey() {
       <main className="lcs-main">
         {step === 0 && (
           <section className="lcs-card">
-            <p className="lcs-eyebrow">LC Webinar · 3-minute survey</p>
+            <p className="lcs-eyebrow">LabsCubed Webinar · 3-minute survey</p>
             <h1>{firstName ? `${firstName}, AI is changing material testing.` : 'AI is changing material testing.'}</h1>
             <p className="lcs-lead">Tell us where you stand, and we'll build a free webinar series around what matters most to you.</p>
             <button className="lcs-primary" onClick={() => { track('lc_survey_start', {}); setStep(1); }}>Start →</button>
@@ -223,7 +222,7 @@ export default function LcWebinarSurvey() {
             )}
             <nav className="lcs-nav">
               <button className="lcs-back" onClick={() => setStep((s) => s - 1)}>← Back</button>
-              {(q.multi || needsOther) && <button className="lcs-primary" disabled={!canNext} onClick={() => setStep((s) => s + 1)}>Continue →</button>}
+              <button className="lcs-primary" disabled={!canNext} onClick={() => setStep((s) => s + 1)}>Continue →</button>
             </nav>
           </section>
         )}

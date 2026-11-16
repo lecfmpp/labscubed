@@ -61,7 +61,7 @@ export default async (request) => {
         ['Task for AI', payload.wish || '—'], ['Follow-up', L.followup || payload.followup],
       ];
       const html =
-        `<p><strong>New LC Webinar survey response</strong></p><table cellpadding="6" style="border-collapse:collapse;font-family:Arial,sans-serif;font-size:14px">` +
+        `<p><strong>New LabsCubed Webinar survey response</strong></p><table cellpadding="6" style="border-collapse:collapse;font-family:Arial,sans-serif;font-size:14px">` +
         rows.map(([k, v]) => `<tr><td style="color:#666;border-bottom:1px solid #eee">${esc(k)}</td><td style="border-bottom:1px solid #eee">${esc(v || '—')}</td></tr>`).join('') +
         `</table>`;
       const res = await fetch('https://api.resend.com/emails', {
@@ -71,7 +71,7 @@ export default async (request) => {
           from: FROM,
           to: [process.env.LC_SURVEY_ALERT_TO || 'info@labscubed.com'],
           ...(payload.email ? { reply_to: payload.email } : {}),
-          subject: `LC Webinar survey — ${payload.name || payload.email || 'anonymous'}${payload.followup === 'chat' ? ' (open to a chat)' : ''}`,
+          subject: `LabsCubed Webinar survey — ${payload.name || payload.email || 'anonymous'}${payload.followup === 'chat' ? ' (open to a chat)' : ''}`,
           html,
           text: rows.map(([k, v]) => `${k}: ${v || '—'}`).join('\n'),
         }),
