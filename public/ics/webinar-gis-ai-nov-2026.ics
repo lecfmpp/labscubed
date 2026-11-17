@@ -3,14 +3,14 @@ VERSION:2.0
 PRODID:-//LabsCubed//Webinar//EN
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
-X-WR-CALNAME:LabsCubed Webinar - Automation, AI and Industry 4.0 in the Testing Lab
+X-WR-CALNAME:LabsCubed Webinar - The Role of AI in Materials Testing
 X-WR-TIMEZONE:America/New_York
 BEGIN:VEVENT
 UID:webinar-gis-ai-nov-2026@labscubed.com
 DTSTAMP:20261008T000000Z
 DTSTART:20261202T160000Z
 DTEND:20261202T165000Z
-SUMMARY:Automation, AI and Industry 4.0 in the Testing Lab - LabsCubed Webinar
+SUMMARY:The Role of AI in Materials Testing - LabsCubed Webinar
 DESCRIPTION:With Khaled Boqaileh, co-founder and CEO of LabsCubed. What it takes to make a testing lab smart: automating the repetitive work, producing data clean enough to be worth analysing, and connecting the two.
 LOCATION:Online
 URL:https://labscubed.com/webinar/gis-ai-nov-2026/
