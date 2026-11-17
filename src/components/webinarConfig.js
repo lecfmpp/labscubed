@@ -240,6 +240,8 @@ export const WEBINARS = {
       "Making a lab \"smart\" isn't one purchase. It's automating the repetitive work, producing data clean enough to be worth analysing, and connecting the two. Here is what that actually takes.",
     seatsTotal: 200,
     seatsLeft: 200,
+    // Abu, Nov 17: no audience counter on this page.
+    showSeats: false,
     ...KHALED,
     agenda: [
       ["01", "Who is LabsCubed", "Where automated tensile testing came from, and the problem it was built to remove."],
