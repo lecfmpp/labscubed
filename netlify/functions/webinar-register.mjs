@@ -44,7 +44,7 @@ const WEBINARS = {
   // replaySegmentId: where the replay-gate form (`unlock`) files people, kept
   // apart from the registrants above. Resend segment "Webinar: SPE Replay".
   'spe-oct-2026': { segmentId: 'd7b053f5-67b3-4747-807e-1e8db27c45a1', replaySegmentId: '9bfd5925-a699-4c6b-a46f-5275e4b24992', leadOnly: true },
-  'automation-ai-nov-2026': { segmentId: 'ca2a167f-e3c6-483b-90f0-8590d69ad2a1' },
+  'automation-ai-nov-2026': { segmentId: 'ca2a167f-e3c6-483b-90f0-8590d69ad2a1', welcomeEvent: 'ai_webinar_dec2026_registered' },
   // Invitation-only technical webinar (Dec 2, 2026), unlisted. Segment "Webinar: Rethinking Plastics Testing 2026".
   'plastics-testing-dec-2026': { segmentId: 'fc080aa9-cbf1-4095-a4e1-59e155950d6a', welcomeEvent: 'plastics_testing_registered' },
   // Tradeshow demo bookings, not a webinar — same funnel, its own list.
