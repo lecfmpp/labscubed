@@ -231,7 +231,7 @@ export const WEBINARS = {
 
   "automation-ai-nov-2026": build({
     slug: "automation-ai-nov-2026",
-    title: "Automation, AI and Industry 4.0 in the Testing Lab",
+    title: "The Role of AI in Materials Testing",
     dateLabel: "Wednesday, December 2, 2026",
     timeLabel: "11:00 AM EST · 50 minutes, including Q&A",
     startUTC: "2026-12-02T16:00:00Z",
@@ -796,6 +796,9 @@ WEBINARS["gis-spe-oct-2026"] = gisClone("spe-oct-2026", {
 // The same event as automation-ai-nov-2026 (date and time inherited from it).
 WEBINARS["gis-ai-nov-2026"] = gisClone("automation-ai-nov-2026", {
   slug: "gis-ai-nov-2026",
+  // The partner (GIS) page keeps the title it was promoted with; only our own
+  // page moved to "The Role of AI in Materials Testing" (Nov 17).
+  title: "Automation, AI and Industry 4.0 in the Testing Lab",
 });
 
 export function getWebinar(slug) {
