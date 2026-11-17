@@ -93,9 +93,17 @@ const TOTAL = QUESTIONS.length + 1; // + open-text question
 const uid = () => (crypto as any).randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 const labelOf = (q: Q, id: string) => q.opts.find((o) => o.id === id)?.label ?? id;
 
+const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+
 export default function LcWebinarSurvey() {
   const params = React.useMemo(() => new URLSearchParams(typeof location !== 'undefined' ? location.search : ''), []);
-  const known = { name: params.get('name') || '', email: params.get('email') || '', company: params.get('company') || '', source: params.get('src') || '' };
+  // Email links pre-fill name/email via merge tags. When a tag is not filled in
+  // (a test send, a preview, or a link copied from Trello) the raw "{{{...}}}"
+  // text arrives instead, so anything that is still a tag or is not a valid
+  // email is dropped rather than pre-filled.
+  const clean = (v: string | null) => { const t = (v || '').trim(); return /[{}]/.test(t) ? '' : t; };
+  const preEmail = clean(params.get('email'));
+  const known = { name: clean(params.get('name')), email: EMAIL_RE.test(preEmail) ? preEmail : '', company: clean(params.get('company')), source: clean(params.get('src')) };
   const clientId = React.useRef(uid());
 
   const [step, setStep] = React.useState(0); // 0 intro, 1..6 questions, 7 open text, 8 done
@@ -172,7 +180,7 @@ export default function LcWebinarSurvey() {
 
   const submitFollowup = async () => {
     if (followup !== 'no' && !email.trim()) { setError('Add your email so we can reach you.'); return; }
-    if (email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.trim())) { setError('That email doesn’t look right.'); return; }
+    if (followup !== 'no' && email && !EMAIL_RE.test(email.trim())) { setError('That email doesn’t look right.'); return; }
     setError(''); setBusy(true);
     const ok = await post(true);
     setBusy(false);
