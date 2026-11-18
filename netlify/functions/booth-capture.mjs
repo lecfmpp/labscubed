@@ -70,7 +70,13 @@ export default async (request) => {
 
   const name = String(data.name ?? '').trim();
   const company = String(data.company ?? '').trim();
-  const email = String(data.email ?? '').trim().toLowerCase();
+  // Tablet typing slips in accents and stray spaces (seen at AMI: "qiñgliang.he@…").
+  // Strip diacritics and whitespace so the address is deliverable and dedupes.
+  const email = String(data.email ?? '')
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, '')
+    .toLowerCase();
   if (!name) return json(400, { error: 'Missing name' });
   if (!company) return json(400, { error: 'Missing company' });
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return json(400, { error: 'Invalid email' });
@@ -108,6 +114,11 @@ export default async (request) => {
           source,
           landing_page: source,
           referrer: '',
+          // Tag the webform_leads row as an event lead at insert time, so inbound
+          // reporting can tell a booth download from an organic website one.
+          utm_source: 'tradeshow',
+          utm_medium: 'booth',
+          utm_campaign: slug,
           ...(index === 0 ? { origin: 'astro-site' } : {}),
         }),
       });
