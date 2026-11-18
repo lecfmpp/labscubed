@@ -3,8 +3,9 @@
 // Existing clients and contacts tell us where they stand on AI, so the LC
 // Webinar series is built around what matters to them. Supabase is the record
 // (public.lc_webinar_survey via the record_lc_webinar_survey RPC). The team
-// gets one email per submission. There is no email to the respondent and no
-// marketing segment: this is a survey, not a sign-up.
+// gets one email per submission and a post in #surveys, and respondents who
+// leave an email join the survey's Resend segment (see lib/surveys.mjs).
+// There is no email to the respondent.
 //
 // The page posts twice: once when the questions are answered (the answers
 // count even if the person closes the tab on the last screen), then again with
@@ -12,6 +13,7 @@
 // the same row instead of adding one.
 
 import { json, readJson, rpc } from '../lib/shared.mjs';
+import { postToSurveysChannel, addSurveyRespondent } from '../lib/surveys.mjs';
 
 const FROM = 'LabsCubed <news@labscubed.com>';
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
@@ -81,6 +83,29 @@ export default async (request) => {
     } catch (error) {
       console.error('Survey alert failed:', error);
     }
+  }
+
+  // #surveys post + Resend segment, once, on the final post.
+  if (payload.followup) {
+    const L = data.labels || {};
+    const list = (v) => (Array.isArray(v) ? v.join(', ') : v);
+    await Promise.all([
+      postToSurveysChannel({
+        title: 'New survey response: AI in Materials Testing',
+        who: [payload.name || 'Anonymous', payload.company, L.role || payload.role_other || payload.role].filter(Boolean).join(' · '),
+        rows: [
+          ['Email', payload.email],
+          ['AI today', L.ai_stage || payload.ai_stage],
+          ['AI could help with', list(L.ai_help || payload.ai_help)],
+          ['Concerns', list(L.concerns || payload.concerns)],
+          ['Would make them comfortable', list(L.comfort || payload.comfort)],
+          ['Webinar topics wanted', list(L.topics || payload.topics)],
+          ['Task for AI', payload.wish],
+          ['Follow-up', L.followup || payload.followup],
+        ],
+      }),
+      addSurveyRespondent('lc-webinar', payload),
+    ]);
   }
 
   try {
