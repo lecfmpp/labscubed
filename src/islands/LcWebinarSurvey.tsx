@@ -4,8 +4,8 @@
  * LabsCubed, so the page is built for no friction:
  *   - one question per screen, every question moves on with Continue;
  *   - no contact form: name/email/company arrive in the link Mo'min sends
- *     (?email=&name=&company=&src=), and are only asked for on the last screen if missing
- *     AND the person wants us to follow up;
+ *     (?email=&name=&company=&src=), and are asked for on the last screen if missing
+ *     (email is required for everyone, whatever the follow-up choice);
  *   - no site header, no links out. In particular it does NOT link to the webinar page:
  *     the only job here is to answer. The follow-up choice is recorded and the team acts on it.
  *
@@ -179,8 +179,8 @@ export default function LcWebinarSurvey() {
   };
 
   const submitFollowup = async () => {
-    if (followup !== 'no' && !email.trim()) { setError('Add your email so we can reach you.'); return; }
-    if (followup !== 'no' && email && !EMAIL_RE.test(email.trim())) { setError('That email doesn’t look right.'); return; }
+    if (!email.trim()) { setError('Please add your work email.'); return; }
+    if (!EMAIL_RE.test(email.trim())) { setError('That email doesn’t look right.'); return; }
     setError(''); setBusy(true);
     const ok = await post(true);
     setBusy(false);
@@ -259,7 +259,7 @@ export default function LcWebinarSurvey() {
                 </button>
               ))}
             </div>
-            {followup && followup !== 'no' && !known.email && (
+            {followup && !known.email && (
               <div className="lcs-contact">
                 <input className="lcs-input" placeholder="Your name" value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" />
                 <input className="lcs-input" type="email" inputMode="email" placeholder="Work email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" />
