@@ -1,0 +1,52 @@
+---
+import { WEBINARS } from '../../../../components/webinarConfig.js';
+import { eventSchema } from '../../../../lib/event-schema.mjs';
+import { buildJsonLd } from '../../../../lib/jsonld';
+import { SITE_URL } from '../../../../site.mjs';
+import Base from '../../../../layouts/Base.astro';
+import WebinarTopBar from '../../../../components/WebinarTopBar.jsx';
+import RegistrationApp from '../../../../components/RegistrationApp.jsx';
+import Footer from '../../../../components/Footer.astro';
+import ScrollTopOnLoad from '../../../../components/ScrollTopOnLoad.astro';
+---
+
+{/* LinkedIn ads land here (same page as /webinar/automation-ai-nov-2026, kept out
+    of search). Sign-ups are tagged source=linkedin and go to ./thank-you, which
+    the LinkedIn "Webinar Registration" conversion matches by URL. */}
+<Base jsonLd={[...buildJsonLd(SITE_URL), eventSchema(WEBINARS['automation-ai-nov-2026'])]} title="The Role of AI in Materials Testing — LabsCubed Webinar" noindex description="Free webinar, Dec 2 2026, 11:00 AM EST. What it takes to make a testing lab smart: automate repetitive work, produce clean data, and connect the two.">
+  <ScrollTopOnLoad />
+  {/* No site header on this page on purpose: every link in it is a way to
+      leave, and the page has one job — registration. The countdown bar stays,
+      sticky on its own. The thank-you page keeps the header, since by then the
+      conversion has happened. */}
+  <div class="lc-sticky-top">
+    <WebinarTopBar slug="automation-ai-nov-2026" client:only="react" />
+  </div>
+  <main class="lc-page">
+    <RegistrationApp slug="automation-ai-nov-2026" channel="linkedin" client:only="react" />
+  </main>
+  <Footer showCta={false} />
+</Base>
+
+<style is:global>
+  .lc-sticky-top {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: #000;
+  }
+
+  /* Belt-and-braces for arrivals that skip the JS scroll helper — a
+     /webinar/automation-ai-nov-2026/#register link, or an in-page anchor. Keeps the top of
+     the registration section clear of the sticky countdown bar, measured at
+     57px now that the site header is gone from this page. */
+  #register {
+    scroll-margin-top: 70px;
+  }
+
+  @media (max-width: 760px) {
+    #register {
+      scroll-margin-top: 64px;
+    }
+  }
+</style>

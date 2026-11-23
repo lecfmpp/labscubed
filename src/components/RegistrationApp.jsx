@@ -743,7 +743,13 @@ function RegisterSection() {
     setIsSubmitting(true);
     setError("");
     const website = details.website ? (details.website.startsWith('http') ? details.website : `https://${details.website}`) : undefined;
-    const payload = { ...basic, ...details, website, webinar: CONFIG.title, webinar_slug: CONFIG.slug, kind: CONFIG.kind, timestamp: new Date().toISOString() };
+    // Ad landing pages tag the sign-up with their channel and the ad's UTMs.
+    const utm = {};
+    try {
+      const q = new URLSearchParams(window.location.search);
+      ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"].forEach((k) => { if (q.get(k)) utm[k] = q.get(k); });
+    } catch { /* no query string */ }
+    const payload = { ...basic, ...details, ...utm, website, webinar: CONFIG.title, webinar_slug: CONFIG.slug, kind: CONFIG.kind, source: CONFIG.channel || undefined, timestamp: new Date().toISOString() };
     try {
       console.log("Submitting to:", CONFIG.submitEndpoint);
       const response = await fetch(CONFIG.submitEndpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload), signal: CONFIG.externalRegistrationUrl ? AbortSignal.timeout(6000) : undefined });
@@ -831,8 +837,14 @@ function RegisterSection() {
   );
 }
 
-export default function App({ slug }) {
-  const webinar = React.useMemo(() => getWebinar(slug), [slug]);
+/* `channel` marks an ad landing page (e.g. "linkedin"): sign-ups are tagged with
+   it and sent to that channel's own thank-you page, so the ad platform can count
+   a registration by URL. */
+export default function App({ slug, channel }) {
+  const webinar = React.useMemo(() => {
+    const w = getWebinar(slug);
+    return channel ? { ...w, channel, thankYouUrl: `${w.registrationUrl}/${channel}/thank-you` } : w;
+  }, [slug, channel]);
   return (
     <WebinarContext.Provider value={webinar}>
       <Hero />{webinar.pastEvent ? <Recap /> : <>{webinar.kind === "tradeshow" ? <EventSummary /> : <Agenda />}<WhatToExpect />{webinar.showSpeaker !== false && <Speaker />}<WhoIsThisFor /></>}<NextWebinar />{webinar.postWebinar || webinar.pastEvent ? <NextSteps /> : <RegisterSection />}
