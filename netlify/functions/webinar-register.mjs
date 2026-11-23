@@ -224,6 +224,9 @@ async function sendResendEvent(email, event, apiKey) {
   }
 }
 
+const AD_CHANNELS = new Set(['linkedin']);
+const clip = (v) => (typeof v === 'string' && v.trim() ? v.trim().slice(0, 120) : undefined);
+
 async function recordInSupabase(data, slug, kind, resendSynced, syncError) {
   const url = process.env.SUPABASE_URL;
   // The RPC is granted to anon, so the publishable key is enough; the service
@@ -251,7 +254,15 @@ async function recordInSupabase(data, slug, kind, resendSynced, syncError) {
         // The RPC (migration webinar_registrations_source_from_payload) reads
         // this from the payload and the column is NOT NULL, so without it every
         // insert is rejected. Same value the table used to default to.
-        source: 'webinar_registration',
+        // Ad landing pages (e.g. /webinar/<slug>/linkedin) send a channel so
+        // paid sign-ups can be counted apart. Allowlisted: anything else falls
+        // back to the usual value.
+        source: AD_CHANNELS.has(data.source) ? data.source : 'webinar_registration',
+        utm_source: clip(data.utm_source),
+        utm_medium: clip(data.utm_medium),
+        utm_campaign: clip(data.utm_campaign),
+        utm_content: clip(data.utm_content),
+        utm_term: clip(data.utm_term),
         // 'webinar' unless the WEBINARS entry says otherwise.
         kind,
         webinar_title: data.webinar || null,
