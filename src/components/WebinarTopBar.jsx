@@ -42,6 +42,11 @@ export default function WebinarTopBar({ slug }) {
   return (
     <div style={{ background: COLORS.teal, borderBottom: `3px solid ${COLORS.tealDeep}` }}>
       <div style={{ maxWidth: 1312, margin: "0 auto", padding: m ? "10px 20px" : "10px 64px" }}>
+        {CONFIG.dateTbc ? (
+          <div style={{ textAlign: "center", fontSize: m ? 11 : 13, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "#000", opacity: 0.9, padding: m ? "2px 0" : "6px 0" }}>
+            {CONFIG.dateLabel}
+          </div>
+        ) : (
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: m ? 6 : 8 }}>
           <span style={{ fontSize: m ? 11 : 13, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "#000", opacity: 0.9 }}>Starts in</span>
           <div style={{ display: "flex", gap: m ? 2 : 4 }}>
@@ -53,6 +58,7 @@ export default function WebinarTopBar({ slug }) {
             ))}
           </div>
         </div>
+        )}
       </div>
     </div>
   );
