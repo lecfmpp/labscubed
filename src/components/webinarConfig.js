@@ -232,10 +232,16 @@ export const WEBINARS = {
   "automation-ai-nov-2026": build({
     slug: "automation-ai-nov-2026",
     title: "The Role of AI in Materials Testing",
-    dateLabel: "Wednesday, December 2, 2026",
-    timeLabel: "11:00 AM EST · 50 minutes, including Q&A",
-    startUTC: "2026-12-02T16:00:00Z",
-    endUTC: "2026-12-02T16:50:00Z",
+    // Postponed from Dec 2, 2026. Exact date not confirmed yet: the page says "to be confirmed",
+    // hides the countdown and calendar buttons (dateTbc). startUTC/endUTC are a provisional
+    // placeholder (2nd Wednesday of January, same 11:00 AM EST slot) that only keeps the page
+    // "upcoming" and open for registration; the HubSpot Marketing Event uses the same date.
+    // When the date is confirmed: set the real labels/times, remove dateTbc, update the .ics file.
+    dateTbc: true,
+    dateLabel: "January 2027 · Date to be confirmed",
+    timeLabel: "Time to be confirmed",
+    startUTC: "2027-01-13T16:00:00Z",
+    endUTC: "2027-01-13T16:50:00Z",
     heroCopy:
       "Making a lab \"smart\" isn't one purchase. It's automating the repetitive work, producing data clean enough to be worth analysing, and connecting the two. Here is what that actually takes.",
     seatsTotal: 200,

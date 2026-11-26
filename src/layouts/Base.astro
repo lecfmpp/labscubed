@@ -2,6 +2,7 @@
 import '../styles/styles.css';
 import { SITE_URL } from '../site.mjs';
 import { buildJsonLd } from '../lib/jsonld';
+import ConsentBanner from '../components/ConsentBanner.astro';
 import Analytics from '../components/Analytics.astro';
 import WebMcp from '../components/WebMcp.astro';
 
@@ -135,5 +136,12 @@ const jsonLd = jsonLdProp ?? buildJsonLd(SITE_URL);
   <body>
     <slot />
     <WebMcp />
+    <ConsentBanner />
+    <script>
+      // Record where this visitor first came from (UTMs, external referrer,
+      // ad click ids) so any form they submit later can be attributed.
+      import { captureFirstTouch } from '../lib/firstTouch';
+      captureFirstTouch();
+    </script>
   </body>
 </html>

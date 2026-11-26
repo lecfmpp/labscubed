@@ -226,6 +226,7 @@ async function sendResendEvent(email, event, apiKey) {
 
 const AD_CHANNELS = new Set(['linkedin']);
 const clip = (v) => (typeof v === 'string' && v.trim() ? v.trim().slice(0, 120) : undefined);
+const clipLong = (v) => (typeof v === 'string' && v.trim() ? v.trim().slice(0, 500) : undefined);
 
 async function recordInSupabase(data, slug, kind, resendSynced, syncError) {
   const url = process.env.SUPABASE_URL;
@@ -263,6 +264,10 @@ async function recordInSupabase(data, slug, kind, resendSynced, syncError) {
         utm_campaign: clip(data.utm_campaign),
         utm_content: clip(data.utm_content),
         utm_term: clip(data.utm_term),
+        referrer: clipLong(data.referrer),
+        landing_page: clipLong(data.landing_page),
+        gclid: clip(data.gclid),
+        li_fat_id: clip(data.li_fat_id),
         // 'webinar' unless the WEBINARS entry says otherwise.
         kind,
         webinar_title: data.webinar || null,

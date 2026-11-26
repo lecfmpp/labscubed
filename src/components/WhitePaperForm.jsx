@@ -6,6 +6,7 @@
 // contact into the "Downloaded - White Paper" Resend segment — unchanged.
 import React from 'react';
 import { track } from '../lib/track';
+import { attributionFields } from '../lib/firstTouch';
 
 const COLORS = {
   teal: '#17ddc5',
@@ -15,41 +16,6 @@ const COLORS = {
 };
 
 const ENDPOINT = 'https://grozewxrymeiruhggcdy.supabase.co/functions/v1/download-request';
-const UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'];
-const COOKIE = 'lc_first_touch';
-const MAX_AGE = 60 * 60 * 24 * 90; // 90 days
-
-function getCookie(name) {
-  const m = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
-  return m ? decodeURIComponent(m.pop()) : '';
-}
-function setCookie(name, value) {
-  document.cookie = `${name}=${encodeURIComponent(value)};path=/;max-age=${MAX_AGE};SameSite=Lax`;
-}
-function currentUtms() {
-  const p = new URLSearchParams(location.search);
-  const o = {};
-  let any = false;
-  UTM_KEYS.forEach((k) => { const v = p.get(k); if (v) { o[k] = v; any = true; } });
-  return any ? o : null;
-}
-function firstTouch() {
-  let s = {};
-  try { s = JSON.parse(getCookie(COOKIE) || '{}') || {}; } catch { s = {}; }
-  const has = s.utm_source || s.utm_medium || s.utm_campaign || s.utm_content || s.utm_term;
-  if (!has) {
-    const cur = currentUtms();
-    if (cur) {
-      cur.landing_page = location.pathname;
-      cur.referrer = document.referrer || '';
-      cur.ts = new Date().toISOString();
-      setCookie(COOKIE, JSON.stringify(cur));
-      s = cur;
-    }
-  }
-  return s;
-}
-
 function useM(bp = 760) {
   const [m, setM] = React.useState(typeof window !== 'undefined' && window.innerWidth <= bp);
   React.useEffect(() => {
@@ -123,7 +89,6 @@ export default function WhitePaperForm() {
   async function complete(details) {
     setSubmitting(true);
     setError('');
-    const ft = firstTouch();
     const payload = {
       email: basic.email,
       name: basic.name,
@@ -137,13 +102,7 @@ export default function WhitePaperForm() {
       asset: 'whitepaper',
       origin: 'astro-site',
       source: location.pathname,
-      utm_source: ft.utm_source || '',
-      utm_medium: ft.utm_medium || '',
-      utm_campaign: ft.utm_campaign || '',
-      utm_content: ft.utm_content || '',
-      utm_term: ft.utm_term || '',
-      referrer: ft.referrer || document.referrer || '',
-      landing_page: ft.landing_page || location.pathname,
+      ...attributionFields(),
     };
     try {
       const resp = await fetch(ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });

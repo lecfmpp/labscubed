@@ -14,6 +14,7 @@ import { nextSessions, replayState } from '../../src/components/evergreen.js';
 
 const REQUIRED = ['name', 'email', 'company', 'role'];
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+const clip = (v) => (v == null || v === '' ? null : String(v).trim().slice(0, 500));
 
 export default async (request) => {
   if (request.method !== 'POST') return json(405, { error: 'Method not allowed' });
@@ -86,6 +87,15 @@ export default async (request) => {
         role: String(data.role).trim(),
         resend_synced: resendSynced,
         sync_error: syncError,
+        // Stored in raw; the webinar_replay_to_lead trigger copies these onto
+        // the webform_leads row so the replay is attributed like any lead.
+        utm_source: clip(data.utm_source),
+        utm_medium: clip(data.utm_medium),
+        utm_campaign: clip(data.utm_campaign),
+        utm_content: clip(data.utm_content),
+        utm_term: clip(data.utm_term),
+        referrer: clip(data.referrer),
+        landing_page: clip(data.landing_page),
       },
     });
   } catch (error) {

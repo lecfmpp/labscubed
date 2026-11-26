@@ -1,0 +1,109 @@
+---
+/* ConsentBanner — LabsCubed-branded cookie consent, and the only place the
+   HubSpot tracking code is loaded.
+
+   - First visit: a small card at the bottom asks to Accept or Reject.
+   - The choice is stored for 12 months (localStorage + `lc_consent` cookie).
+   - HubSpot (js.hs-scripts.com/4055087.js) loads ONLY after "Accept", and only
+     on the production hosts (same rule as Analytics.astro), so previews and
+     localhost never send data to HubSpot.
+   - "Cookie settings" in the footer reopens the card (window.lcConsent.open()).
+   - window.lcIdentify(email) ties the visitor's HubSpot cookie and page views to
+     the contact when they submit a form — only if consent was given. A global
+     submit listener calls it for every form with an email field; islands that
+     do not use a native submit (QuoteWizard) call it directly.
+
+   GA4 / Google Ads / LinkedIn Insight are NOT gated here (unchanged behaviour). */
+---
+<div id="lc-consent" class="lcc" role="dialog" aria-live="polite" aria-label="Cookie preferences" hidden>
+  <div class="lcc-card">
+    <p class="lcc-title">We value your privacy</p>
+    <p class="lcc-text">
+      We use cookies to understand how visitors find and use our site, so we can improve it and follow up on your requests.
+      You can accept or reject these cookies. See our <a href="/privacy-policy">privacy policy</a>.
+    </p>
+    <div class="lcc-actions">
+      <button type="button" class="lcc-btn lcc-reject" data-lcc="denied">Reject</button>
+      <button type="button" class="lcc-btn lcc-accept" data-lcc="granted">Accept</button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .lcc { position: fixed; left: 16px; right: 16px; bottom: 16px; z-index: 1000; display: flex; justify-content: flex-start; pointer-events: none; }
+  .lcc[hidden] { display: none; }
+  .lcc-card {
+    pointer-events: auto; max-width: 440px; background: var(--lc-white, #fff); color: var(--lc-ink, #1d1d1f);
+    border: 1px solid var(--lc-line-strong, rgba(0,0,0,.1)); border-radius: 16px; padding: 20px 22px;
+    box-shadow: 0 18px 48px rgba(0,0,0,.16); font-size: 14px; line-height: 1.5;
+  }
+  .lcc-title { margin: 0 0 6px; font-weight: 700; font-size: 15px; }
+  .lcc-text { margin: 0 0 16px; color: var(--lc-gray-500, #86868b); }
+  .lcc-text a { color: var(--lc-teal-deep, #0d9488); text-decoration: underline; }
+  .lcc-actions { display: flex; gap: 10px; justify-content: flex-end; }
+  .lcc-btn { font: inherit; font-weight: 600; border-radius: 999px; padding: 9px 20px; cursor: pointer; border: 1px solid transparent; }
+  .lcc-reject { background: transparent; color: var(--lc-ink, #1d1d1f); border-color: var(--lc-line-strong, rgba(0,0,0,.1)); }
+  .lcc-reject:hover { background: var(--lc-gray-100, #f5f5f7); }
+  .lcc-accept { background: var(--lc-teal, #17ddc5); color: var(--lc-ink-900, #111); }
+  .lcc-accept:hover { background: var(--lc-teal-deep, #0d9488); color: #fff; }
+  .lcc-btn:focus-visible { outline: 2px solid var(--lc-teal-deep, #0d9488); outline-offset: 2px; }
+  @media (max-width: 520px) { .lcc { left: 8px; right: 8px; bottom: 8px; } .lcc-card { max-width: none; } }
+</style>
+
+<script is:inline>
+  (function () {
+    var KEY = 'lc_consent';
+    var HUBSPOT_SRC = 'https://js.hs-scripts.com/4055087.js';
+    var PROD = /^(www\.)?labscubed\.com$/.test(location.hostname);
+    var el = document.getElementById('lc-consent');
+
+    function read() {
+      try { var v = JSON.parse(localStorage.getItem(KEY) || 'null'); if (v && v.v) return v.v; } catch (e) {}
+      var m = document.cookie.match(/(?:^|;\s*)lc_consent=(granted|denied)/);
+      return m ? m[1] : null;
+    }
+    function write(v) {
+      try { localStorage.setItem(KEY, JSON.stringify({ v: v, at: new Date().toISOString() })); } catch (e) {}
+      document.cookie = 'lc_consent=' + v + ';path=/;max-age=' + 60 * 60 * 24 * 365 + ';SameSite=Lax';
+    }
+    function loadHubSpot() {
+      if (window.__lcHsLoaded) return;
+      window.__lcHsLoaded = true;
+      if (!PROD) { try { console.debug('[consent] HubSpot would load here (production only)'); } catch (e) {} return; }
+      var s = document.createElement('script');
+      s.id = 'hs-script-loader'; s.async = true; s.defer = true; s.src = HUBSPOT_SRC;
+      document.head.appendChild(s);
+    }
+    function apply(v) {
+      if (v === 'granted') loadHubSpot();
+      try { document.dispatchEvent(new CustomEvent('lc:consent', { detail: v })); } catch (e) {}
+    }
+
+    window.lcConsent = {
+      get: read,
+      set: function (v) { write(v); el.hidden = true; apply(v); },
+      open: function () { el.hidden = false; var b = el.querySelector('.lcc-accept'); if (b) b.focus(); },
+    };
+    window.lcIdentify = function (email) {
+      if (read() !== 'granted' || !email || !/@/.test(email)) return;
+      var q = (window._hsq = window._hsq || []);
+      q.push(['identify', { email: String(email).trim().toLowerCase() }]);
+      q.push(['trackPageView']);
+    };
+
+    el.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-lcc]');
+      if (b) window.lcConsent.set(b.getAttribute('data-lcc'));
+    });
+    // Any form with an email field identifies the visitor to HubSpot on submit (consent permitting).
+    document.addEventListener('submit', function (e) {
+      try {
+        var f = e.target; var i = f && f.querySelector && f.querySelector('input[type="email"], input[name="email"]');
+        if (i && i.value) window.lcIdentify(i.value);
+      } catch (err) {}
+    }, true);
+
+    var current = read();
+    if (current) apply(current); else el.hidden = false;
+  })();
+</script>
