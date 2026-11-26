@@ -1,6 +1,7 @@
 import React from 'react';
 import { WEBINARS, COLORS } from './webinarConfig.js';
 import { nextSessions } from './evergreen.js';
+import { attributionFields } from '../lib/firstTouch';
 
 /* Booking modal for a webinar's replay sessions, mounted once on the webinar
    hub. Any element carrying data-open-replay="<slug>" opens it. It offers the
@@ -81,7 +82,7 @@ export default function ReplayModal() {
       const res = await fetch("/api/webinar/replay-register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, webinar_slug: slug, session_start: new Date(choice).toISOString() }),
+        body: JSON.stringify({ ...form, ...attributionFields(), webinar_slug: slug, session_start: new Date(choice).toISOString() }),
       });
       const out = await res.json().catch(() => ({}));
       if (!res.ok || !out.token) throw new Error(out.error || "We couldn't save your seat. Please try again.");

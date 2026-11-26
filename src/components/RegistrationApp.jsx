@@ -1,5 +1,6 @@
 import React from 'react';
 import { track } from '../lib/track';
+import { attributionFields } from '../lib/firstTouch';
 import LogoSlider from './LogoSlider.jsx';
 import PartnershipBadge from './PartnershipBadge.jsx';
 import { getWebinar, youTubeId, COLORS } from './webinarConfig.js';
@@ -743,12 +744,9 @@ function RegisterSection() {
     setIsSubmitting(true);
     setError("");
     const website = details.website ? (details.website.startsWith('http') ? details.website : `https://${details.website}`) : undefined;
-    // Ad landing pages tag the sign-up with their channel and the ad's UTMs.
-    const utm = {};
-    try {
-      const q = new URLSearchParams(window.location.search);
-      ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"].forEach((k) => { if (q.get(k)) utm[k] = q.get(k); });
-    } catch { /* no query string */ }
+    // First-touch UTMs/referrer (ad landing pages still pass theirs in the URL,
+    // which the tracker records on arrival).
+    const utm = attributionFields();
     const payload = { ...basic, ...details, ...utm, website, webinar: CONFIG.title, webinar_slug: CONFIG.slug, kind: CONFIG.kind, source: CONFIG.channel || undefined, timestamp: new Date().toISOString() };
     try {
       console.log("Submitting to:", CONFIG.submitEndpoint);

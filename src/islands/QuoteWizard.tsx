@@ -12,6 +12,7 @@
    together with them. `recommendMachine()` still runs, but only to give sales
    an internal "likely fit" in the payload. */
 import React from 'react';
+import { attributionFields } from '../lib/firstTouch';
 import { SAMPLES, getSample, Sample } from '../lib/samples';
 import { Button } from '../lib/ui';
 import { DAILY_OPTIONS, recommendMachine } from '../lib/recommend';
@@ -582,7 +583,8 @@ export default function QuoteWizard() {
           specimenKnowledge: rec.samples.length || data.otherSample.trim() ? 'provided' : 'to_confirm',
           dailyVolume: data.dailyIdx !== null ? (DAILY_OPTIONS[data.dailyIdx] || {}).label : '',
           recommendedMachine: rec.name,
-          source: location.pathname, landing_page: location.pathname, referrer: document.referrer || '', origin: 'astro-site',
+          source: location.pathname, origin: 'astro-site',
+          ...attributionFields(),
         }),
       });
       const resp = await r.json().catch(() => ({}));

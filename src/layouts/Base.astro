@@ -135,5 +135,11 @@ const jsonLd = jsonLdProp ?? buildJsonLd(SITE_URL);
   <body>
     <slot />
     <WebMcp />
+    <script>
+      // Record where this visitor first came from (UTMs, external referrer,
+      // ad click ids) so any form they submit later can be attributed.
+      import { captureFirstTouch } from '../lib/firstTouch';
+      captureFirstTouch();
+    </script>
   </body>
 </html>
