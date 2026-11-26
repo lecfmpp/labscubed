@@ -54,11 +54,13 @@ const columns = showCta
         <div class="ft-link ft-plain">Kitchener, ON</div>
       </div>
     </div>
-    <div class="ft-legal">© 2026 LabsCubed Inc. All rights reserved.</div>
+    <div class="ft-legal">© 2026 LabsCubed Inc. All rights reserved. · <button type="button" class="ft-cookie" onclick="window.lcConsent && window.lcConsent.open()">Cookie settings</button></div>
   </div>
 </footer>
 
 <style>
+  .ft-cookie { all: unset; cursor: pointer; text-decoration: underline; color: inherit; }
+  .ft-cookie:focus-visible { outline: 2px solid #0d9488; outline-offset: 2px; }
   .ft { background: #000; color: #fff; position: relative; overflow: hidden; }
   .ft-inner { max-width: 1392px; margin: 0 auto; padding: 120px 64px 40px; box-sizing: border-box; }
   .ft-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 32px; flex-wrap: wrap; }

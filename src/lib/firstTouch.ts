@@ -90,5 +90,6 @@ export function attributionFields(): Record<string, string> {
     referrer: ft.referrer || '',
     landing_page: ft.landing_page || location.pathname,
     first_touch_at: ft.ts || '',
+    hutk: (document.cookie.match(/(?:^|;\s*)hubspotutk=([^;]+)/) || [])[1] || '',
   };
 }

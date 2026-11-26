@@ -567,6 +567,7 @@ export default function QuoteWizard() {
     setSending(true);
     setSendError('');
     const ctry = getCountry(data.country);
+    try { (window as any).lcIdentify?.(data.email); } catch { /* consent not given or script blocked */ }
     try {
       const r = await fetch(ENDPOINT, {
         method: 'POST',
