@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "astro dev",
     "prebuild": "node scripts/fetch-yt-thumbs.mjs",
-    "build": "astro build && node scripts/build-agent-files.mjs",
+    "build": "astro build && node scripts/build-agent-files.mjs && node scripts/check-sitemap-noindex.mjs",
     "optimize:images": "node scripts/optimize-images.mjs",
     "preview": "astro preview",
     "astro": "astro"

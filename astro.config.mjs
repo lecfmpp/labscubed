@@ -21,9 +21,13 @@ export default defineConfig({
       // the sitemap (they are also noindex).
       // Partner funnels (/webinar/gis-*) and the invitation-only technical webinar
       // are unlisted: direct link only.
+      // Paid-ad landing copies (/webinar/<slug>/linkedin and its /thank-you
+      // conversion page) are noindex duplicates of the canonical webinar page;
+      // Ahrefs flagged them as "Noindex page in sitemap" (2026-11-24 crawl).
+      // scripts/check-sitemap-noindex.mjs fails the build if this ever drifts.
       filter: (page) => {
         const path = new URL(page).pathname;
-        return !/\/(session|booth|pre-assessment|pre-assessment-v2)(\/thank-you)?\/?$/.test(path) && !/^\/webinar\/(gis-|plastics-testing-dec-2026)/.test(path) && !/^\/survey\//.test(path);
+        return !/\/(session|booth|pre-assessment|pre-assessment-v2)(\/thank-you)?\/?$/.test(path) && !/^\/webinar\/(gis-|plastics-testing-dec-2026)/.test(path) && !/^\/webinar\/[^/]+\/linkedin(\/|$)/.test(path) && !/^\/survey\//.test(path);
       },
       /* Blog/post entries are rewritten without a trailing slash so each entry
          matches the page's own canonical exactly — a sitemap that disagrees
