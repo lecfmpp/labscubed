@@ -8,7 +8,12 @@
  * whenever a new page passes `noindex` to Base.astro but nobody adds it to the
  * sitemap filter in astro.config.mjs. This check reads dist/sitemap-*.xml,
  * finds each URL's built HTML and fails the build if that page has a robots
- * noindex meta. Uses only Node built-ins. */
+ * noindex meta. Uses only Node built-ins.
+ *
+ * It fails only the production build (Netlify CONTEXT=production). Deploy
+ * previews and local builds also render review/approved blog posts, which are
+ * noindex drafts by design (src/lib/blog.ts), so there it only warns: those
+ * sitemaps are never the one crawlers read. */
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 
@@ -35,12 +40,16 @@ for (const url of urls) {
   }
 }
 
+const IS_PRODUCTION = process.env.CONTEXT === 'production';
+
 if (bad.length) {
-  console.error(
+  (IS_PRODUCTION ? console.error : console.warn)(
     `[sitemap-check] ${bad.length} noindex page(s) are in the sitemap:\n` +
       bad.map((u) => `  - ${u}`).join('\n') +
-      '\nExclude them in the sitemap filter in astro.config.mjs, or drop their noindex.',
+      '\nExclude them in the sitemap filter in astro.config.mjs, or drop their noindex.' +
+      (IS_PRODUCTION ? '' : '\n(Not a production build, so this is only a warning. Draft posts are expected here.)'),
   );
-  process.exit(1);
+  if (IS_PRODUCTION) process.exit(1);
+} else {
+  console.log(`[sitemap-check] ${urls.length} sitemap URLs, none noindex`);
 }
-console.log(`[sitemap-check] ${urls.length} sitemap URLs, none noindex`);
