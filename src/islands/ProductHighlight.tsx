@@ -57,7 +57,7 @@ export default function ProductHighlight() {
           {[
           { v: trayCap, l: "Specimens Per Run", s: `Loaded, tested and measured unattended on the ${trayMachine} carousel.`, anim: true },
           { v: trayRubber ? "85%" : "95%", l: "Recover Lab Time", s: `Save up to ${trayRubber ? "85" : "95"}% of your team's time for higher-value tasks.` },
-          { v: "18–24", l: "Months to Full ROI", s: "Maximize ROI while accelerating results and technician time." },
+          { v: "12–24", l: "Months to Full ROI", s: "Maximize ROI while accelerating results and technician time." },
           { v: "40%", l: "Ensure Data Consistency", s: "Up to 40% more consistent results, proven by extensive studies." }].
           map((it: any, i: number) =>
           <div key={it.l} style={m ? { display: "flex", gap: 18, alignItems: "stretch", padding: "18px 0", borderTop: i > 0 ? "1px solid rgba(0,0,0,0.08)" : "none" } : undefined}>
